@@ -2,10 +2,6 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/Backend/server.js",
-      "use": "@vercel/node"
-    },
-    {
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": { "distDir": "dist" }
@@ -13,8 +9,9 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "src/Backend/server.js"
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1",
+      "headers": { "cache-control": "public, max-age=31536000, immutable" }
     },
     {
       "src": "/(.*)",
