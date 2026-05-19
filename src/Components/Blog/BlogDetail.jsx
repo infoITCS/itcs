@@ -136,9 +136,27 @@ const BlogDetail = () => {
     }
   };
 
-  if (loading) return <p className="blog-detail-loading">Loading...</p>;
-  if (error) return <p className="blog-detail-error">Error: {error}</p>;
-  if (!article) return <p className="blog-detail-not-found">Blog not found</p>;
+  if (loading) {
+    return (
+      <div className="blog-detail skeleton-wrapper">
+        <div className="skeleton-cover"></div>
+        <div className="skeleton-title"></div>
+        <div className="skeleton-meta"></div>
+        <div className="skeleton-body">
+          <div className="skeleton-line"></div>
+          <div className="skeleton-line"></div>
+          <div className="skeleton-line"></div>
+          <div className="skeleton-line w-70"></div>
+          <br/>
+          <div className="skeleton-line"></div>
+          <div className="skeleton-line w-50"></div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error) return <div className="blog-detail-error"><h2>Oops!</h2><p>{error}</p><Link to="/blog" className="back-btn">Go Back</Link></div>;
+  if (!article) return <div className="blog-detail-not-found"><h2>Blog not found</h2><Link to="/blog" className="back-btn">Go Back</Link></div>;
 
   const displayAuthor = customAuthor || article.user?.name || article.user?.username || "Unknown Author";
 
