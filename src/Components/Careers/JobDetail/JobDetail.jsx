@@ -3,6 +3,19 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { apiUrl } from "../../../config/api";
 import "./JobDetail.scss";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faLocationDot, 
+  faClock, 
+  faBriefcase, 
+  faArrowLeft,
+  faEnvelope,
+  faPhone,
+  faCircleCheck,
+  faStar,
+  faGraduationCap,
+  faChevronRight
+} from '@fortawesome/free-solid-svg-icons';
 
 const JobDetail = () => {
   const { id } = useParams();
@@ -12,229 +25,194 @@ const JobDetail = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const loadJobDetail = async () => {
+    const fetchJob = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(apiUrl(`/api/jobsAdd/${id}`));
+        const res = await axios.get(apiUrl(`/api/jobsAdd/${id}?t=${Date.now()}`));
         setJob(res.data);
       } catch (err) {
-        console.error("Error loading job details:", err);
-        setError("Failed to load job details. Please try again.");
+        console.error("Fetch error:", err);
+        setError("Position details are currently unavailable.");
       } finally {
         setLoading(false);
       }
     };
-
-    loadJobDetail();
+    fetchJob();
+    window.scrollTo(0, 0);
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="job-detail-loading">
-        <div className="spinner"></div>
-        <p>Loading job details...</p>
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="theme-loading">
+      <div className="theme-spinner"></div>
+      <p>Loading Position Details...</p>
+    </div>
+  );
 
-  if (error || !job) {
-    return (
-      <div className="job-detail-error">
-        <div className="error-container">
-          <h2>Oops! Something went wrong</h2>
-          <p>{error || "Job not found"}</p>
-          <button className="back-btn" onClick={() => navigate("/careers")}>
-            ← Back to Careers
-          </button>
-        </div>
-      </div>
-    );
-  }
+  if (error || !job) return (
+    <div className="theme-error">
+      <h2>Position Not Found</h2>
+      <p>{error}</p>
+      <button className="theme-btn" onClick={() => navigate("/careers")}>Back to Careers</button>
+    </div>
+  );
 
-  const handleApplyClick = () => {
+  const parseList = (text) => text ? text.split(/\r?\n/).filter(l => l.trim() !== "") : [];
+  
+  const handleApply = () => {
     navigate("/apply", { state: { job } });
   };
 
   return (
-    <div className="job-detail-container">
-      <div className="job-detail-hero">
-        <div className="hero-content">
-          <button className="back-btn" onClick={() => navigate("/careers")}>
-            ← Back to Careers
+    <div className="job-detail-themed">
+      <div className="theme-radial-top"></div>
+      <div className="theme-radial-bottom"></div>
+
+      <div className="detail-wrapper">
+        <div className="detail-top-nav">
+          <button className="btn-back" onClick={() => navigate("/careers")}>
+            <FontAwesomeIcon icon={faArrowLeft} /> Back to Careers
           </button>
-          <h1>{job.title}</h1>
-          <div className="job-meta-header">
-            <span className="department-tag">{job.department}</span>
-            <span className="type-tag">{job.type}</span>
+        </div>
+
+        <div className="detail-grid">
+          <div className="detail-main">
+            <header className="detail-header">
+              <div className="header-tags">
+                <span className="tag-dept">{job.department}</span>
+                <span className="tag-type">{job.type}</span>
+              </div>
+              <h1>{job.title}</h1>
+              <div className="header-meta">
+                <div className="meta-item">
+                  <FontAwesomeIcon icon={faLocationDot} />
+                  <span>{job.location}</span>
+                </div>
+                <div className="meta-item">
+                  <FontAwesomeIcon icon={faClock} />
+                  <span>{job.experience}</span>
+                </div>
+              </div>
+            </header>
+
+            <div className="content-blocks">
+              {/* About Role - Keep in main column */}
+              {job.aboutRole && (
+                <section className="detail-section">
+                  <div className="section-head">
+                    <div className="head-icon"><FontAwesomeIcon icon={faStar} /></div>
+                  <h2>About This Role</h2>
+                </div>
+                <div className="section-body">
+                  <p>{job.aboutRole}</p>
+                </div>
+              </section>
+            )}
+            </div>
+          </div>
+
+          <div className="detail-sidebar">
+            <div className="sidebar-sticky">
+              <div className="apply-card-themed">
+                <h3>Start Your Journey</h3>
+                <p>Join ITCS and collaborate with the best in the industry to build future-ready solutions.</p>
+                <button className="btn-apply-themed" onClick={handleApply}>
+                  Apply For This Job
+                </button>
+                <div className="sidebar-status">
+                  <div className="pulse-dot"></div>
+                  <span>Accepting Applications</span>
+                </div>
+              </div>
+
+              <div className="contact-card-themed">
+                <h4>Support & Questions</h4>
+                <div className="contact-info">
+                  <a href="mailto:info@itcs.com.pk">
+                    <FontAwesomeIcon icon={faBriefcase} />
+                    <span>info@itcs.com.pk</span>
+                  </a>
+                  <a href="tel:021111482711">
+                    <FontAwesomeIcon icon={faBriefcase} />
+                    <span>021 111-482-711</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="job-detail-content">
-        <div className="content-wrapper">
-          <div className="main-content">
-            <section className="job-overview">
-              <h2>Job Overview</h2>
-              <div className="overview-grid">
-                <div className="overview-item">
-                  <span className="icon">📍</span>
-                  <div>
-                    <p className="label">Location</p>
-                    <p className="value">{job.location}</p>
-                  </div>
-                </div>
-                <div className="overview-item">
-                  <span className="icon">⏱️</span>
-                  <div>
-                    <p className="label">Experience</p>
-                    <p className="value">{job.experience}</p>
-                  </div>
-                </div>
-                <div className="overview-item">
-                  <span className="icon">💼</span>
-                  <div>
-                    <p className="label">Employment Type</p>
-                    <p className="value">{job.type}</p>
-                  </div>
-                </div>
-                <div className="overview-item">
-                  <span className="icon">👥</span>
-                  <div>
-                    <p className="label">Department</p>
-                    <p className="value">{job.department}</p>
-                  </div>
+        {/* Full Width Detail Sections */}
+        <div className="full-width-content">
+          {/* Responsibilities - Full Width */}
+          {job.responsibilities && (
+            <section className="detail-section-full">
+              <div className="section-head">
+                <div className="head-icon"><FontAwesomeIcon icon={faCircleCheck} /></div>
+                <h2>Key Responsibilities</h2>
+              </div>
+              <div className="section-body">
+                <ul className="full-theme-list">
+                  {parseList(job.responsibilities).map((item, i) => (
+                    <li key={i}>
+                      <FontAwesomeIcon icon={faChevronRight} className="li-arrow" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          )}
+
+          {/* Qualifications - Full Width */}
+          {job.qualifications && (
+            <section className="detail-section-full">
+              <div className="section-head">
+                <div className="head-icon"><FontAwesomeIcon icon={faGraduationCap} /></div>
+                <h2>Qualifications & Skills</h2>
+              </div>
+              <div className="section-body">
+                <div className="full-qual-grid">
+                  {parseList(job.qualifications).map((item, i) => (
+                    <div className="qual-item-pro" key={i}>
+                      <div className="item-dot"></div>
+                      <span>{item}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </section>
+          )}
 
-            <section className="job-description">
-              <h2>About This Role</h2>
-              <div className="description-content">
-                {job.aboutRole ? (
-                  <p>{job.aboutRole}</p>
-                ) : job.description ? (
-                  <p>{job.description}</p>
-                ) : (
-                  <p>We're looking for a talented professional to join our {job.department} team. If you're passionate about technology and innovation, we'd love to hear from you!</p>
-                )}
-              </div>
-            </section>
-
-            <section className="job-responsibilities">
-              <h2>Key Responsibilities</h2>
-              <ul className="responsibilities-list">
-                {job.responsibilities ? (
-                  job.responsibilities.split('\n').filter(line => line.trim()).map((item, idx) => (
-                    <li key={idx}>{item.trim()}</li>
-                  ))
-                ) : (
-                  <>
-                    <li>Contribute to innovative projects and solutions</li>
-                    <li>Collaborate with a talented and diverse team</li>
-                    <li>Work on cutting-edge technology and tools</li>
-                    <li>Drive impact and create meaningful value</li>
-                  </>
-                )}
-              </ul>
-            </section>
-
-            <section className="job-requirements">
-              <h2>What We're Looking For</h2>
-              <div className="requirements-grid">
-                {job.requirements ? (
-                  job.requirements.split('\n').filter(line => line.trim()).map((item, idx) => (
-                    <div className="requirement-card" key={idx}>
-                      <h3>{idx === 0 ? "Core Requirement" : idx === 1 ? "Skills" : idx === 2 ? "Qualifications" : "Expectation"}</h3>
-                      <p>{item.trim()}</p>
-                    </div>
-                  ))
-                ) : (
-                  <>
-                    <div className="requirement-card">
-                      <h3>Technical Skills</h3>
-                      <p>Strong technical foundation relevant to the {job.title.toLowerCase()} position</p>
-                    </div>
-                    <div className="requirement-card">
-                      <h3>Experience</h3>
-                      <p>{job.experience}</p>
-                    </div>
-                    <div className="requirement-card">
-                      <h3>Soft Skills</h3>
-                      <p>Communication, teamwork, and problem-solving abilities</p>
-                    </div>
-                    <div className="requirement-card">
-                      <h3>Passion</h3>
-                      <p>Enthusiasm for learning and growing with our organization</p>
-                    </div>
-                  </>
-                )}
-              </div>
-            </section>
-
-            <section className="job-benefits">
-              <h2>Why Join ITCS?</h2>
-              <div className="benefits-list">
-                <div className="benefit-item">
-                  <span className="benefit-icon">🏢</span>
-                  <h4>Innovative Workspaces</h4>
-                  <p>State-of-the-art offices designed for creativity and collaboration</p>
-                </div>
-                <div className="benefit-item">
-                  <span className="benefit-icon">📚</span>
-                  <h4>Continuous Learning</h4>
-                  <p>Professional development and certification opportunities</p>
-                </div>
-                <div className="benefit-item">
-                  <span className="benefit-icon">🤝</span>
-                  <h4>Team Building</h4>
-                  <p>Regular team activities and workshops to build strong relationships</p>
-                </div>
-                <div className="benefit-item">
-                  <span className="benefit-icon">⚖️</span>
-                  <h4>Work-Life Balance</h4>
-                  <p>Flexible work arrangements and generous leave policies</p>
-                </div>
-                <div className="benefit-item">
-                  <span className="benefit-icon">🏥</span>
-                  <h4>Health Insurance</h4>
-                  <p>Comprehensive health coverage for you and your family</p>
-                </div>
-                <div className="benefit-item">
-                  <span className="benefit-icon">💰</span>
-                  <h4>Competitive Compensation</h4>
-                  <p>Performance-based compensation and incentive plans</p>
-                </div>
-              </div>
-            </section>
-          </div>
-
-          <aside className="job-sidebar">
-            <div className="apply-card">
-              <h3>Ready to Apply?</h3>
-              <p>Send us your resume and let's start your journey with ITCS.</p>
-              <button className="apply-btn-primary" onClick={handleApplyClick}>
-                Apply Now
-              </button>
-              <p className="deadline-note">Application deadline: Open until filled</p>
+          {/* Benefits Section */}
+          <section className="benefits-section-full">
+            <div className="section-head-centered">
+              <div className="head-icon"><FontAwesomeIcon icon={faStar} /></div>
+              <h2>Exclusive Employee Benefits</h2>
+              <p>We invest in our people to ensure a fulfilling and rewarding career journey.</p>
             </div>
-
-            <div className="contact-card">
-              <h3>Questions?</h3>
-              <p>Get in touch with our HR team</p>
-              <div className="contact-info">
-                <p>
-                  <strong>Email:</strong>
-                  <br />
-                  <a href="mailto:info@itcs.com.pk">info@itcs.com.pk</a>
-                </p>
-                <p>
-                  <strong>Phone:</strong>
-                  <br />
-                  <a href="tel:+9221111482711">021 111-482-711</a>
-                </p>
-              </div>
+            <div className="benefits-bento-pro">
+              {[
+                { title: "Health Insurance", desc: "Complete medical coverage for self & family" },
+                { title: "Provident Fund", desc: "Long-term financial security plans" },
+                { title: "Annual Paid Leaves", desc: "Generous time off for work-life balance" },
+                { title: "Compensation Plans", desc: "Competitive salary & performance bonuses" },
+                { title: "Paid Certifications", desc: "Upskill with company-sponsored training" },
+                { title: "Monthly Rewards", desc: "Recognition for outstanding performance" },
+                { title: "Quarterly Meetups", desc: "Team building & social engagements" },
+                { title: "Referral Bonuses", desc: "Rewards for bringing in top talent" }
+              ].map((benefit, i) => (
+                <div className="benefit-card-full" key={i}>
+                  <div className="card-icon">
+                    <FontAwesomeIcon icon={faStar} />
+                  </div>
+                  <div className="card-info">
+                    <h4>{benefit.title}</h4>
+                    <p>{benefit.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          </aside>
+          </section>
         </div>
       </div>
     </div>

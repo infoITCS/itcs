@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import QuillEditor from '../../Common/QuillEditor';
+import 'react-quill-new/dist/quill.snow.css';
 import { apiUrl } from '../../../config/api';
 import './AddCustomBlog.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -59,7 +59,9 @@ const AddCustomBlog = () => {
   }, [formData.title, autoSlug]);
 
   const stripHtml = (html) => {
-    const doc = new DOMParser().parseFromString(html, 'text/html');
+    // Replace closing tags of block elements with a space to prevent text merging
+    const spacedHtml = html.replace(/<\/h[1-6]>|<\/p>|<\/div>|<\/li>|<br\s*\/?>/gi, '$& ');
+    const doc = new DOMParser().parseFromString(spacedHtml, 'text/html');
     return doc.body.textContent || '';
   };
 
@@ -150,14 +152,25 @@ const AddCustomBlog = () => {
       }
 
       const plainTextContent = stripHtml(formData.content);
+      let excerpt = formData.excerpt.trim();
+      
+      if (!excerpt) {
+        // Find a word boundary within 150 chars
+        const limit = 150;
+        if (plainTextContent.length > limit) {
+          const lastSpace = plainTextContent.lastIndexOf(' ', limit);
+          excerpt = plainTextContent.substring(0, lastSpace > 0 ? lastSpace : limit) + '...';
+        } else {
+          excerpt = plainTextContent;
+        }
+      }
+
       const blogData = {
         ...formData,
         featuredImage: imageUrl,
         status: 'pending',
         tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
-        excerpt: formData.excerpt.trim()
-          ? formData.excerpt
-          : plainTextContent.substring(0, 150) + (plainTextContent.length > 150 ? '...' : '')
+        excerpt: excerpt
       };
 
       await axios.post(apiUrl('/api/custom-blogs'), blogData, {
@@ -306,7 +319,7 @@ const AddCustomBlog = () => {
                 <div className="form-group">
                   <label><span>Blog Content</span><span className="char-count">{wordCount} words · {readingTime} min read</span></label>
                   <div ref={contentRef}>
-                    <ReactQuill theme="snow" value={formData.content} onChange={handleContentChange} modules={modules} placeholder="Start writing your amazing story..." />
+                    <QuillEditor theme="snow" value={formData.content} onChange={handleContentChange} modules={modules} placeholder="Start writing your amazing story..." />
                   </div>
                 </div>
 
@@ -454,7 +467,9 @@ const AddCustomBlog = () => {
                         <span><FontAwesomeIcon icon={faUserEdit} /> {blog.author || 'Unknown'}</span>
                         {blog.publishDate && <span><FontAwesomeIcon icon={faCalendarAlt} /> {new Date(blog.publishDate).toLocaleDateString()}</span>}
                       </div>
-                      <p className="card-dash-excerpt">{blog.excerpt || blog.metaDescription || 'No description.'}</p>
+                      <p className="card-dash-excerpt">
+                        {(blog.excerpt || blog.metaDescription || 'No description.').replace(/([?!:])([a-zA-Z])/g, '$1 $2')}
+                      </p>
                       <div className="card-dash-tags">
                         {(blog.tags || []).slice(0, 3).map((t, i) => <span key={i} className="dash-tag">#{t}</span>)}
                       </div>

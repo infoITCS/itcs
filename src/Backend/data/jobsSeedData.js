@@ -6,7 +6,10 @@ const jobsSeedData = [
     type: "Full-time",
     location: "Karachi",
     experience: "2-5 years",
-    description: "We are seeking an IT Sales Specialist to join our dynamic sales team in Karachi. You will be responsible for identifying and pursuing new business opportunities, managing client relationships, and achieving sales targets in the IT solutions market. Your expertise in IT products and services combined with strong communication skills will be key to your success.",
+    description: "We are seeking an IT Sales Specialist to join our dynamic sales team in Karachi.",
+    aboutRole: "As an IT Sales Specialist, you will be the bridge between our cutting-edge technology and our valued clients.",
+    responsibilities: "Identify and pursue new business opportunities\nManage and nurture client relationships\nAchieve monthly and annual sales targets\nStay updated with latest IT products and services",
+    requirements: "Bachelor's degree in Business or IT\n2+ years of experience in IT sales\nExcellent communication and negotiation skills\nProven track record of meeting targets",
   },
   {
     title: "Tender Specialist",

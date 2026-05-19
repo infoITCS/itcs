@@ -99,21 +99,11 @@ const AdminPanel = () => {
         <nav className="sidebar-nav">
           {!isAuthor && (
             <button
-              className={`nav-item ${activeTab === 'post-job' ? 'active' : ''}`}
-              onClick={() => setActiveTab('post-job')}
+              className={`nav-item ${activeTab === 'job-management' ? 'active' : ''}`}
+              onClick={() => setActiveTab('job-management')}
             >
               <span className="nav-icon"><FontAwesomeIcon icon={faAddressCard} /></span>
-              <span className="nav-text">Post a Job</span>
-            </button>
-          )}
-
-          {!isAuthor && (
-            <button
-              className={`nav-item ${activeTab === 'job-list' ? 'active' : ''}`}
-              onClick={() => setActiveTab('job-list')}
-            >
-              <span className="nav-icon"><FontAwesomeIcon icon={faList} /></span>
-              <span className="nav-text">Job List</span>
+              <span className="nav-text">Job Management</span>
             </button>
           )}
 
@@ -159,8 +149,7 @@ const AdminPanel = () => {
       </div>
 
       <div className="admin-content">
-        {activeTab === 'post-job' && <PostJob />}
-        {activeTab === 'job-list' && <JobList />}
+        {activeTab === 'job-management' && <PostJob />}
         {activeTab === 'blog-approval' && <BlogApproval />}
         {activeTab === 'add-blog' && <AddCustomBlog />}
         

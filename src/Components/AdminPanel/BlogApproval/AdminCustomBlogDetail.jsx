@@ -14,7 +14,10 @@ const AdminCustomBlogDetail = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const res = await axios.get(apiUrl('/api/custom-blogs/all'))
+        const token = localStorage.getItem('token')
+        const res = await axios.get(apiUrl('/api/custom-blogs/all'), {
+          headers: { Authorization: `Bearer ${token}` }
+        })
         const posts = res.data || []
         const found = posts.find(
           (item) => item._id === id || String(item.id) === String(id)
@@ -41,7 +44,7 @@ const AdminCustomBlogDetail = () => {
   const author =
     blog.author || blog.displayAuthor || blog.username || blog.user?.username || 'Unknown'
   const body = blog.content || blog.body || blog.description || '<p>No content available.</p>'
-  const image = blog.cover_image || blog.social_image || blog.image
+  const image = blog.featuredImage || blog.cover_image || blog.social_image || blog.image
 
   return (
     <div className="blog-detail">

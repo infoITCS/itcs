@@ -14,6 +14,9 @@ export default function BlogApproval() {
   const [authors, setAuthors] = useState({});
   const [dates, setDates] = useState({});
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const blogsPerPage = 8;
+
   const organization = "itcs11";
 
   // Fetch all Dev.to blogs
@@ -64,7 +67,7 @@ export default function BlogApproval() {
       const authorMap = {};
       const dateMap = {};
 
-      if (Array.isArray(statusRes.data)) {
+      if (statusRes.data && Array.isArray(statusRes.data)) {
         statusRes.data.forEach(b => {
           statusMap[b.devId] = b.status;
           authorMap[b.devId] = b.customAuthor || "";
@@ -73,31 +76,45 @@ export default function BlogApproval() {
       }
 
       // Filter visible Dev.to blogs (pending or approved, not rejected)
-      let visibleDevBlogs = devBlogsData.filter(blog => statusMap[blog.id] !== "rejected");
-      visibleDevBlogs = visibleDevBlogs.map(blog => ({
-        ...blog,
-        type: 'devto',
-        displayAuthor: authorMap[blog.id] || blog.user?.username || "Unknown",
-        displayDate: dateMap[blog.id] || blog.readable_publish_date
-      }));
+      let visibleDevBlogs = [];
+      if (devBlogsData && Array.isArray(devBlogsData)) {
+        visibleDevBlogs = devBlogsData.filter(blog => statusMap[blog.id] !== "rejected");
+        visibleDevBlogs = visibleDevBlogs.map(blog => ({
+          ...blog,
+          type: 'devto',
+          displayAuthor: authorMap[blog.id] || blog.user?.username || "Unknown",
+          displayDate: dateMap[blog.id] || blog.readable_publish_date
+        }));
+      }
 
       // Process custom blogs (pending or published, not rejected)
-      const visibleCustomBlogs = customBlogsRes.data
-        .filter(blog => blog.status !== 'rejected')
-        .map(blog => ({
-          ...blog,
-          type: 'custom',
-          id: blog._id,
-          title: blog.title,
-          description: blog.excerpt || blog.metaDescription,
-          cover_image: blog.featuredImage,
-          user: { username: blog.author },
-          published_at: blog.publishDate,
-          readable_publish_date: new Date(blog.publishDate).toLocaleDateString(),
-          tag_list: blog.tags || [],
-          displayAuthor: blog.author,
-          displayDate: new Date(blog.publishDate).toLocaleDateString()
-        }));
+      let visibleCustomBlogs = [];
+      if (customBlogsRes.data && Array.isArray(customBlogsRes.data)) {
+        visibleCustomBlogs = customBlogsRes.data
+          .filter(blog => blog.status !== 'rejected')
+          .map(blog => {
+            let description = blog.excerpt || blog.metaDescription || "";
+            // Fix for text that has no space after punctuation (e.g. "Question?Answer")
+            if (typeof description === 'string') {
+              description = description.replace(/([?!:])([a-zA-Z])/g, '$1 $2');
+            }
+
+            return {
+              ...blog,
+              type: 'custom',
+              id: blog._id,
+              title: blog.title,
+              description: description,
+              cover_image: blog.featuredImage,
+              user: { username: blog.author },
+              published_at: blog.publishDate,
+              readable_publish_date: new Date(blog.publishDate).toLocaleDateString(),
+              tag_list: blog.tags || [],
+              displayAuthor: blog.author,
+              displayDate: new Date(blog.publishDate).toLocaleDateString()
+            };
+          });
+      }
 
       setStatuses(statusMap);
       setAuthors(authorMap);
@@ -106,8 +123,14 @@ export default function BlogApproval() {
       setCustomBlogs(visibleCustomBlogs);
 
     } catch (err) {
-      console.error(err);
-      alert("Failed to fetch blogs for approval.");
+      console.error("Fetch blogs error:", err);
+      if (err.response && err.response.status === 401) {
+        alert("Your session has expired. Please log in again.");
+        localStorage.clear(); // Clear potentially invalid token
+        window.location.href = "/login";
+      } else {
+        alert("Failed to fetch blogs for approval. Check console for details.");
+      }
     } finally {
       setLoading(false);
     }
@@ -182,7 +205,21 @@ export default function BlogApproval() {
     return sortBlogsByDate(allBlogs, dates);
   };
 
+  // Reset pagination when tab changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
+
   const allBlogs = getAllBlogs();
+  const indexOfLastBlog = currentPage * blogsPerPage;
+  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
+  const currentBlogs = allBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
+  const totalPages = Math.ceil(allBlogs.length / blogsPerPage);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="blog-approval-container">
@@ -212,22 +249,24 @@ export default function BlogApproval() {
       {loading && <p className="loading-text">Loading blogs...</p>}
 
       <div className="blog-grid">
-        {allBlogs.map(blog => (
+        {currentBlogs.map(blog => (
           <article key={blog.id || blog._id} className={`blog-card ${blog.type}`}>
             <div className="blog-type-badge">
               {blog.type === 'custom' ? 'Custom' : 'Dev.to'}
             </div>
 
-            <div className="blog-card__content">
-              {(blog.cover_image || blog.social_image) && (
+            {(blog.cover_image || blog.social_image) && (
+              <div className="blog-cover-wrap">
                 <img
                   src={blog.cover_image || blog.social_image}
                   alt={blog.title}
                   className="blog-cover"
                   loading="lazy"
                 />
-              )}
+              </div>
+            )}
 
+            <div className="blog-card__content">
               <h3>{blog.title}</h3>
               <p className="meta">
                 Author: {blog.displayAuthor || blog.user?.username || "Unknown"} •{" "}
@@ -320,6 +359,39 @@ export default function BlogApproval() {
       </div>
 
       {!loading && allBlogs.length === 0 && <p className="no-blogs">No blogs pending approval.</p>}
+
+      {/* Modern Pagination UI */}
+      {totalPages > 1 && (
+        <div className="modern-pagination">
+          <button 
+            className="pagination-arrow" 
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            &larr;
+          </button>
+          
+          <div className="page-numbers">
+            {[...Array(totalPages)].map((_, index) => (
+              <button
+                key={index + 1}
+                className={`page-number ${currentPage === index + 1 ? "active" : ""}`}
+                onClick={() => paginate(index + 1)}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+
+          <button 
+            className="pagination-arrow" 
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            &rarr;
+          </button>
+        </div>
+      )}
     </div>
   );
 }

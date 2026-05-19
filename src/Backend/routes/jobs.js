@@ -46,7 +46,16 @@ router.delete('/seed/clear', async (req, res) => {
 // Create a new job
 router.post('/', async (req, res) => {
   try {
-    const { title, department, type, location, experience, description } = req.body;
+    const { 
+      title, 
+      department, 
+      type, 
+      location, 
+      experience, 
+      aboutRole, 
+      responsibilities, 
+      qualifications 
+    } = req.body;
 
     if (!title || !department || !location) {
       return res.status(400).json({ message: 'Title, department, and location are required' });
@@ -58,7 +67,10 @@ router.post('/', async (req, res) => {
       type: type || 'Full-time',
       location,
       experience: experience || 'Not specified',
-      description: description || '',
+      aboutRole: aboutRole || '',
+      responsibilities: responsibilities || '',
+      qualifications: qualifications || '',
+      description: aboutRole || '' // Sync for legacy
     });
 
     const savedJob = await newJob.save();

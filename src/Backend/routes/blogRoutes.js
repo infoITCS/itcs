@@ -12,7 +12,7 @@ const router = express.Router();
 // POST / - Create a new custom blog (always saved as pending)
 router.post('/', async (req, res) => {
   try {
-    const { title, slug, content, author, excerpt, tags, featuredImage, metaTitle, metaDescription, metaKeywords } = req.body;
+    let { title, slug, content, author, excerpt, tags, featuredImage, metaTitle, metaDescription, metaKeywords } = req.body;
     
     let ownerId = null;
     const authHeader = req.headers.authorization;
@@ -22,6 +22,18 @@ router.post('/', async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         ownerId = decoded.id;
       } catch (err) {}
+    }
+
+    // Make slug unique by appending a counter if duplicate exists
+    if (slug) {
+      let existing = await CustomBlog.findOne({ slug });
+      if (existing) {
+        let counter = 1;
+        while (await CustomBlog.findOne({ slug: `${slug}-${counter}` })) {
+          counter++;
+        }
+        slug = `${slug}-${counter}`;
+      }
     }
 
     const blog = new CustomBlog({

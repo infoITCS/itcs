@@ -68,20 +68,25 @@
   }
 
   .blog-body {
-    max-width: 1440px;
+    max-width: 1000px;
     margin: 0 auto;
     text-align: left;
-    font-size: 22px; 
-    line-height: 2;   
+    font-size: 20px; 
+    line-height: 1.8;   
     color: #fff; 
     position: relative;
     background: rgba(255, 255, 255, 0.06);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
-    padding: 50px 60px; 
+    padding: clamp(20px, 5vw, 60px); 
     box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
+    
+    /* Responsive word wrap */
+    word-break: normal;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 
     p {
       margin-bottom: 28px;
@@ -113,8 +118,7 @@
     }
 
     img {
-      width: 100%;
-      max-width: 800px;
+      max-width: 100%;
       height: auto;
       margin: 25px auto;
       display: block;
