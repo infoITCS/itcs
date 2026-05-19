@@ -224,61 +224,107 @@
   }
 }
 
- / *   S k e l e t o n   L o a d e r s   * / 
- . s k e l e t o n - w r a p p e r   { 
-     d i s p l a y :   f l e x ; 
-     f l e x - d i r e c t i o n :   c o l u m n ; 
-     a l i g n - i t e m s :   c e n t e r ; 
- } 
- 
- @ k e y f r a m e s   s h i m m e r   { 
-     0 %   {   b a c k g r o u n d - p o s i t i o n :   - 1 0 0 0 p x   0 ;   } 
-     1 0 0 %   {   b a c k g r o u n d - p o s i t i o n :   1 0 0 0 p x   0 ;   } 
- } 
- 
- . s k e l e t o n - c o v e r ,   . s k e l e t o n - t i t l e ,   . s k e l e t o n - m e t a ,   . s k e l e t o n - l i n e   { 
-     b a c k g r o u n d :   # 1 e 1 b 3 0 ; 
-     b a c k g r o u n d - i m a g e :   l i n e a r - g r a d i e n t ( 9 0 d e g ,   # 1 e 1 b 3 0   0 p x ,   # 2 a 2 5 4 2   4 0 p x ,   # 1 e 1 b 3 0   8 0 p x ) ; 
-     b a c k g r o u n d - s i z e :   1 0 0 0 p x   1 0 0 % ; 
-     a n i m a t i o n :   s h i m m e r   2 s   i n f i n i t e   l i n e a r ; 
-     b o r d e r - r a d i u s :   8 p x ; 
- } 
- 
- . s k e l e t o n - c o v e r   { 
-     w i d t h :   1 0 0 % ; 
-     m a x - w i d t h :   1 4 4 0 p x ; 
-     h e i g h t :   4 0 0 p x ; 
-     b o r d e r - r a d i u s :   2 4 p x ; 
-     m a r g i n - b o t t o m :   4 0 p x ; 
- } 
- 
- . s k e l e t o n - t i t l e   { 
-     w i d t h :   7 0 % ; 
-     h e i g h t :   6 0 p x ; 
-     m a r g i n :   3 0 p x   a u t o   4 0 p x ; 
- } 
- 
- . s k e l e t o n - m e t a   { 
-     w i d t h :   4 0 0 p x ; 
-     h e i g h t :   8 0 p x ; 
-     b o r d e r - r a d i u s :   2 0 p x ; 
-     m a r g i n :   0   a u t o   6 0 p x ; 
- } 
- 
- . s k e l e t o n - b o d y   { 
-     w i d t h :   1 0 0 % ; 
-     m a x - w i d t h :   1 4 4 0 p x ; 
-     p a d d i n g :   5 0 p x   6 0 p x ; 
-     b a c k g r o u n d :   v a r ( - - b g - s e c o n d a r y ) ; 
-     b o r d e r - r a d i u s :   2 0 p x ; 
- } 
- 
- . s k e l e t o n - l i n e   { 
-     h e i g h t :   2 0 p x ; 
-     m a r g i n - b o t t o m :   2 0 p x ; 
-     w i d t h :   1 0 0 % ; 
- } 
- . s k e l e t o n - l i n e . w - 7 0   {   w i d t h :   7 0 % ;   } 
- . s k e l e t o n - l i n e . w - 5 0   {   w i d t h :   5 0 % ;   } 
-  
- 
+/* Skeleton Loaders */
+.skeleton-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.skeleton-cover,
+.skeleton-title,
+.skeleton-meta,
+.skeleton-line {
+  background: #1e1b30;
+  background-image: linear-gradient(90deg, #1e1b30 0px, #2a2542 40px, #1e1b30 80px);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+  border-radius: 8px;
+}
+
+.skeleton-cover {
+  width: 100%;
+  max-width: 1440px;
+  height: 400px;
+  border-radius: 24px;
+  margin-bottom: 40px;
+}
+
+.skeleton-title {
+  width: 70%;
+  height: 60px;
+  margin: 30px auto 40px;
+}
+
+.skeleton-meta {
+  width: 400px;
+  max-width: 90%;
+  height: 80px;
+  border-radius: 20px;
+  margin: 0 auto 60px;
+}
+
+.skeleton-body {
+  width: 100%;
+  max-width: 1440px;
+  padding: 50px 60px;
+  background: var(--bg-secondary);
+  border-radius: 20px;
+}
+
+.skeleton-line {
+  height: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.skeleton-line.w-70 { width: 70%; }
+.skeleton-line.w-50 { width: 50%; }
+
+/* Error & Not Found States */
+.blog-detail-error,
+.blog-detail-not-found {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #fff;
+  padding: 40px;
+
+  h2 {
+    font-size: 32px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 24px;
+  }
+
+  .back-btn {
+    padding: 12px 28px;
+    background: #4a9eff;
+    color: #fff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.3s;
+
+    &:hover {
+      background: #3580d9;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .skeleton-cover { height: 200px; }
+  .skeleton-title { height: 40px; }
+  .skeleton-body { padding: 25px; }
+}
