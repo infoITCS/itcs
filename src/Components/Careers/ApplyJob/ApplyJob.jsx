@@ -78,7 +78,11 @@ const ApplyJob = () => {
       });
       setTimeout(() => navigate("/careers"), 3000);
     } catch (err) {
-      setStatus({ type: "error", message: "Failed to submit application. Please try again or email us directly." });
+      const statusCode = err.response?.status || "Network Error";
+      const serverMsg = err.response?.data?.message || "";
+      const debugInfo = serverMsg ? ` (${serverMsg})` : "";
+      setStatus({ type: "error", message: `Failed to submit application (${statusCode}${debugInfo}). Please try again or email us directly.` });
+      console.error("Application submit error:", statusCode, err.response?.data, err.message);
     } finally {
       setLoading(false);
     }

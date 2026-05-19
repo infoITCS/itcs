@@ -67,6 +67,15 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Global error handler - catch unhandled errors
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({
+    error: 'Internal server error',
+    message: err.message,
+  });
+});
+
 // Catch-all for non-API routes - return 404
 app.use((req, res) => {
   res.status(404).json({ error: 'API route not found' });
@@ -74,14 +83,12 @@ app.use((req, res) => {
 
 // Vercel serverless handler
 export default async function handler(req, res) {
-  // Ensure MongoDB connection before handling requests
   try {
     await getMongoConnection();
   } catch (error) {
     console.error('MongoDB connection error:', error);
     return res.status(500).json({ error: 'Database connection failed' });
   }
-  
-  // Let express handle the request
+
   return app(req, res);
 }
