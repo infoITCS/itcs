@@ -56,11 +56,15 @@ export default function BlogApproval() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const [devBlogsData, customBlogsRes, statusRes] = await Promise.all([
-        fetchAllDevBlogs(),
-        axios.get(apiUrl("/api/custom-blogs/all"), { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(apiUrl("/api/blogs/statuses"))
-      ]);
+
+      // Fetch each source independently so one failure doesn't kill everything
+      let devBlogsData = [];
+      let customBlogsRes = { data: [] };
+      let statusRes = { data: [] };
+
+      try { devBlogsData = await fetchAllDevBlogs(); } catch (e) { console.warn("Dev.to fetch failed:", e.message); }
+      try { customBlogsRes = await axios.get(apiUrl("/api/custom-blogs/all"), { headers: { Authorization: `Bearer ${token}` } }); } catch (e) { console.warn("Custom blogs fetch failed:", e.message); }
+      try { statusRes = await axios.get(apiUrl("/api/blogs/statuses")); } catch (e) { console.warn("Statuses fetch failed:", e.message); }
 
       // Process Dev.to blogs statuses
       const statusMap = {};
@@ -124,13 +128,6 @@ export default function BlogApproval() {
 
     } catch (err) {
       console.error("Fetch blogs error:", err);
-      if (err.response && err.response.status === 401) {
-        alert("Your session has expired. Please log in again.");
-        localStorage.clear(); // Clear potentially invalid token
-        window.location.href = "/login";
-      } else {
-        alert("Failed to fetch blogs for approval. Check console for details.");
-      }
     } finally {
       setLoading(false);
     }
