@@ -52,6 +52,41 @@ router.post('/', async (req, res) => {
   }
 });
 
+// PUT /:id - Update an existing custom blog
+router.put('/:id', async (req, res) => {
+  try {
+    const { title, slug, content, author, excerpt, tags, featuredImage, metaTitle, metaDescription, metaKeywords, status } = req.body;
+    
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: "Invalid ID" });
+    }
+
+    const updateData = {
+      title, slug, content, author, excerpt,
+      tags: Array.isArray(tags) ? tags : [],
+      featuredImage, metaTitle, metaDescription, metaKeywords
+    };
+    
+    // Only update status if explicitly passed (e.g. back to pending on edit)
+    if (status) {
+      updateData.status = status;
+    }
+
+    const updated = await CustomBlog.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { new: true }
+    );
+
+    if (!updated) return res.status(404).json({ error: "Blog not found" });
+    
+    res.json({ message: "Blog updated successfully!", data: updated });
+  } catch (error) {
+    console.error("Update error:", error);
+    res.status(500).json({ message: "Failed to update blog", error: error.message });
+  }
+});
+
 // GET /all - Get all custom blogs (admin management)
 router.get('/all', async (req, res) => {
   try {

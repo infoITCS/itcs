@@ -22,6 +22,7 @@ const AddCustomBlog = () => {
   };
 
   const [formData, setFormData] = useState(initialFormState);
+  const [editingId, setEditingId] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -202,19 +203,27 @@ const AddCustomBlog = () => {
       const blogData = {
         ...formData,
         featuredImage: imageUrl,
-        status: 'pending',
         tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
         excerpt: excerpt
       };
 
-      await axios.post(apiUrl('/api/custom-blogs'), blogData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      if (editingId) {
+        await axios.put(apiUrl(`/api/custom-blogs/${editingId}`), blogData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setMessage({ type: 'success', text: 'Blog updated successfully!' });
+      } else {
+        await axios.post(apiUrl('/api/custom-blogs'), blogData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setMessage({ type: 'success', text: 'Blog submitted for approval!' });
+      }
 
-      setMessage({ type: 'success', text: 'Blog submitted for approval!' });
       setFormData(initialFormState);
       setImageFile(null);
       setImagePreview(null);
+      setEditingId(null);
+      setAutoSlug(true);
       fetchBlogs();
     } catch (err) {
       console.error('Publish error:', err);
@@ -245,7 +254,33 @@ const AddCustomBlog = () => {
     setFormData(initialFormState);
     setImageFile(null);
     setImagePreview(null);
+    setEditingId(null);
+    setAutoSlug(true);
     setMessage({ type: '', text: '' });
+  };
+
+  const handleEdit = (blog) => {
+    setEditingId(blog._id);
+    setFormData({
+      title: blog.title || '',
+      slug: blog.slug || '',
+      content: blog.content || '',
+      author: blog.author || '',
+      excerpt: blog.excerpt || '',
+      tags: blog.tags ? blog.tags.join(', ') : '',
+      featuredImage: blog.featuredImage || '',
+      metaTitle: blog.metaTitle || '',
+      metaDescription: blog.metaDescription || '',
+      metaKeywords: blog.metaKeywords || ''
+    });
+    setImagePreview(blog.featuredImage || null);
+    setDashboardTab('create');
+    setAutoSlug(false);
+    window.scrollTo(0, 0);
+  };
+
+  const handleView = (blog) => {
+    window.open(`/blog/${blog.slug}`, '_blank');
   };
 
   const handleDelete = async (id) => {
@@ -519,8 +554,8 @@ const AddCustomBlog = () => {
                       </div>
                     </div>
                     <div className="card-dash-actions">
-                      <button className="action-btn action-view" title="View"><FontAwesomeIcon icon={faExternalLinkAlt} /></button>
-                      <button className="action-btn action-edit" title="Edit"><FontAwesomeIcon icon={faEdit} /></button>
+                      <button className="action-btn action-view" title="View" onClick={() => handleView(blog)}><FontAwesomeIcon icon={faExternalLinkAlt} /></button>
+                      <button className="action-btn action-edit" title="Edit" onClick={() => handleEdit(blog)}><FontAwesomeIcon icon={faEdit} /></button>
                       <button className={`action-btn action-delete ${deleting === blog._id ? 'loading' : ''}`} title="Delete" onClick={() => handleDelete(blog._id)} disabled={deleting === blog._id}>
                         <FontAwesomeIcon icon={deleting === blog._id ? faClock : faTrashAlt} />
                       </button>
