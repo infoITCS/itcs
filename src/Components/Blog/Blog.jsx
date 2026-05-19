@@ -126,99 +126,106 @@ export default function Blog() {
     return date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   };
 
+  // Skeleton Card Component
+  const SkeletonCard = () => (
+    <div className="blog-card skeleton-card">
+      <div className="blog-cover-wrap skeleton-shimmer" style={{height: '200px'}}></div>
+      <div className="blog-card__content">
+        <div className="skeleton-shimmer" style={{height: '24px', width: '85%', marginBottom: '12px', borderRadius: '6px'}}></div>
+        <div className="skeleton-shimmer" style={{height: '14px', width: '60%', marginBottom: '16px', borderRadius: '4px'}}></div>
+        <div className="skeleton-shimmer" style={{height: '14px', width: '100%', marginBottom: '8px', borderRadius: '4px'}}></div>
+        <div className="skeleton-shimmer" style={{height: '14px', width: '90%', marginBottom: '8px', borderRadius: '4px'}}></div>
+        <div className="skeleton-shimmer" style={{height: '14px', width: '40%', borderRadius: '4px'}}></div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="blog-public-container">
       <h2 className="blog-public-title">Our Blogs</h2>
 
-      {loading && <p className="loading-text">Loading approved blogs...</p>}
+      {loading ? (
+        <div className="blog-grid">
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <SkeletonCard key={i} />
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="blog-grid">
+            {currentPosts.length > 0 ? (
+              currentPosts.map(post => (
+                <article key={post.id} className="blog-card">
+                  {(post.cover_image || post.social_image) && (
+                    <div className="blog-cover-wrap">
+                      <img
+                        src={post.cover_image || post.social_image}
+                        alt={post.title}
+                        className="blog-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
 
-      {/* Tag pills hidden */}
-      {/* <div className="tag-pills">
-        {tags.map(tag => (
-          <button
-            key={tag}
-            className={`tag-pill ${activeTag === tag ? "active" : ""}`}
-            onClick={() => setActiveTag(tag)}
-          >
-            #{tag}
-          </button>
-        ))}
-      </div> */}
+                  <div className="blog-card__content">
+                    <h3>{post.title}</h3>
 
-      <div className="blog-grid">
-        {currentPosts.length > 0 ? (
-          currentPosts.map(post => (
-            <article key={post.id} className="blog-card">
-              {(post.cover_image || post.social_image) && (
-                <div className="blog-cover-wrap">
-                  <img
-                    src={post.cover_image || post.social_image}
-                    alt={post.title}
-                    className="blog-cover"
-                    loading="lazy"
-                  />
-                </div>
-              )}
+                    <p className="meta">
+                      {post.displayAuthor} • {formatDate(post.displayDate, post.isCustom)} • {post.reading_time_minutes} min read
+                    </p>
 
-              <div className="blog-card__content">
-                <h3>{post.title}</h3>
+                    <p className="description">{post.description}</p>
 
-                <p className="meta">
-                  {post.displayAuthor} • {formatDate(post.displayDate, post.isCustom)} • {post.reading_time_minutes} min read
-                </p>
+                    <div className="tags-small">
+                      {post.tag_list?.slice(0, 3).map(tag => (
+                        <span key={tag}>#{tag}</span>
+                      ))}
+                    </div>
 
-                <p className="description">{post.description}</p>
-
-                <div className="tags-small">
-                  {post.tag_list?.slice(0, 3).map(tag => (
-                    <span key={tag}>#{tag}</span>
-                  ))}
-                </div>
-
-                <Link to={post.isCustom ? `/custom-blog/${post.slug}` : `/blog/${post.id}`} className="read-more">
-                  Read more
-                </Link>
-              </div>
-            </article>
-          ))
-        ) : (
-          <p className="no-posts">
-            {loading ? "Loading..." : "No blogs found for this tag."}
-          </p>
-        )}
-      </div>
-
-      {/* Modern Pagination UI */}
-      {totalPages > 1 && (
-        <div className="modern-pagination">
-          <button 
-            className="pagination-arrow" 
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            &larr;
-          </button>
-          
-          <div className="page-numbers">
-            {[...Array(totalPages)].map((_, index) => (
-              <button
-                key={index + 1}
-                className={`page-number ${currentPage === index + 1 ? "active" : ""}`}
-                onClick={() => paginate(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
+                    <Link to={post.isCustom ? `/custom-blog/${post.slug}` : `/blog/${post.id}`} className="read-more">
+                      Read more
+                    </Link>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <p className="no-posts">No blogs found for this tag.</p>
+            )}
           </div>
 
-          <button 
-            className="pagination-arrow" 
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            &rarr;
-          </button>
-        </div>
+          {/* Modern Pagination UI */}
+          {totalPages > 1 && (
+            <div className="modern-pagination">
+              <button 
+                className="pagination-arrow" 
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                &larr;
+              </button>
+              
+              <div className="page-numbers">
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index + 1}
+                    className={`page-number ${currentPage === index + 1 ? "active" : ""}`}
+                    onClick={() => paginate(index + 1)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+
+              <button 
+                className="pagination-arrow" 
+                onClick={() => paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                &rarr;
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

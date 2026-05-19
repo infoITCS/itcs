@@ -313,4 +313,26 @@
       height: 180px;
     }
   }
+
+  /* Skeleton Loading Cards */
+  .skeleton-card {
+    pointer-events: none;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .skeleton-shimmer {
+    background: #1e1b30;
+    background-image: linear-gradient(90deg, #1e1b30 0px, #2a2542 40px, #1e1b30 80px);
+    background-size: 1000px 100%;
+    animation: blog-shimmer 2s infinite linear;
+    border-radius: 8px;
+  }
+
+  @keyframes blog-shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+  }
 }
