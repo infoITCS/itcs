@@ -142,13 +142,8 @@ const AddCustomBlog = () => {
 
     try {
       let imageUrl = formData.featuredImage;
-      if (imageFile) {
-        const uploadData = new FormData();
-        uploadData.append('image', imageFile);
-        const uploadRes = await axios.post(apiUrl('/api/upload'), uploadData, {
-          headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
-        });
-        imageUrl = uploadRes.data.url;
+      if (imagePreview) {
+        imageUrl = imagePreview; // Save image as Base64 string directly
       }
 
       const plainTextContent = stripHtml(formData.content);
