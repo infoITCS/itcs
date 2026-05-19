@@ -62,7 +62,7 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
 
     const mailOptions = {
       from: `"Careers Portal" <${process.env.EMAIL_USER}>`,
-      to: 'abubakarr1011@gmail.com',
+      to: process.env.EMAIL_USER,
       subject: `New Application: ${jobTitle} - ${fullName}`,
       html: `
         <!DOCTYPE html>
