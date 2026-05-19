@@ -35,7 +35,7 @@ const transporter = nodemailer.createTransport({
 })
 
 
-router.post('/apply', upload.single('resume'), async (req, res) => {
+router.post('/apply', async (req, res) => {
   try {
     const {
       fullName,
@@ -48,16 +48,28 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
       jobTitle = 'Not Specified',
       jobDepartment = '',
       jobLocation = '',
+      resume, // Base64 string from frontend
+      resumeName = 'resume.pdf',
     } = req.body
 
-    
     if (!fullName || !email || !phone || !preferredLocation || !experience) {
       return res.status(400).json({ message: 'All required fields must be filled.' })
     }
 
-
-    if (!req.file) {
+    if (!resume) {
       return res.status(400).json({ message: 'Resume (PDF) is required.' })
+    }
+
+    // Decode base64 resume
+    const matches = resume.match(/^data:(.+);base64,(.+)$/)
+    let buffer
+    if (matches) {
+      if (!matches[1].includes('pdf')) {
+        return res.status(400).json({ message: 'Only PDF files are allowed!' })
+      }
+      buffer = Buffer.from(matches[2], 'base64')
+    } else {
+      buffer = Buffer.from(resume, 'base64')
     }
 
     const mailOptions = {
@@ -114,8 +126,8 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
       `,
       attachments: [
         {
-          filename: req.file.originalname,
-          content: req.file.buffer,
+          filename: resumeName,
+          content: buffer,
           contentType: 'application/pdf',
         },
       ],

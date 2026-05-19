@@ -6,6 +6,7 @@ import jobRoutes from '../src/Backend/routes/jobRoutes.js';
 import blogRoutes from '../src/Backend/routes/blogRoutes.js';
 import adminRoutes from '../src/Backend/routes/adminRoutes.js';
 import jobsRoutes from '../src/Backend/routes/jobs.js';
+import contactRoutes from '../src/Backend/routes/contactRoutes.js';
 
 // MongoDB connection singleton for serverless
 let mongooseConnection = null;
@@ -51,6 +52,7 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/jobsAdd', jobsRoutes);
 app.use('/api/custom-blogs', blogRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Upload route - disabled on Vercel (use cloud storage instead)
 app.use('/api/upload', (req, res) => {

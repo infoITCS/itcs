@@ -10,6 +10,7 @@ import blogRoutes from './routes/blogRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import jobsRoutes from './routes/jobs.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -48,6 +49,7 @@ app.use('/api/admin', adminRoutes)
 app.use('/api/jobsAdd', jobsRoutes);
 app.use('/api/custom-blogs', blogRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Serve Frontend Static Files (Port 5000 consolidation) - Should be AFTER API routes
 app.use(express.static(path.join(__dirname, '../../dist')));

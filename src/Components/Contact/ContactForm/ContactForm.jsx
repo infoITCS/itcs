@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { apiUrl } from "../../../config/api";
 import "./ContactForm.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMapMarkerAlt, faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faMapMarkerAlt, faEnvelope, faPhone, faCircleCheck, faMessage } from "@fortawesome/free-solid-svg-icons";
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +14,9 @@ const ContactForm = () => {
     message: ""
   });
 
+  const [status, setStatus] = useState({ type: "", message: "" });
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -19,10 +24,27 @@ const ContactForm = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Add your form submission logic here
+    setLoading(true);
+    setStatus({ type: "", message: "" });
+
+    try {
+      await axios.post(apiUrl("/api/contact"), formData);
+      setStatus({ type: "success", message: "Message sent successfully! We'll get back to you within 24 hours." });
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: ""
+      });
+    } catch (err) {
+      console.error("Contact form error:", err);
+      setStatus({ type: "error", message: "Failed to send message. Please try again later." });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const contactInfo = [
@@ -51,6 +73,12 @@ const ContactForm = () => {
             <h2>Send Us a Message</h2>
             <p>Fill out the form below and we'll get back to you within 24 hours.</p>
           </div>
+          {status.message && (
+            <div className={`status-alert ${status.type}`} style={{ padding: "10px", marginBottom: "15px", borderRadius: "5px", backgroundColor: status.type === 'success' ? '#d4edda' : '#f8d7da', color: status.type === 'success' ? '#155724' : '#721c24' }}>
+              <FontAwesomeIcon icon={status.type === 'success' ? faCircleCheck : faMessage} style={{ marginRight: '8px' }} />
+              {status.message}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="contact-form">
             <div className="form-row">
               <div className="form-group">
@@ -118,9 +146,9 @@ const ContactForm = () => {
               ></textarea>
             </div>
 
-            <button type="submit" className="submit-btn">
-              Send Message
-              <span className="btn-icon">→</span>
+            <button type="submit" className="submit-btn" disabled={loading}>
+              {loading ? "Sending..." : "Send Message"}
+              {!loading && <span className="btn-icon">→</span>}
             </button>
           </form>
         </div>

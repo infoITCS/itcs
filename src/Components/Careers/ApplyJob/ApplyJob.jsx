@@ -49,22 +49,48 @@ const ApplyJob = () => {
     setFormData((prev) => ({ ...prev, resume: e.target.files[0] }));
   };
 
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setStatus({ type: "", message: "" });
 
-    const submitData = new FormData();
-    submitData.append("jobId", job?._id || "general");
-    submitData.append("jobTitle", job?.title || "General Application");
-    submitData.append("jobDepartment", job?.department || "N/A");
-    submitData.append("jobLocation", job?.location || "N/A");
-    Object.keys(formData).forEach((key) => {
-      submitData.append(key, formData[key]);
-    });
-
     try {
-      await axios.post(apiUrl("/api/jobs/apply"), submitData);
+      let resumeBase64 = "";
+      if (formData.resume) {
+        resumeBase64 = await fileToBase64(formData.resume);
+      }
+
+      const payload = {
+        jobId: job?._id || "general",
+        jobTitle: job?.title || "General Application",
+        jobDepartment: job?.department || "N/A",
+        jobLocation: job?.location || "N/A",
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        experience: formData.experience,
+        preferredLocation: formData.preferredLocation,
+        linkedin: formData.linkedin,
+        coverLetter: formData.coverLetter,
+        resume: resumeBase64,
+        resumeName: formData.resume ? formData.resume.name : "resume.pdf",
+      };
+
+      await axios.post(apiUrl("/api/jobs/apply"), payload, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
       setStatus({ type: "success", message: "Application submitted successfully! Our team will contact you soon." });
       setFormData({
         fullName: "",
