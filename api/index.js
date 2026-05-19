@@ -6,7 +6,6 @@ import jobRoutes from '../src/Backend/routes/jobRoutes.js';
 import blogRoutes from '../src/Backend/routes/blogRoutes.js';
 import adminRoutes from '../src/Backend/routes/adminRoutes.js';
 import jobsRoutes from '../src/Backend/routes/jobs.js';
-import uploadRoutes from '../src/Backend/routes/uploadRoutes.js';
 
 // MongoDB connection singleton for serverless
 let mongooseConnection = null;
@@ -52,7 +51,21 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/jobsAdd', jobsRoutes);
 app.use('/api/custom-blogs', blogRoutes);
-app.use('/api/upload', uploadRoutes);
+
+// Upload route - disabled on Vercel (use cloud storage instead)
+app.use('/api/upload', (req, res) => {
+  res.status(501).json({ error: 'File uploads not supported on Vercel. Use cloud storage like AWS S3, Cloudinary, or Vercel Blob.' });
+});
+
+// Health check
+app.get('/api/health', (req, res) => {
+  const isConnected = mongoose.connection.readyState === 1;
+  res.status(200).json({
+    status: 'ok',
+    database: isConnected ? 'connected' : 'disconnected',
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
 // Catch-all for non-API routes - return 404
 app.use((req, res) => {
