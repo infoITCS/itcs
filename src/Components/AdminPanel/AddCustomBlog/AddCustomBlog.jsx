@@ -118,13 +118,52 @@ const AddCustomBlog = () => {
     setFormData(prev => ({ ...prev, content }));
   };
 
-  const handleImageChange = (e) => {
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const max_width = 1200;
+          const max_height = 800;
+
+          if (width > height) {
+            if (width > max_width) {
+              height = Math.round((height * max_width) / width);
+              width = max_width;
+            }
+          } else {
+            if (height > max_height) {
+              width = Math.round((width * max_height) / height);
+              height = max_height;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Compress to JPEG with 70% quality to ensure small size (< 500KB)
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          resolve(compressedDataUrl);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Show loading indicator or directly compress
+      const compressed = await compressImage(file);
       setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result);
-      reader.readAsDataURL(file);
+      setImagePreview(compressed);
     }
   };
 
@@ -180,7 +219,17 @@ const AddCustomBlog = () => {
     } catch (err) {
       console.error('Publish error:', err);
       const isConnectionError = err.code === 'ERR_NETWORK' || err.message.includes('Network Error');
-      const serverMsg = err.response?.data?.message || err.response?.data?.error || '';
+      let serverMsg = err.response?.data?.message || err.response?.data?.error || '';
+      
+      // Fix React Error #31: Prevent serverMsg from being an object
+      if (typeof serverMsg === 'object') {
+        serverMsg = serverMsg.message || serverMsg.code || JSON.stringify(serverMsg);
+      }
+      
+      if (err.response?.status === 413) {
+        serverMsg = "Image is still too large. Please upload a smaller image.";
+      }
+
       setMessage({
         type: 'error',
         text: isConnectionError
