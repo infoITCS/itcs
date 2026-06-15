@@ -9,21 +9,21 @@ const ContactMap = () => {
       city: "Karachi",
       address: "6/K Block 2, P.E.C.H.S, Karachi, Pakistan",
       phone: "021 111-482-711",
-      email: "karachi@itcs.com.pk",
+      email: "info@itcs.com.pk",
       mapUrl: "https://www.google.com/maps/dir//6%2FK+Block+2+P.E.C.H.S+Karachi+Pakistan"
     },
     {
       city: "Lahore",
       address: "Office No. 32, 1st Floor, I.T Tower 73-E/1، Hali Rd, Block A Gulberg III Lahore, Pakistan",
       phone: "042 378-74358",
-      email: "lahore@itcs.com.pk",
+      email: "info@itcs.com.pk",
       mapUrl: "https://www.google.com/maps/dir//I.T+Tower+73-E%2F1+Hali+Rd+Gulberg+III+Lahore+Pakistan"
     },
     {
       city: "Islamabad",
       address: "Office # 14, Ground Floor, Malik Plaza F-8 Markaz, Islamabad",
       phone: "+92 51 2744956",
-      email: "islamabad@itcs.com.pk",
+      email: "info@itcs.com.pk",
       mapUrl: "https://www.google.com/maps/dir//Malik+Plaza+F-8+Markaz+Islamabad+Pakistan"
     }
   ];

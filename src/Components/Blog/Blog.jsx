@@ -10,55 +10,19 @@ export default function Blog() {
   const [activeTag, setActiveTag] = useState("all");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 6;
-
-  const organization = import.meta.env.VITE_DEVTO_ORG || "itcs11";
-  const devtoApiBase = import.meta.env.VITE_DEVTO_API_BASE || "https://dev.to/api";
+  const postsPerPage = 9;
 
   useEffect(() => {
     const fetchBlogs = async () => {
       setLoading(true);
       try {
-        const [devRes, approvedRes, customRes] = await Promise.all([
-          fetch(`${devtoApiBase}/organizations/${organization}/articles?per_page=100&_=${Date.now()}`),
-          axios.get(apiUrl("/api/blogs/approved-ids")),
-          axios.get(apiUrl("/api/custom-blogs/published"))
-        ]);
+        const customRes = await axios.get(apiUrl("/api/custom-blogs/published")).catch(() => ({ data: [] }));
+        const customBlogs = customRes.data || [];
 
-        const devBlogs = await devRes.json();
-        const approvedData = approvedRes.data;
-        const customBlogs = customRes.data;
-
-        const approvedIds = approvedData.map(item => item.devId);
-        const authorMap = {};
-        const dateMap = {};
-
-        approvedData.forEach(item => {
-          if (item.customAuthor) authorMap[item.devId] = item.customAuthor;
-          if (item.customDate) dateMap[item.devId] = item.customDate;
-        });
-
-        const approvedDevBlogs = devBlogs
-          .filter(blog => approvedIds.includes(blog.id))
-          .map(blog => {
-            const approvedRecord = approvedData.find(item => item.devId === blog.id);
-            return {
-              ...blog,
-              displayAuthor: authorMap[blog.id] || blog.user?.username || "Unknown",
-              displayDate: dateMap[blog.id] || blog.readable_publish_date,
-              isCustom: false,
-              approvedAt: approvedRecord?.createdAt || new Date(0)
-            };
-          });
-
-        const formattedCustomBlogs = customBlogs.map(blog => {
-          // Fix for text that has no space after punctuation (e.g. "Question?Answer")
-          // This prevents the browser from seeing it as one giant word and breaking it badly.
+        const formatted = (customBlogs || []).map(blog => {
           let description = blog.excerpt || blog.metaDescription || "";
-          
-          // Add space after ? ! : if a letter follows directly
           description = description.replace(/([?!:])([a-zA-Z])/g, '$1 $2');
-          
+
           return {
             id: blog._id,
             title: blog.title,
@@ -68,7 +32,7 @@ export default function Blog() {
             user: { username: blog.author, name: blog.author },
             published_at: blog.publishDate,
             readable_publish_date: new Date(blog.publishDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-            reading_time_minutes: Math.ceil(blog.content.split(' ').length / 200),
+            reading_time_minutes: Math.ceil((blog.content || '').split(' ').length / 200),
             tag_list: blog.tags || [],
             displayAuthor: blog.author,
             displayDate: blog.publishDate,
@@ -78,15 +42,14 @@ export default function Blog() {
           };
         });
 
-        const allPosts = [...approvedDevBlogs, ...formattedCustomBlogs];
-        allPosts.sort((a, b) => {
-          const dateA = a.isCustom ? new Date(a.updatedAt || a.published_at) : new Date(a.approvedAt);
-          const dateB = b.isCustom ? new Date(b.updatedAt || b.published_at) : new Date(b.approvedAt);
+        formatted.sort((a, b) => {
+          const dateA = new Date(a.updatedAt || a.published_at);
+          const dateB = new Date(b.updatedAt || b.published_at);
           return dateB - dateA;
         });
-        setPosts(allPosts);
+        setPosts(formatted);
 
-        const allTags = allPosts.flatMap(blog => blog.tag_list || []);
+        const allTags = formatted.flatMap(blog => blog.tag_list || []);
         const uniqueTags = Array.from(new Set(allTags)).sort();
         setTags(["all", ...uniqueTags]);
 
@@ -196,32 +159,46 @@ export default function Blog() {
           {/* Modern Pagination UI */}
           {totalPages > 1 && (
             <div className="modern-pagination">
-              <button 
-                className="pagination-arrow" 
-                onClick={() => paginate(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                &larr;
+              <button className="pagination-arrow" onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
+                &larr; Prev
               </button>
-              
+
               <div className="page-numbers">
-                {[...Array(totalPages)].map((_, index) => (
-                  <button
-                    key={index + 1}
-                    className={`page-number ${currentPage === index + 1 ? "active" : ""}`}
-                    onClick={() => paginate(index + 1)}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
+                {(() => {
+                  const pages = [];
+                  const maxVisible = 3;
+                  let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+                  let end = Math.min(totalPages, start + maxVisible - 1);
+                  if (end - start + 1 < maxVisible) {
+                    start = Math.max(1, end - maxVisible + 1);
+                  }
+
+                  if (start > 1) {
+                    pages.push(<button key={1} className="page-number" onClick={() => paginate(1)}>1</button>);
+                    if (start > 2) pages.push(<span key="start-ellipsis" className="page-ellipsis">&hellip;</span>);
+                  }
+
+                  for (let i = start; i <= end; i++) {
+                    pages.push(
+                      <button
+                        key={i}
+                        className={`page-number ${currentPage === i ? "active" : ""}`}
+                        onClick={() => paginate(i)}
+                      >{i}</button>
+                    );
+                  }
+
+                  if (end < totalPages) {
+                    if (end < totalPages - 1) pages.push(<span key="end-ellipsis" className="page-ellipsis">&hellip;</span>);
+                    pages.push(<button key={totalPages} className="page-number" onClick={() => paginate(totalPages)}>{totalPages}</button>);
+                  }
+
+                  return pages;
+                })()}
               </div>
 
-              <button 
-                className="pagination-arrow" 
-                onClick={() => paginate(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                &rarr;
+              <button className="pagination-arrow" onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages}>
+                Next &rarr;
               </button>
             </div>
           )}

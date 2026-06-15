@@ -211,7 +211,7 @@ router.patch("/:id/status", async (req, res) => {
       const updated = await BlogStatus.findOneAndUpdate(
         { devId: numId },
         { $set: updateFields },
-        { upsert: true, new: true }
+        { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }
       );
       return res.json(updated);
     }

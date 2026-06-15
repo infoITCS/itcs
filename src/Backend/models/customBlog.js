@@ -13,7 +13,9 @@ const customBlogSchema = new mongoose.Schema({
   metaKeywords: { type: String, default: '' },
   status: { type: String, enum: ['pending', 'published', 'rejected'], default: 'pending' },
   ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  publishDate: { type: Date, default: Date.now }
+  publishDate: { type: Date, default: Date.now },
+  source: { type: String, enum: ['custom', 'devto'], default: 'custom' },
+  sourceId: { type: Number }
 }, { timestamps: true });
 
 export default mongoose.model("CustomBlog", customBlogSchema);
