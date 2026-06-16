@@ -66,6 +66,12 @@ mongoose
     console.log('💡 TIP: If whitelisting 223.123.84.142 didn\'t work, try changing your computer DNS to 8.8.8.8');
   });
 
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: 'Internal server error', message: err.message });
+});
+
 // Catch-all route to serve React's index.html for SPA routing
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../dist/index.html'));
