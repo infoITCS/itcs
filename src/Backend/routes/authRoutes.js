@@ -4,11 +4,9 @@ import jwt from 'jsonwebtoken'
 import jwksRsa from 'jwks-rsa'
 import axios from 'axios'
 import User from '../models/userModel.js'
-import dotenv from 'dotenv'
 import crypto from 'crypto'
 import nodemailer from 'nodemailer'
 
-dotenv.config()
 const router = express.Router()
 
 const ALLOWED_ADMIN_EMAILS = process.env.ALLOWED_ADMIN_EMAILS

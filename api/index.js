@@ -45,6 +45,17 @@ app.use(cors({
 app.use(express.json({ limit: '200mb' }));
 app.use(express.urlencoded({ extended: true, limit: '200mb' }));
 
+// MongoDB connection middleware
+app.use(async (req, res, next) => {
+  try {
+    await getMongoConnection();
+    next();
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
@@ -85,12 +96,5 @@ app.use((req, res) => {
 
 // Vercel serverless handler
 export default async function handler(req, res) {
-  try {
-    await getMongoConnection();
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-    return res.status(500).json({ error: 'Database connection failed' });
-  }
-
   return app(req, res);
 }
