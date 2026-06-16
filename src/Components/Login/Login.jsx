@@ -82,6 +82,25 @@ const Login = () => {
     }
   }
 
+  const handleDifferentAccount = async () => {
+    setError('')
+    try {
+      instance.clearCache()
+      const response = await instance.loginPopup({
+        ...loginRequest,
+        prompt: 'select_account',
+      })
+      await handleMicrosoftLoginSuccess(response.account)
+    } catch (err) {
+      if (err.name === 'BrowserAuthError' && err.errorCode === 'user_cancelled') {
+        console.log('User cancelled login');
+      } else {
+        console.error('Login error:', err);
+        setError(err.message || 'Failed to sign in with Microsoft 365');
+      }
+    }
+  }
+
   const handleMicrosoftLoginSuccess = async (account) => {
     try {
       console.log("Microsoft login popup successful, acquiring token silently...");
@@ -161,26 +180,35 @@ const Login = () => {
             </div>
 
             {loginMethod === 'microsoft' ? (
-              <button 
-                type="button" 
-                className="submit-btn microsoft-btn" 
-                onClick={handleMicrosoftLogin}
-                disabled={loading}
-              >
-                {loading ? (
-                  <span className="loading-spinner">Signing in...</span>
-                ) : (
-                  <>
-                    <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect x="0.5" y="0.5" width="9" height="9" fill="#F25022"/>
-                      <rect x="10.5" y="0.5" width="9" height="9" fill="#7FBA00"/>
-                      <rect x="0.5" y="10.5" width="9" height="9" fill="#00A4EF"/>
-                      <rect x="10.5" y="10.5" width="9" height="9" fill="#FFB900"/>
-                    </svg>
-                    Sign in with Microsoft 365
-                  </>
-                )}
-              </button>
+              <>
+                <button 
+                  type="button" 
+                  className="submit-btn microsoft-btn" 
+                  onClick={handleMicrosoftLogin}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className="loading-spinner">Signing in...</span>
+                  ) : (
+                    <>
+                      <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="0.5" y="0.5" width="9" height="9" fill="#F25022"/>
+                        <rect x="10.5" y="0.5" width="9" height="9" fill="#7FBA00"/>
+                        <rect x="0.5" y="10.5" width="9" height="9" fill="#00A4EF"/>
+                        <rect x="10.5" y="10.5" width="9" height="9" fill="#FFB900"/>
+                      </svg>
+                      Sign in with Microsoft 365
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  className="different-account-btn"
+                  onClick={handleDifferentAccount}
+                >
+                  Login as different account
+                </button>
+              </>
             ) : (
               <form onSubmit={handleEmailLogin} className="email-login-form">
                 <div className="form-group">

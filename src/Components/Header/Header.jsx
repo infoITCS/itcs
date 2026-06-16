@@ -68,9 +68,7 @@ const Header = () => {
 
       
       <div className="auth-buttons">
-        <button className="btn btn-login" onClick={() => navigate('/login')}>
-          Login
-        </button>
+        <a href="https://support.itcs.com.pk/" className="btn btn-support" target="_blank" rel="noopener noreferrer">Support</a>
         <button
           className="custom-toggler"
           type="button"

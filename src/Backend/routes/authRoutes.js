@@ -126,13 +126,15 @@ router.post('/microsoft', async (req, res) => {
 
     let user = await User.findOne({ email: userEmail })
 
+    const isItcsEmail = userEmail.toLowerCase().endsWith('@itcs.com.pk');
+
     if (!user) {
       user = new User({
         fullName: userName,
         username: userEmail.split('@')[0],
         email: userEmail,
         password: '',
-        role: isAllowedAdmin ? 'admin' : 'user',
+        role: isAllowedAdmin ? 'admin' : (isItcsEmail ? 'author' : 'user'),
         isAdmin: isAllowedAdmin,
       })
       await user.save()
@@ -141,6 +143,8 @@ router.post('/microsoft', async (req, res) => {
       if (isAllowedAdmin) {
         user.isAdmin = true;
         user.role = 'admin';
+      } else if (isItcsEmail && user.role === 'user') {
+        user.role = 'author';
       }
       await user.save()
     }

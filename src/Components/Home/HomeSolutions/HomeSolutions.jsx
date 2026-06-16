@@ -55,12 +55,12 @@ const HomeSolutions = () => {
       <div className="solutions-container">
         <div className="solutions-header">
           <span className="section-badge">WHY CHOOSE US</span>
-          <h2 className="section-title">13+ Years of Industry Experience</h2>
+          <h2 className="section-title">16+ Years of Industry Experience</h2>
           <p className="section-description">
-            We uphold the virtues of superior functional resources and excellent 
-            customer services with the prime objective of fostering value enablement 
-            systems, since 2011. By deploying problem-focused and solution-centered 
-            approaches with functional expertise and strategic partnerships with Tier 1 
+            We uphold the virtues of superior functional resources and excellent
+            customer services with the prime objective of fostering value enablement
+            systems, since 2011. By deploying problem-focused and solution-centered
+            approaches with functional expertise and strategic partnerships with Tier 1
             firms, we ensure customer success.
           </p>
         </div>
@@ -77,7 +77,7 @@ const HomeSolutions = () => {
                   <p className="card-description">{solution.description}</p>
                 </div>
                 <div className="card-back">
-                  <button 
+                  <button
                     className="explore-btn"
                     onClick={() => navigate(solution.path)}
                   >

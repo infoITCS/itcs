@@ -26,6 +26,10 @@
       .btn-login {
         display: none;
       }
+
+      .btn-support {
+        display: inline-block;
+      }
     }
 
     .auth-buttons .custom-toggler {
@@ -229,32 +233,15 @@
     cursor: pointer;
     border: none;
     background: transparent;
-    position: relative;
-    transition: color var(--transition-normal),
-      background-color var(--transition-normal);
 
     &:hover {
       color: #a855f7;
     }
-
-    &::before {
-      content: '';
-      position: absolute;
-      bottom: -3px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--accent-gradient);
-      transition: width var(--transition-normal);
-    }
-
-    &:hover::before {
-      width: 100%;
-    }
   }
 
   .auth-buttons .btn-login,
-  .auth-buttons .btn-signup {
+  .auth-buttons .btn-signup,
+  .auth-buttons .btn-support {
     text-transform: uppercase;
     font-weight: 600;
     font-size: 13px;
@@ -483,7 +470,8 @@
     }
 
     .btn-login,
-    .btn-signup {
+    .btn-signup,
+    .btn-support {
       padding: 6px 10px;
       font-size: 11px;
     }
@@ -495,7 +483,8 @@
   }
 
   .btn-login,
-  .btn-signup {
+  .btn-signup,
+  .btn-support {
     padding: 6px 12px;
     font-size: 12px;
   }
@@ -567,7 +556,8 @@
     }
 
     .btn-login,
-    .btn-signup {
+    .btn-signup,
+    .btn-support {
       padding: 5px 10px;
       font-size: 11px;
     }
@@ -649,7 +639,8 @@
     }
 
     .auth-buttons .btn-login,
-    .auth-buttons .btn-signup {
+    .auth-buttons .btn-signup,
+    .auth-buttons .btn-support {
       padding: 5px 8px;
       font-size: 10px;
     }
