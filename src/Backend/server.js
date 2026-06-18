@@ -34,51 +34,42 @@ app.use('/uploads', express.static(uploadsPath));
 
 app.use(express.static(path.join(__dirname, '../../dist')));
 
-const start = async () => {
-  mongoose.set('bufferTimeoutMS', 120000);
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 30000,
-      family: 4,
-    });
-    console.log('✅ MongoDB Connected Successfully');
-  } catch (err) {
-    console.error('❌ MongoDB Connection Error:', err.message);
-    process.exit(1);
-  }
+mongoose.set('bufferTimeoutMS', 120000);
+await mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 30000,
+  family: 4,
+});
+console.log('✅ MongoDB Connected Successfully');
 
-  const [authRoutes, jobRoutes, blogRoutes, adminRoutes, jobsRoutes, uploadRoutes, contactRoutes] = await Promise.all([
-    import('./routes/authRoutes.js'),
-    import('./routes/jobRoutes.js'),
-    import('./routes/blogRoutes.js'),
-    import('./routes/adminRoutes.js'),
-    import('./routes/jobs.js'),
-    import('./routes/uploadRoutes.js'),
-    import('./routes/contactRoutes.js'),
-  ]);
+const [authRoutes, jobRoutes, blogRoutes, adminRoutes, jobsRoutes, uploadRoutes, contactRoutes] = await Promise.all([
+  import('./routes/authRoutes.js'),
+  import('./routes/jobRoutes.js'),
+  import('./routes/blogRoutes.js'),
+  import('./routes/adminRoutes.js'),
+  import('./routes/jobs.js'),
+  import('./routes/uploadRoutes.js'),
+  import('./routes/contactRoutes.js'),
+]);
 
-  app.use('/api/auth', authRoutes.default)
-  app.use('/api/jobs', jobRoutes.default)
-  app.use('/api/blogs', blogRoutes.default)
-  app.use('/api/admin', adminRoutes.default)
-  app.use('/api/jobsAdd', jobsRoutes.default)
-  app.use('/api/custom-blogs', blogRoutes.default)
-  app.use('/api/upload', uploadRoutes.default)
-  app.use('/api/contact', contactRoutes.default)
+app.use('/api/auth', authRoutes.default)
+app.use('/api/jobs', jobRoutes.default)
+app.use('/api/blogs', blogRoutes.default)
+app.use('/api/admin', adminRoutes.default)
+app.use('/api/jobsAdd', jobsRoutes.default)
+app.use('/api/custom-blogs', blogRoutes.default)
+app.use('/api/upload', uploadRoutes.default)
+app.use('/api/contact', contactRoutes.default)
 
-  app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
-    res.status(500).json({ error: 'Internal server error', message: err.message });
-  });
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: 'Internal server error', message: err.message });
+});
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../dist/index.html'));
-  });
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../dist/index.html'));
+});
 
-  const PORT = process.env.PORT || 5000
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
-}
-
-start();
+const PORT = process.env.PORT || 5000
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
 
 export default app
