@@ -7,8 +7,9 @@ let _db = null
 export const setDb = (db) => {
   _db = db
   _ready = true
-  console.log('✅ dbHelpers initialized with database:', db.databaseName)
 }
+
+export const isReady = () => _ready
 
 const coll = (name) => {
   if (!_ready || !_db) throw new Error('Database not connected')

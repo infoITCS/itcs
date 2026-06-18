@@ -11,12 +11,17 @@ import adminRoutes from './routes/adminRoutes.js'
 import jobsRoutes from './routes/jobs.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
-import { setDb } from './models/dbHelpers.js'
+import { setDb, isReady } from './models/dbHelpers.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 dotenv.config({ path: path.join(__dirname, '../../.env') })
+dotenv.config()
+
+if (!process.env.MONGO_URI) {
+  console.error('❌ MONGO_URI not set. Create .env file with MONGO_URI=mongodb+srv://...');
+}
 
 const app = express()
 
@@ -37,10 +42,15 @@ app.use(express.json({ limit: '200mb' }))
 app.use(express.urlencoded({ extended: true, limit: '200mb' }))
 
 const uploadsPath = path.join(__dirname, 'uploads');
-console.log('Serving static files from:', uploadsPath);
 app.use('/uploads', express.static(uploadsPath));
 
-// Routes
+app.use('/api', (req, res, next) => {
+  if (!isReady()) {
+    return res.status(503).json({ error: 'Database not connected yet. Try again in a few seconds.' });
+  }
+  next();
+});
+
 app.use('/api/auth', authRoutes)
 app.use('/api/jobs', jobRoutes)
 app.use('/api/blogs', blogRoutes)
@@ -58,13 +68,9 @@ mongoose
     family: 4,
   })
   .then(() => {
-    console.log('connection name:', mongoose.connection.name)
-    console.log('client exists:', !!mongoose.connection.client)
     const db = mongoose.connection.client.db('ITCSwebsite')
-    console.log('got db:', db.databaseName)
     setDb(db)
-    console.log('✅ MongoDB Connected Successfully')
-    db.collection('customblogs').countDocuments().then(c => console.log('customblogs count:', c)).catch(e => console.log('count error:', e.message))
+    console.log('✅ MongoDB Connected —', db.databaseName)
   })
   .catch((err) => {
     console.error('❌ MongoDB Connection Error:', err.message);
