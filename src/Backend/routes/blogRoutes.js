@@ -1,8 +1,6 @@
 import express from "express";
-import mongoose from "mongoose";
-import BlogStatus from "../models/blog.js";
-import CustomBlog from "../models/customBlog.js";
-import User from "../models/userModel.js";
+import { ObjectId } from "mongodb";
+import * as db from '../models/dbHelpers.js'
 import jwt from "jsonwebtoken";
 
 const router = express.Router();
@@ -26,17 +24,17 @@ router.post('/', async (req, res) => {
 
     // Make slug unique by appending a counter if duplicate exists
     if (slug) {
-      let existing = await CustomBlog.findOne({ slug });
+      let existing = await db.findBlogOneBySlug(slug);
       if (existing) {
         let counter = 1;
-        while (await CustomBlog.findOne({ slug: `${slug}-${counter}` })) {
+        while (await db.findBlogOneBySlug(`${slug}-${counter}`)) {
           counter++;
         }
         slug = `${slug}-${counter}`;
       }
     }
 
-    const blog = new CustomBlog({
+    const saved = await db.createBlog({
       title, slug, content, author, excerpt,
       tags: Array.isArray(tags) ? tags : [],
       featuredImage, metaTitle, metaDescription, metaKeywords,
@@ -44,7 +42,6 @@ router.post('/', async (req, res) => {
       ownerId,
       publishDate: new Date()
     });
-    const saved = await blog.save();
     res.status(201).json({ message: "Blog submitted for approval!", data: saved });
   } catch (error) {
     console.error("Save error:", error);
@@ -57,7 +54,7 @@ router.put('/:id', async (req, res) => {
   try {
     const { title, slug, content, author, excerpt, tags, featuredImage, metaTitle, metaDescription, metaKeywords, status } = req.body;
     
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ error: "Invalid ID" });
     }
 
@@ -72,11 +69,7 @@ router.put('/:id', async (req, res) => {
       updateData.status = status;
     }
 
-    const updated = await CustomBlog.findByIdAndUpdate(
-      req.params.id,
-      { $set: updateData },
-      { new: true }
-    );
+    const updated = await db.updateBlogById(req.params.id, updateData);
 
     if (!updated) return res.status(404).json({ error: "Blog not found" });
     
@@ -100,7 +93,7 @@ router.get('/all', async (req, res) => {
     try {
       const token = authHeader.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findById(decoded.id);
+      const user = await db.findUserById(decoded.id);
       
       if (!user) {
         return res.status(401).json({ message: "Unauthorized: User not found" });
@@ -108,14 +101,14 @@ router.get('/all', async (req, res) => {
 
       // If user is author and NOT admin, show only their own blogs
       if (user.role === 'author' && !user.isAdmin) {
-        query = { ownerId: user._id };
+        query = { ownerId: String(user._id) };
       }
       // If admin, query remains {} so they see all blogs
     } catch (err) {
       return res.status(401).json({ message: "Unauthorized: Invalid token" });
     }
 
-    const blogs = await CustomBlog.find(query).sort({ createdAt: -1 });
+    const blogs = await db.findBlogWhere(query);
     res.status(200).json(blogs);
   } catch (error) {
     res.status(500).json({ message: "Server error fetching blogs", error: error.message });
@@ -125,7 +118,7 @@ router.get('/all', async (req, res) => {
 // GET /published - Get only published custom blogs (public website)
 router.get('/published', async (req, res) => {
   try {
-    const blogs = await CustomBlog.find({ status: 'published' }).sort({ createdAt: -1 });
+    const blogs = await db.findBlogPublished();
     res.status(200).json(blogs);
   } catch (error) {
     res.status(500).json({ message: "Server error fetching blogs", error: error.message });
@@ -135,7 +128,7 @@ router.get('/published', async (req, res) => {
 // GET /slug/:slug - Get a single custom blog by slug
 router.get('/slug/:slug', async (req, res) => {
   try {
-    const blog = await CustomBlog.findOne({ slug: req.params.slug });
+    const blog = await db.findBlogOneBySlug(req.params.slug);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
     res.json(blog);
   } catch (error) {
@@ -146,10 +139,10 @@ router.get('/slug/:slug', async (req, res) => {
 // DELETE /:id - Delete a custom blog
 router.delete("/:id", async (req, res) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    if (!ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ error: "Invalid ID" });
     }
-    const deleted = await CustomBlog.findByIdAndDelete(req.params.id);
+    const deleted = await db.deleteBlogById(req.params.id);
     if (!deleted) return res.status(404).json({ error: "Blog not found" });
     res.json({ message: "Blog deleted successfully" });
   } catch (err) {
@@ -163,7 +156,7 @@ router.delete("/:id", async (req, res) => {
 // GET /statuses - Get all Dev.to blog statuses
 router.get("/statuses", async (req, res) => {
   try {
-    const statuses = await BlogStatus.find({});
+    const statuses = await db.findBlogStatuses();
     res.json(statuses);
   } catch (err) {
     console.error(err);
@@ -174,9 +167,7 @@ router.get("/statuses", async (req, res) => {
 // Get approved blog IDs (for Dev.to blogs)
 router.get("/approved-ids", async (req, res) => {
   try {
-    const approvedBlogs = await BlogStatus.find({ status: "approved" }).select(
-      "devId customAuthor customDate createdAt"
-    );
+    const approvedBlogs = await db.findApprovedIds();
     res.json(approvedBlogs);
   } catch (err) {
     console.error(err);
@@ -208,16 +199,12 @@ router.patch("/:id/status", async (req, res) => {
         return res.status(400).json({ error: "No valid fields to update" });
       }
 
-      const updated = await BlogStatus.findOneAndUpdate(
-        { devId: numId },
-        { $set: updateFields },
-        { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }
-      );
+      const updated = await db.upsertBlogStatus(numId, updateFields);
       return res.json(updated);
     }
 
     // --- Custom blog status update ---
-    if (!mongoose.Types.ObjectId.isValid(idParam)) {
+    if (!ObjectId.isValid(idParam)) {
       return res.status(400).json({ error: "Invalid ID" });
     }
 
@@ -226,11 +213,7 @@ router.patch("/:id/status", async (req, res) => {
       return res.status(400).json({ error: "Invalid status" });
     }
 
-    const updated = await CustomBlog.findByIdAndUpdate(
-      idParam,
-      { $set: { status } },
-      { new: true }
-    );
+    const updated = await db.updateBlogById(idParam, { status });
 
     if (!updated) return res.status(404).json({ error: "Blog not found" });
     res.json(updated);

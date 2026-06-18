@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+mongoose.set('bufferTimeoutMS', 120000);
+
 const blogStatusSchema = new mongoose.Schema(
     {
     devId: { type: Number, required: true, unique: true },

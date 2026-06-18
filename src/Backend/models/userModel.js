@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 
+mongoose.set('bufferTimeoutMS', 120000)
+
 const userSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   username: { type: String, required: true, unique: true },

@@ -1,21 +1,36 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
+import { ObjectId } from 'mongodb'
 
-const customBlogSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  slug: { type: String, default: '' },
-  content: { type: String, default: '' },
-  author: { type: String, default: '' },
-  excerpt: { type: String, default: '' },
-  tags: { type: [String], default: [] },
-  featuredImage: { type: String, default: '' },
-  metaTitle: { type: String, default: '' },
-  metaDescription: { type: String, default: '' },
-  metaKeywords: { type: String, default: '' },
-  status: { type: String, enum: ['pending', 'published', 'rejected'], default: 'pending' },
-  ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  publishDate: { type: Date, default: Date.now },
-  source: { type: String, enum: ['custom', 'devto'], default: 'custom' },
-  sourceId: { type: Number }
-}, { timestamps: true });
+const collection = () => mongoose.connection.db.collection('customblogs')
 
-export default mongoose.model("CustomBlog", customBlogSchema);
+export const findPublished = async (limit = 50) =>
+  collection().find({ status: 'published' }).sort({ createdAt: -1 }).limit(limit).toArray()
+
+export const findOneBySlug = async (slug) =>
+  collection().findOne({ slug })
+
+export const findWhere = async (query = {}) =>
+  collection().find(query).sort({ createdAt: -1 }).toArray()
+
+export const findById = async (id) =>
+  collection().findOne({ _id: ObjectId.createFromHexString(id) })
+
+export const create = async (data) => {
+  const doc = { ...data, createdAt: new Date(), updatedAt: new Date() }
+  const result = await collection().insertOne(doc)
+  return { ...doc, _id: result.insertedId }
+}
+
+export const findByIdAndUpdate = async (id, update) => {
+  const result = await collection().findOneAndUpdate(
+    { _id: ObjectId.createFromHexString(id) },
+    { $set: { ...update, updatedAt: new Date() } },
+    { returnDocument: 'after' }
+  )
+  return result
+}
+
+export const findByIdAndDelete = async (id) => {
+  const result = await collection().deleteOne({ _id: ObjectId.createFromHexString(id) })
+  return result.deletedCount > 0 ? { _id: id } : null
+}

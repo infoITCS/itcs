@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+mongoose.set('bufferTimeoutMS', 120000);
+
 const jobSchema = new mongoose.Schema({
   title: { type: String, required: true },
   department: { type: String, required: true },

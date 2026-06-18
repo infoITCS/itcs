@@ -1,6 +1,6 @@
 // routes/jobs.js
 import express from 'express';
-import Job from '../models/job.js';
+import * as db from '../models/dbHelpers.js'
 import jobsSeedData from '../data/jobsSeedData.js';
 
 const router = express.Router();
@@ -9,17 +9,17 @@ const router = express.Router();
 router.post('/seed/init', async (req, res) => {
   try {
     // Check if jobs already exist
-    const existingJobs = await Job.countDocuments();
+    const existingJobs = await db.findAllJobs();
     
-    if (existingJobs > 0) {
+    if (existingJobs.length > 0) {
       return res.status(400).json({ 
         message: 'Database already has jobs. Clear them first if you want to reseed.',
-        count: existingJobs 
+        count: existingJobs.length 
       });
     }
 
     // Insert seed data
-    const savedJobs = await Job.insertMany(jobsSeedData);
+    const savedJobs = await Promise.all(jobsSeedData.map(j => db.createJob(j)));
     res.status(201).json({ 
       message: `Successfully seeded ${savedJobs.length} jobs`,
       jobs: savedJobs 
@@ -33,9 +33,10 @@ router.post('/seed/init', async (req, res) => {
 // Clear all jobs (must be before /:id route)
 router.delete('/seed/clear', async (req, res) => {
   try {
-    const result = await Job.deleteMany({});
+    const jobs = await db.findAllJobs();
+    await Promise.all(jobs.map(j => db.deleteJobById(String(j._id))));
     res.json({ 
-      message: `Successfully deleted ${result.deletedCount} jobs`
+      message: `Successfully deleted ${jobs.length} jobs`
     });
   } catch (err) {
     console.error('Error clearing jobs:', err);
@@ -61,7 +62,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Title, department, and location are required' });
     }
 
-    const newJob = new Job({
+    const savedJob = await db.createJob({
       title,
       department,
       type: type || 'Full-time',
@@ -72,8 +73,6 @@ router.post('/', async (req, res) => {
       qualifications: qualifications || '',
       description: aboutRole || '' // Sync for legacy
     });
-
-    const savedJob = await newJob.save();
     res.status(201).json({ message: 'Job created successfully', job: savedJob });
   } catch (err) {
     console.error('Error creating job:', err);
@@ -84,7 +83,7 @@ router.post('/', async (req, res) => {
 // Get all jobs
 router.get('/', async (req, res) => {
   try {
-    const jobs = await Job.find().sort({ createdAt: -1 });
+    const jobs = await db.findAllJobs();
     res.json(jobs);
   } catch (err) {
     console.error('Error fetching jobs:', err);
@@ -96,7 +95,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const job = await Job.findById(id);
+    const job = await db.findJobById(id);
     
     if (!job) {
       return res.status(404).json({ message: 'Job not found' });
@@ -114,10 +113,10 @@ router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    const job = await Job.findById(id);
+    const job = await db.findJobById(id);
     if (!job) return res.status(404).json({ message: 'Job not found' });
 
-    await Job.findByIdAndDelete(id);
+    await db.deleteJobById(id);
     res.json({ message: 'Job deleted successfully' });
   } catch (err) {
     console.error('Error deleting job:', err);

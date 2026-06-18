@@ -4,6 +4,14 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import authRoutes from './routes/authRoutes.js'
+import jobRoutes from './routes/jobRoutes.js'
+import blogRoutes from './routes/blogRoutes.js'
+import adminRoutes from './routes/adminRoutes.js'
+import jobsRoutes from './routes/jobs.js';
+import uploadRoutes from './routes/uploadRoutes.js';
+import contactRoutes from './routes/contactRoutes.js';
+import { setDb } from './models/dbHelpers.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -32,33 +40,35 @@ const uploadsPath = path.join(__dirname, 'uploads');
 console.log('Serving static files from:', uploadsPath);
 app.use('/uploads', express.static(uploadsPath));
 
+// Routes
+app.use('/api/auth', authRoutes)
+app.use('/api/jobs', jobRoutes)
+app.use('/api/blogs', blogRoutes)
+app.use('/api/admin', adminRoutes)
+app.use('/api/jobsAdd', jobsRoutes)
+app.use('/api/custom-blogs', blogRoutes)
+app.use('/api/upload', uploadRoutes)
+app.use('/api/contact', contactRoutes)
+
 app.use(express.static(path.join(__dirname, '../../dist')));
 
-mongoose.set('bufferTimeoutMS', 120000);
-await mongoose.connect(process.env.MONGO_URI, {
-  serverSelectionTimeoutMS: 30000,
-  family: 4,
-});
-console.log('✅ MongoDB Connected Successfully');
-
-const [authRoutes, jobRoutes, blogRoutes, adminRoutes, jobsRoutes, uploadRoutes, contactRoutes] = await Promise.all([
-  import('./routes/authRoutes.js'),
-  import('./routes/jobRoutes.js'),
-  import('./routes/blogRoutes.js'),
-  import('./routes/adminRoutes.js'),
-  import('./routes/jobs.js'),
-  import('./routes/uploadRoutes.js'),
-  import('./routes/contactRoutes.js'),
-]);
-
-app.use('/api/auth', authRoutes.default)
-app.use('/api/jobs', jobRoutes.default)
-app.use('/api/blogs', blogRoutes.default)
-app.use('/api/admin', adminRoutes.default)
-app.use('/api/jobsAdd', jobsRoutes.default)
-app.use('/api/custom-blogs', blogRoutes.default)
-app.use('/api/upload', uploadRoutes.default)
-app.use('/api/contact', contactRoutes.default)
+mongoose
+  .connect(process.env.MONGO_URI, {
+    serverSelectionTimeoutMS: 30000,
+    family: 4,
+  })
+  .then(() => {
+    console.log('connection name:', mongoose.connection.name)
+    console.log('client exists:', !!mongoose.connection.client)
+    const db = mongoose.connection.client.db('ITCSwebsite')
+    console.log('got db:', db.databaseName)
+    setDb(db)
+    console.log('✅ MongoDB Connected Successfully')
+    db.collection('customblogs').countDocuments().then(c => console.log('customblogs count:', c)).catch(e => console.log('count error:', e.message))
+  })
+  .catch((err) => {
+    console.error('❌ MongoDB Connection Error:', err.message);
+  });
 
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);

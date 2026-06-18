@@ -1,6 +1,6 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
-import User from '../models/userModel.js'
+import * as db from '../models/dbHelpers.js'
 import bcrypt from 'bcryptjs'
 
 const router = express.Router()
@@ -12,7 +12,7 @@ const isAdmin = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    const user = await User.findById(decoded.id)
+    const user = await db.findUserById(decoded.id)
 
     if (!user) return res.status(403).json({ message: 'Forbidden' })
     if (!user.isAdmin) return res.status(403).json({ message: 'Admin access required' })
@@ -29,14 +29,14 @@ router.post('/add-user', isAdmin, async (req, res) => {
   try {
     const { fullName, username, email, password, role } = req.body
 
-    const existingUser = await User.findOne({ email })
+    const existingUser = await db.findUserByEmail(email)
     if (existingUser) return res.status(400).json({ message: 'Email already exists' })
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
     const isAdminRole = role === 'admin'
 
-    const newUser = new User({
+    const newUser = await db.createUser({
       fullName,
       username,
       email,
@@ -45,7 +45,6 @@ router.post('/add-user', isAdmin, async (req, res) => {
       isAdmin: isAdminRole,
     })
 
-    await newUser.save()
     res.status(201).json({ message: `${role === 'admin' ? 'Admin' : 'Author'} added successfully`, user: newUser })
   } catch (err) {
     console.error(err)

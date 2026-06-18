@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import jwksRsa from 'jwks-rsa'
 import axios from 'axios'
-import User from '../models/userModel.js'
+import * as db from '../models/dbHelpers.js'
 import crypto from 'crypto'
 import nodemailer from 'nodemailer'
 
@@ -28,7 +28,7 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body
 
-    let user = await User.findOne({ email })
+    let user = await db.findUserByEmail(email)
 
     if (!user) {
       return res.status(400).json({ message: 'Invalid email or password' });
@@ -42,11 +42,11 @@ router.post('/login', async (req, res) => {
         return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: String(user._id) }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     })
 
-    const userData = user.toObject();
+    const userData = { ...user };
     delete userData.password;
     res.status(200).json({ message: 'Login successful', token, user: userData })
   } catch (error) {
@@ -122,12 +122,12 @@ router.post('/microsoft', async (req, res) => {
 
     const isAllowedAdmin = ALLOWED_ADMIN_EMAILS.includes(userEmail.toLowerCase());
 
-    let user = await User.findOne({ email: userEmail })
+    let user = await db.findUserByEmail(userEmail)
 
     const isItcsEmail = userEmail.toLowerCase().endsWith('@itcs.com.pk');
 
     if (!user) {
-      user = new User({
+      const result = await db.createUser({
         fullName: userName,
         username: userEmail.split('@')[0],
         email: userEmail,
@@ -135,23 +135,24 @@ router.post('/microsoft', async (req, res) => {
         role: isAllowedAdmin ? 'admin' : (isItcsEmail ? 'author' : 'user'),
         isAdmin: isAllowedAdmin,
       })
-      await user.save()
+      user = await db.findUserByEmail(userEmail)
     } else {
-      user.fullName = userName
+      const updateFields = { fullName: userName };
       if (isAllowedAdmin) {
-        user.isAdmin = true;
-        user.role = 'admin';
+        updateFields.isAdmin = true;
+        updateFields.role = 'admin';
       } else if (isItcsEmail && user.role === 'user') {
-        user.role = 'author';
+        updateFields.role = 'author';
       }
-      await user.save()
+      await db.updateUserById(String(user._id), updateFields);
+      user = await db.findUserById(String(user._id));
     }
 
     if (!user.isAdmin && user.role !== 'admin' && user.role !== 'author') {
       return res.status(403).json({ message: 'Access denied. You are not authorized to access the admin panel.' });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: String(user._id) }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     })
 
@@ -159,7 +160,7 @@ router.post('/microsoft', async (req, res) => {
       message: 'Login successful',
       token,
       user: {
-        _id: user._id,
+        _id: String(user._id),
         email: user.email,
         fullName: user.fullName,
         role: user.role,
@@ -176,7 +177,7 @@ router.post('/microsoft', async (req, res) => {
 router.post('/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email });
+    const user = await db.findUserByEmail(email);
 
     if (!user) {
       return res.status(404).json({ message: 'User with this email does not exist.' });
@@ -188,9 +189,7 @@ router.post('/forgot-password', async (req, res) => {
 
     // Generate token
     const resetToken = crypto.randomBytes(32).toString('hex');
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-    await user.save();
+    await db.setUserResetToken(email, resetToken, new Date(Date.now() + 3600000).toISOString());
 
     // Create transporter
     const transporter = nodemailer.createTransport({
@@ -238,10 +237,7 @@ router.post('/reset-password/:token', async (req, res) => {
     const { token } = req.params;
     const { password } = req.body;
 
-    const user = await User.findOne({
-      resetPasswordToken: token,
-      resetPasswordExpires: { $gt: Date.now() }, // Ensure token has not expired
-    });
+    const user = await db.findUserByResetToken(token);
 
     if (!user) {
       return res.status(400).json({ message: 'Password reset token is invalid or has expired.' });
@@ -249,12 +245,13 @@ router.post('/reset-password/:token', async (req, res) => {
 
     // Hash new password
     const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
-    
-    // Clear reset token fields
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
-    await user.save();
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    await db.updateUserById(String(user._id), {
+      password: hashedPassword,
+      resetPasswordToken: null,
+      resetPasswordExpires: null
+    });
 
     res.status(200).json({ message: 'Password has been successfully reset. You can now log in.' });
   } catch (error) {
