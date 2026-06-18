@@ -4,29 +4,21 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import authRoutes from './routes/authRoutes.js'
-import jobRoutes from './routes/jobRoutes.js'
-import blogRoutes from './routes/blogRoutes.js'
-import adminRoutes from './routes/adminRoutes.js'
-import jobsRoutes from './routes/jobs.js';
-import uploadRoutes from './routes/uploadRoutes.js';
-import contactRoutes from './routes/contactRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-dotenv.config({ path: path.join(__dirname, '../../.env') }) // Correct path to .env in project root
+dotenv.config({ path: path.join(__dirname, '../../.env') })
+
 const app = express()
 
-// Middleware
 app.use(cors({
-  origin: '*', // Allow all origins for development
+  origin: '*',
   credentials: false,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
-// Add CORS headers for static files (images)
 app.use('/uploads', (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -36,49 +28,57 @@ app.use('/uploads', (req, res, next) => {
 app.use(express.json({ limit: '200mb' }))
 app.use(express.urlencoded({ extended: true, limit: '200mb' }))
 
-// Serve uploaded files statically
 const uploadsPath = path.join(__dirname, 'uploads');
 console.log('Serving static files from:', uploadsPath);
 app.use('/uploads', express.static(uploadsPath));
 
-// Routes
-app.use('/api/auth', authRoutes)
-app.use('/api/jobs', jobRoutes)
-app.use('/api/blogs', blogRoutes)
-app.use('/api/admin', adminRoutes)
-app.use('/api/jobsAdd', jobsRoutes);
-app.use('/api/custom-blogs', blogRoutes);
-app.use('/api/upload', uploadRoutes);
-app.use('/api/contact', contactRoutes);
-
-// Serve Frontend Static Files (Port 5000 consolidation) - Should be AFTER API routes
 app.use(express.static(path.join(__dirname, '../../dist')));
 
-// MongoDB connection
-mongoose
-  .connect(process.env.MONGO_URI, {
-    serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds instead of hanging
-    family: 4, // Force IPv4 to resolve DNS issues common in Node.js on Windows
-  })
-  .then(() => console.log('✅ MongoDB Connected Successfully'))
-  .catch((err) => {
+const start = async () => {
+  mongoose.set('bufferTimeoutMS', 120000);
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 30000,
+      family: 4,
+    });
+    console.log('✅ MongoDB Connected Successfully');
+  } catch (err) {
     console.error('❌ MongoDB Connection Error:', err.message);
-    console.log('💡 TIP: If whitelisting 223.123.84.142 didn\'t work, try changing your computer DNS to 8.8.8.8');
+    process.exit(1);
+  }
+
+  const [authRoutes, jobRoutes, blogRoutes, adminRoutes, jobsRoutes, uploadRoutes, contactRoutes] = await Promise.all([
+    import('./routes/authRoutes.js'),
+    import('./routes/jobRoutes.js'),
+    import('./routes/blogRoutes.js'),
+    import('./routes/adminRoutes.js'),
+    import('./routes/jobs.js'),
+    import('./routes/uploadRoutes.js'),
+    import('./routes/contactRoutes.js'),
+  ]);
+
+  app.use('/api/auth', authRoutes.default)
+  app.use('/api/jobs', jobRoutes.default)
+  app.use('/api/blogs', blogRoutes.default)
+  app.use('/api/admin', adminRoutes.default)
+  app.use('/api/jobsAdd', jobsRoutes.default)
+  app.use('/api/custom-blogs', blogRoutes.default)
+  app.use('/api/upload', uploadRoutes.default)
+  app.use('/api/contact', contactRoutes.default)
+
+  app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    res.status(500).json({ error: 'Internal server error', message: err.message });
   });
 
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
-  res.status(500).json({ error: 'Internal server error', message: err.message });
-});
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../dist/index.html'));
+  });
 
-// Catch-all route to serve React's index.html for SPA routing
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../dist/index.html'));
-});
+  const PORT = process.env.PORT || 5000
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+}
 
-// Start server
-const PORT = process.env.PORT || 5000
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+start();
 
 export default app
