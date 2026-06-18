@@ -11,6 +11,7 @@ import adminRoutes from './routes/adminRoutes.js'
 import jobsRoutes from './routes/jobs.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
+import diagRoutes from './routes/diagRoutes.js';
 import { setDb, isReady } from './models/dbHelpers.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -59,6 +60,7 @@ app.use('/api/jobsAdd', jobsRoutes)
 app.use('/api/custom-blogs', blogRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/contact', contactRoutes)
+app.use('/api', diagRoutes)
 
 app.use(express.static(path.join(__dirname, '../../dist')));
 
