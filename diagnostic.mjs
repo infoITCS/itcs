@@ -13,7 +13,7 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 dotenv.config();
 
 console.log('MONGO_URI exists:', !!process.env.MONGO_URI);
-console.log('MONGO_URI:', process.env.MONGO_URI?.substring(0, 40) + '...');
+console.log('MONGO_URI:', process.env.MONGO_URI ? process.env.MONGO_URI.substring(0, 40) + '...' : 'NOT SET');
 
 try {
   const mongoose = await import('mongoose');

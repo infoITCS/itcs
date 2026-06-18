@@ -78,7 +78,7 @@ router.post('/microsoft', async (req, res) => {
         userEmail = microsoftUser.mail || microsoftUser.userPrincipalName
         userName = microsoftUser.displayName || microsoftUser.givenName
       } catch (graphError) {
-        const errDetail = graphError.response?.data || graphError.message
+        const errDetail = (graphError.response && graphError.response.data) || graphError.message
         console.error('Microsoft Graph API error:', typeof errDetail === 'string' ? errDetail : JSON.stringify(errDetail))
         console.error('Graph API failed, attempting ID token validation...')
       }
@@ -111,7 +111,7 @@ router.post('/microsoft', async (req, res) => {
         console.log('ID token validated successfully for:', userEmail)
       } catch (idTokenError) {
         console.error('ID token validation error:', idTokenError.message)
-        const errDetail = idTokenError.response?.data || idTokenError.message
+        const errDetail = (idTokenError.response && idTokenError.response.data) || idTokenError.message
         return res.status(401).json({ message: `Authentication failed: ${errDetail}` })
       }
     }
