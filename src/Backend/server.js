@@ -60,7 +60,8 @@ app.use('/api/jobsAdd', jobsRoutes)
 app.use('/api/custom-blogs', blogRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/contact', contactRoutes)
-app.use('/api', diagRoutes)
+// diag routes before /api middleware (no DB needed)
+app.use('/diag', diagRoutes)
 
 app.use(express.static(path.join(__dirname, '../../dist')));
 
