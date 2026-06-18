@@ -1,6 +1,7 @@
 import express from "express";
-import { ObjectId } from "mongodb";
+import mongoose from "mongoose";
 import * as db from '../models/dbHelpers.js'
+const ObjectId = mongoose.Types.ObjectId
 import jwt from "jsonwebtoken";
 
 const router = express.Router();

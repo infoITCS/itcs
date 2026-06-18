@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { ObjectId } from 'mongodb'
+const ObjectId = mongoose.Types.ObjectId
 
 let _ready = false
 let _db = null
