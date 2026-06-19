@@ -34,8 +34,8 @@ export const findUserByResetToken = (token) => coll('users').findOne({
 })
 
 // CustomBlogs
-export const findBlogPublished = (limit = 50) =>
-  coll('customblogs').find({ status: 'published' }).sort({ createdAt: -1 }).limit(limit).toArray()
+export const findBlogPublished = () =>
+  coll('customblogs').find({ status: 'published' }).sort({ createdAt: -1 }).toArray()
 
 export const findBlogOneBySlug = (slug) =>
   coll('customblogs').findOne({ slug })
