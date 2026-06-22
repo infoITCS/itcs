@@ -21,7 +21,6 @@ const CareerHero = () => {
         </p>
         <div className="hero-buttons">
           <a href="#positions" className="btn-primary">View Open Positions</a>
-          <a href="#culture" className="btn-secondary">Learn Our Culture</a>
         </div>
         <div className="hero-stats">
           <div className="stat">
@@ -34,7 +33,7 @@ const CareerHero = () => {
           </div>
           <div className="stat">
             <h3>20+</h3>
-            <p>Countries</p>
+            <p>Companies</p>
           </div>
         </div>
       </div>

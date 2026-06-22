@@ -2,7 +2,6 @@ import React from 'react'
 import CareerHero from './CareerHero/CareerHero'
 import CareerBenefits from './CareerBenefits/CareerBenefits'
 import CareerPositions from './CareerPositions/CareerPositions'
-import CareerCulture from './CareerCulture/CareerCulture'
 
 const Careers = () => {
   return (
@@ -10,7 +9,6 @@ const Careers = () => {
       <CareerHero />
       <CareerBenefits />
       <CareerPositions />
-      <CareerCulture />
     </>
   )
 }

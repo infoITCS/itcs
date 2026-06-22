@@ -11,24 +11,24 @@ const HomeHero = () => {
         <div className="hero-orb hero-orb-2"></div>
         <div className="hero-orb hero-orb-3"></div>
       </div>
-      
+
       <div className="hero-container">
         <div className="hero-badge">
           <span className="badge-icon">⚡</span>
           <span>PAKISTAN'S TOP MICROSOFT CSP TIER-1 DIRECT PARTNER</span>
         </div>
-        
+
         <h1 className="hero-title">
           Innovate Faster with
           <span className="gradient-text"> Microsoft Cloud</span>
         </h1>
-        
+
         <p className="hero-description">
-          Transform your business with cutting-edge cloud solutions. 
-          We help organizations accelerate digital transformation with Microsoft's 
+          Transform your business with cutting-edge cloud solutions.
+          We help organizations accelerate digital transformation with Microsoft's
           powerful cloud platform and our expert guidance.
         </p>
-        
+
         <div className="hero-actions">
           <Link to="/services" className="btn-primary">
             Get Started
@@ -39,10 +39,10 @@ const HomeHero = () => {
             <span className="btn-icon"> ▶</span>
           </Link>
         </div>
-        
+
         <div className="hero-stats">
           <div className="stat-item">
-            <div className="stat-number">13+</div>
+            <div className="stat-number">16+</div>
             <div className="stat-label">Years Experience</div>
           </div>
           <div className="stat-divider"></div>
