@@ -6,6 +6,18 @@ const HomeTestimonials = () => {
 
   const testimonials = [
     {
+      company: "Getz Pharma",
+      role: "Manager IT",
+      text: "I have no words to say thanks because from one strange call for IT support from my colleague, you provided highly technical support and spent almost full day to restore our IT services running on domain environment.",
+      rating: 5,
+    },
+    {
+      company: "Hawks Merchants",
+      role: "Manager IT",
+      text: "I had an excellent experience with ITCS for my web development, SEO and design needs. Their professionalism and attention to detail were outstanding. They delivered a stunning, user-friendly website that perfectly aligned with my vision. Communication was seamless, and their support continued even after project completion. I highly recommend ITCS for high-quality web services!",
+      rating: 5,
+    },
+    {
       company: "The Sind Club",
       role: "Manager IT",
       text: "The ITCS support team is awesome. They are very professional and never hesitate to go above and beyond to satisfy us. Keep up the good work!",
@@ -17,12 +29,7 @@ const HomeTestimonials = () => {
       text: "Our migration to the cloud via Office 365 was made very simple by ITCS. Excellent service and courteous staff!",
       rating: 5,
     },
-    {
-      company: "Getz Pharma",
-      role: "Manager IT",
-      text: "I have no words to say thanks because from one strange call for IT support from my colleague, you provided highly technical support and spent almost full day to restore our IT services running on domain environment.",
-      rating: 5,
-    },
+
   ];
 
   const nextSlide = () => {

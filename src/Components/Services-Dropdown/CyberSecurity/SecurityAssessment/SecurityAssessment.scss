@@ -5,15 +5,16 @@
     padding: 140px 24px 60px;
     text-align: center;
     position: relative;
-    background: linear-gradient(135deg, rgba(0, 91, 169, 0.15) 0%, rgba(0, 138, 189, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%);
 
     .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 10px 20px;
-      background: rgba(0, 91, 169, 0.1);
-      border: 1px solid rgba(0, 91, 169, 0.3);
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+
       border-radius: 50px;
       color: white;
       font-size: 13px;
@@ -23,6 +24,7 @@
 
       svg {
         font-size: 16px;
+        color: #a855f7;
       }
     }
 
@@ -92,23 +94,36 @@
         transition: all 0.3s ease;
 
         &:hover {
-          border-color: #008ABD;
+          border-color: #7c3aed;
           transform: translateY(-5px);
+          box-shadow: 0 10px 30px rgba(124, 58, 237, 0.15);
+
+          .card-icon {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            border-color: #7c3aed;
+
+            svg {
+              color: white;
+            }
+          }
         }
 
         .card-icon {
           width: 56px;
           height: 56px;
-          background: rgba(0, 138, 189, 0.1);
+          background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+          border: 1px solid rgba(124, 58, 237, 0.3);
           border-radius: 14px;
           display: flex;
           align-items: center;
           justify-content: center;
           margin-bottom: 18px;
+          transition: all 0.3s ease;
 
           svg {
             font-size: 24px;
-            color: #008ABD;
+            color: #a855f7;
+            transition: all 0.3s ease;
           }
         }
 
@@ -177,7 +192,7 @@
         .step-number {
           font-size: 36px;
           font-weight: 700;
-          color: #008ABD;
+          color: #a855f7;
           opacity: 0.5;
           margin-bottom: 16px;
         }
@@ -245,24 +260,36 @@
         transition: all 0.3s ease;
 
         &:hover {
-          border-color: #008ABD;
+          border-color: #7c3aed;
           transform: translateY(-5px);
-          box-shadow: 0 15px 40px rgba(0, 91, 169, 0.15);
+          box-shadow: 0 15px 40px rgba(124, 58, 237, 0.15);
+
+          .benefit-icon {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            border-color: #7c3aed;
+
+            svg {
+              color: white;
+            }
+          }
         }
 
         .benefit-icon {
           width: 64px;
           height: 64px;
           margin: 0 auto 20px;
-          background: linear-gradient(135deg, rgba(0, 91, 169, 0.15) 0%, rgba(0, 138, 189, 0.1) 100%);
+          background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+          border: 1px solid rgba(124, 58, 237, 0.3);
           border-radius: 16px;
           display: flex;
           align-items: center;
           justify-content: center;
+          transition: all 0.3s ease;
 
           svg {
             font-size: 28px;
-            color: #008ABD;
+            color: #a855f7;
+            transition: all 0.3s ease;
           }
         }
 
@@ -318,7 +345,7 @@
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 30px rgba(0, 91, 169, 0.3);
+        box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
       }
     }
   }

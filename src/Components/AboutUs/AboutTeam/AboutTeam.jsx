@@ -1,7 +1,7 @@
 import React from "react";
 import "./AboutTeam.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLaptopCode, faPalette, faLock, faChartBar } from "@fortawesome/free-solid-svg-icons";
+import { faLaptopCode, faPalette, faLock, faChartBar, faHeadset } from "@fortawesome/free-solid-svg-icons";
 
 
 const AboutTeam = () => {
@@ -47,6 +47,12 @@ const AboutTeam = () => {
       title: "Consulting Team",
       count: "10+ Consultants",
       skills: ["Strategy", "Digital Transform", "PM", "BA"]
+    },
+    {
+      icon: faHeadset,
+      title: "Support Team",
+      count: "20+ Specialists",
+      skills: ["IT Support", "Help Desk", "Network Ops", "24/7 Service"]
     }
   ];
 

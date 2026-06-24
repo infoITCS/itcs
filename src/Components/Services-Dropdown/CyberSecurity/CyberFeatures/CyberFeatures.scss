@@ -70,11 +70,22 @@
     text-align: center;
 
     .card-icon {
-      font-size: 48px;
-      margin-bottom: 20px;
-      color: #fff;
-      display: inline-block;
-      transition: transform var(--transition-normal);
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-normal);
+
+      svg {
+        font-size: 28px;
+        color: #a855f7;
+        transition: all var(--transition-normal);
+      }
     }
 
     .card-title {
@@ -96,7 +107,13 @@
       box-shadow: 0 8px 30px rgba(124, 58, 237, 0.3);
 
       .card-icon {
-        transform: scale(1.2) rotate(10deg);
+        background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+        border-color: #7c3aed;
+        transform: scale(1.05);
+
+        svg {
+          color: white;
+        }
       }
     }
   }

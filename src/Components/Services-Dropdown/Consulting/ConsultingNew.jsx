@@ -7,6 +7,7 @@ import { faBriefcase, faChartLine, faHandshake, faLightbulb, faRocket, faUsers, 
 import PartnerLogos from '../_shared/PartnerLogos/PartnerLogos';
 import { faMicrosoft, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { faBuilding, faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
+import consultingImg from 'assets/images/Consulting-images/business-consulting.png';
 
 const consultingPartners = [
   { icon: faMicrosoft, name: 'Microsoft Consulting', type: 'Gold Partner', description: 'Authorized Microsoft consulting partner for enterprise transformation, cloud strategy, and digital workplace solutions.', status: 'Verified Partner' },
@@ -16,7 +17,7 @@ const consultingPartners = [
 
 const ConsultingHero = () => {
   const navigate = useNavigate();
-  
+
   return (
     <section className="consulting-hero-section">
       <div className="hero-badge">
@@ -28,7 +29,7 @@ const ConsultingHero = () => {
         <span className="gradient-text">Transformation</span>
       </h1>
       <p className="hero-description">
-        Success in a changing world requires a purpose-driven transformative strategy. 
+        Success in a changing world requires a purpose-driven transformative strategy.
         We help organizations navigate digital transformation with strategic planning and expert guidance.
       </p>
       <div className="hero-actions">
@@ -54,9 +55,9 @@ const ConsultingSection2 = () => {
       <div className="consultingSection2-wrapper">
         <div className="content-side">
           <h2>Expert Business Consulting for Growth</h2>
-          <p>Transform your business with our comprehensive consulting solutions. We deliver strategic guidance and expert advice tailored to meet your specific business requirements.</p>
-          <p>From startup to enterprise, our consulting services grow with your business, providing the insights you need to succeed.</p>
-          
+          <p>IT Consulting Services Built on 16 Years of Execution. Most IT environments don’t fail because of lack of tools—they fail because of poor alignment, accumulated technical debt, and decisions made without long-term architectural thinking. With 16 years of experience designing and operating enterprise-grade systems, ITCS brings a perspective shaped by execution, not theory.</p>
+          <p>We help organizations confront what’s actually holding them back technically. Our consulting focuses on making hard calls—what to modernize, what to retire, and how to rebuild systems so they support business strategy instead of drifting away from it.</p>
+
           <div className="services-list">
             {services.map((item, idx) => (
               <div className="service-item" key={idx}>
@@ -71,9 +72,9 @@ const ConsultingSection2 = () => {
             ))}
           </div>
         </div>
-        
+
         <div className="image-side">
-          <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600" alt="Business Consulting" />
+          <img src={consultingImg} alt="Business Consulting" />
         </div>
       </div>
     </div>
@@ -85,7 +86,8 @@ const ConsultingFeatures = () => {
     { icon: faCogs, title: 'Process Optimization', description: 'Streamline operations for efficiency' },
     { icon: faChartLine, title: 'Financial Consulting', description: 'Expert financial planning and analysis' },
     { icon: faUsers, title: 'Organizational Development', description: 'Build high-performing teams' },
-    { icon: faLightbulb, title: 'Innovation Strategy', description: 'Drive innovation and growth' }
+    { icon: faLightbulb, title: 'Innovation Strategy', description: 'Drive innovation and growth' },
+    { icon: faRocket, title: 'Technical Consultant', description: 'Guiding your technical systems toward measurable impact.' }
   ];
 
   return (
@@ -140,7 +142,7 @@ const ConsultingSection4 = () => {
 
 const ConsultingCTA = () => {
   const navigate = useNavigate();
-  
+
   return (
     <section className="consulting-cta">
       <div className="cta-container">

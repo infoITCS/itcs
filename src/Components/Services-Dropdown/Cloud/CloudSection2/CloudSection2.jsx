@@ -17,9 +17,16 @@ const CloudSection2 = () => {
       <div className="cloudSection2-wrapper">
         <div className="content-side">
           <h2>Enterprise Cloud Solutions for Modern Business</h2>
-          <p>Transform your business operations with our comprehensive cloud computing solutions. We deliver scalable, secure, and cost-effective cloud services tailored to meet your specific business requirements.</p>
-          <p>From startup to enterprise, our cloud solutions grow with your business, providing the flexibility and power you need to succeed in the digital age.</p>
-          
+          <p>Legacy infrastructure slows growth, fragments operations, and locks IT teams
+            into constant maintenance while limiting access, scalability, and control. On-prem systems create
+            bottlenecks in performance, visibility, and speed—holding businesses back when they need to
+            move faster. At ITCS, we replace this with cloud environments built for adaptability, resilience,
+            and always-on availability—centralizing access, removing hardware constraints, and enabling
+            systems that scale on demand. The result is faster execution, lower overhead, and infrastructure
+            that works for the business, not against it.
+
+          </p>
+
           <div className="services-list">
             {services.map((item, idx) => (
               <div className="service-item" key={idx}>
@@ -34,7 +41,7 @@ const CloudSection2 = () => {
             ))}
           </div>
         </div>
-        
+
         <div className="image-side">
           <img src={CloudHeroImg} alt="Cloud Solutions" />
         </div>

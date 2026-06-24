@@ -26,12 +26,12 @@ const VisionContent = () => {
     {
       number: "01",
       title: "Innovation",
-      description: "We embrace change and continuously seek new ways to solve problems and create value."
+      description: "We embrace change and continuously explore better ways to solve problems and create value. By collaborating with leading industry partners, we ensure you receive best-in-class solutions and outcomes."
     },
     {
       number: "02",
       title: "Excellence",
-      description: "We maintain the highest standards in everything we do, from code quality to client service."
+      description: "We maintain the highest standards in everything we do, from code quality to client service, reinforced by our ISO certified processes and quality management systems."
     },
     {
       number: "03",
@@ -51,7 +51,7 @@ const VisionContent = () => {
     {
       number: "06",
       title: "Growth",
-      description: "We invest in our people and foster continuous learning and professional development."
+      description: "We invest in our professionals and foster continuous learning from professional development to internationally recognized standard certifications, to ensure global-level competence and the best for our customers."
     }
   ];
 

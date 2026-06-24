@@ -54,25 +54,25 @@
       transition: all 0.3s ease;
 
       &:hover {
-        border-color: #008ABD;
+        border-color: #7c3aed;
         transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(0, 91, 169, 0.1);
+        box-shadow: 0 15px 40px rgba(124, 58, 237, 0.15);
       }
 
-      .benefit-check {
-        width: 28px;
-        height: 28px;
-        min-width: 28px;
-        background: linear-gradient(135deg, #005BA9 0%, #008ABD 100%);
-        border-radius: 50%;
+      .benefit-icon {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+        border: 1px solid rgba(124, 58, 237, 0.3);
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-top: 2px;
 
         svg {
-          font-size: 14px;
-          color: white;
+          font-size: 22px;
+          color: #a855f7;
         }
       }
 

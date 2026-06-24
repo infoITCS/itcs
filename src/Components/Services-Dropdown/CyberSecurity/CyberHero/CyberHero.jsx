@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const CyberHero = () => {
   const navigate = useNavigate();
-  
+
   return (
     <section className="cyber-hero">
       <div className="hero-background">
@@ -17,17 +17,17 @@ const CyberHero = () => {
       <div className="hero-container">
         <div className="hero-badge">
           <span className="badge-icon">🛡️</span>
-          <span>ENTERPRISE CYBERSECURITY</span>
+          <span>PROTECT WHAT MATTERS</span>
         </div>
 
         <h1 className="hero-title">
-          Secure Scalability with
-          <span className="gradient-text"> Integrated Cybersecurity</span>
+          Cybersecurity That Stops
+          <span className="gradient-text"> Threats Before They Start</span>
         </h1>
 
         <p className="hero-description">
-          Cybersecurity has evolved beyond compliance and risk management - it has become a key factor 
-          in driving business growth and success. In today's increasingly digitized world, cybersecurity 
+          Cybersecurity has evolved beyond compliance and risk management - it has become a key factor
+          in driving business growth and success. In today's increasingly digitized world, cybersecurity
           is critical for protecting your digital assets and ensuring business continuity.
         </p>
 

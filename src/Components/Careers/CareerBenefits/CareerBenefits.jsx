@@ -29,7 +29,7 @@ const CareerBenefits = () => {
     {
       icon: faLaptopCode,
       title: "Remote Work",
-      description: "Hybrid work model with modern equipment and home office setup allowance."
+      description: "Hybrid work model with modern equipment."
     },
     {
       icon: faGraduationCap,

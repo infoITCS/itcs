@@ -72,7 +72,7 @@ const ITSection2 = () => {
         </div>
         
         <div className="image-side">
-          <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600" alt="IT Services" />
+          <img src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600" alt="IT Services" />
         </div>
       </div>
     </div>
@@ -112,10 +112,10 @@ const ITFeatures = () => {
 
 const ITSection4 = () => {
   const benefits = [
-    { title: '24/7 Support', description: 'Round-the-clock technical assistance' },
-    { title: 'Expert Team', description: 'Certified IT professionals' },
-    { title: 'Quick Response', description: 'Fast resolution times' },
-    { title: 'Cost Effective', description: 'Flexible pricing plans' }
+    { icon: faHeadset, title: '24/7 Support', description: 'Round-the-clock technical assistance' },
+    { icon: faCog, title: 'Expert Team', description: 'Certified IT professionals' },
+    { icon: faClock, title: 'Quick Response', description: 'Fast resolution times' },
+    { icon: faTools, title: 'Cost Effective', description: 'Flexible pricing plans' }
   ];
 
   return (
@@ -127,7 +127,9 @@ const ITSection4 = () => {
       <div className="benefits-grid">
         {benefits.map((benefit, idx) => (
           <div className="benefit-item" key={idx}>
-            <div className="benefit-check">✓</div>
+            <div className="benefit-icon">
+              <FontAwesomeIcon icon={benefit.icon} />
+            </div>
             <div className="benefit-text">
               <strong>{benefit.title}</strong>
               <span>{benefit.description}</span>

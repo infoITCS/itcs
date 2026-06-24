@@ -1,7 +1,7 @@
 import React from "react";
 import "./CloudSection4.scss";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faMapMarkerAlt, faCertificate, faAward, faTools, faCoins, faHeadset } from '@fortawesome/free-solid-svg-icons';
+import { faMapMarkerAlt, faCertificate, faAward, faTools, faCoins, faHeadset } from '@fortawesome/free-solid-svg-icons';
 
 const CloudSection4 = () => {
   const benefits = [
@@ -30,8 +30,8 @@ const CloudSection4 = () => {
           <div className="benefits-grid">
             {benefits.map((benefit, idx) => (
               <div className="benefit-item" key={idx}>
-                <div className="benefit-check">
-                  <FontAwesomeIcon icon={faCheckCircle} />
+                <div className="benefit-icon">
+                  <FontAwesomeIcon icon={benefit.icon} />
                 </div>
                 <div className="benefit-text">
                   <strong>{benefit.title}</strong>

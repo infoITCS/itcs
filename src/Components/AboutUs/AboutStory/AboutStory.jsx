@@ -1,6 +1,7 @@
 import React from "react";
 import "./AboutStory.scss";
-import aboutImage from "./../../../assets/images/about-us-s2.png";
+import aboutImage from "./../../../assets/images/About.webp";
+
 
 const AboutStory = () => {
   return (

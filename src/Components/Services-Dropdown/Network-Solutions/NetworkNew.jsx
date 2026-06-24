@@ -5,12 +5,16 @@ import './NetworkNew.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGlobe, faNetworkWired, faShieldAlt, faWifi, faServer, faTools, faProjectDiagram, faLock, faSignal } from '@fortawesome/free-solid-svg-icons';
 import PartnerLogos from '../_shared/PartnerLogos/PartnerLogos';
-import { faMicrosoft, faAws, faGoogle } from '@fortawesome/free-brands-svg-icons';
+
 
 const networkPartners = [
-  { icon: faMicrosoft, name: 'Microsoft Networking', type: 'Gold Partner', description: 'Microsoft networking partner for Azure networking, ExpressRoute, and hybrid connectivity solutions.', status: 'Verified Partner' },
-  { icon: faAws, name: 'AWS Networking', type: 'Advanced Partner', description: 'AWS networking partner delivering VPC design, Direct Connect, and global network infrastructure.', status: 'Verified Partner' },
-  { icon: faProjectDiagram, name: 'Cisco Solutions', type: 'Technology Partner', description: 'Authorized partner for Cisco networking equipment, SD-WAN, and enterprise network architecture.', status: 'Verified Partner' },
+  { name: 'Cisco Secure Agile Exchange', type: 'Technology Partner', description: 'Secure, agile network exchange for modern enterprises', status: 'Verified Partner' },
+  { name: 'Fortinet Secure SD-WAN', type: 'Technology Partner', description: 'Next-gen SD-WAN with integrated security', status: 'Verified Partner' },
+  { name: 'Palo Alto Networks Prisma SASE', type: 'Technology Partner', description: 'Cloud-delivered secure access service edge', status: 'Verified Partner' },
+  { name: 'HPE Aruba EdgeConnect', type: 'Technology Partner', description: 'WAN edge networking with built-in security', status: 'Verified Partner' },
+  { name: 'VMware VeloCloud', type: 'Technology Partner', description: 'Software-defined WAN for cloud-ready connectivity', status: 'Verified Partner' },
+  { name: 'FortiGate Next-Generation Firewall', type: 'Technology Partner', description: 'Enterprise-grade NGFW with advanced threat protection', status: 'Verified Partner' },
+  { name: 'Barracuda CloudGen WAN', type: 'Technology Partner', description: 'Simplified SD-WAN with cloud-native management', status: 'Verified Partner' },
 ];
 
 const NetworkHero = () => {
@@ -184,7 +188,7 @@ const NetworkNew = () => {
       <NetworkHero />
       <NetworkSection2 />
       <NetworkFeatures />
-      <PartnerLogos partners={networkPartners} />
+      <PartnerLogos partners={networkPartners} ticker heading="Trusted Network Partners" subtext="Strategic alliances with leading network technology providers to deliver robust connectivity solutions" />
       <NetworkSection4 />
       <NetworkCTA />
     </>

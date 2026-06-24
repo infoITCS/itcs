@@ -19,14 +19,16 @@ const HomeHero = () => {
         </div>
 
         <h1 className="hero-title">
-          Innovate Faster with
-          <span className="gradient-text"> Microsoft Cloud</span>
+          Want to Unlock Business 4.0 with
+          <span className="gradient-text"> Smarter Tech?</span>
         </h1>
 
         <p className="hero-description">
-          Transform your business with cutting-edge cloud solutions.
-          We help organizations accelerate digital transformation with Microsoft's
-          powerful cloud platform and our expert guidance.
+          At ITCS, we help organizations solve complex technology challenges
+          through cloud solutions, cybersecurity, network infrastructure, enterprise
+          systems, IT support, web development, and managed services—so your
+          systems stop holding you back and start driving business performance in
+          a way that matters.
         </p>
 
         <div className="hero-actions">

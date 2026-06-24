@@ -18,12 +18,12 @@ const AboutHero = () => {
           <span className="gradient-text">Empowering Business</span>
         </h1>
         <p className="hero-description">
-          For over two decades, we've been at the forefront of technological innovation, 
+          For over two decades, we've been at the forefront of technological innovation,
           delivering cutting-edge solutions that drive business success across Pakistan and beyond.
         </p>
         <div className="hero-stats">
           <div className="stat-item">
-            <h3>20+</h3>
+            <h3>16+</h3>
             <p>Years Experience</p>
           </div>
           <div className="stat-item">

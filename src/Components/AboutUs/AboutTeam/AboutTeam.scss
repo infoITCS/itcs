@@ -90,64 +90,127 @@
 
     .departments-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(5, 1fr);
       gap: 24px;
       margin-bottom: 80px;
+
+      @media (max-width: 1100px) {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (max-width: 500px) {
+        grid-template-columns: 1fr;
+      }
 
       .dept-card {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
         border-radius: 16px;
-        padding: 32px 24px;
+        padding: 32px 24px 28px;
         text-align: center;
-        transition: all var(--transition-normal);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: var(--accent-gradient);
+          opacity: 0;
+          transition: opacity 0.4s ease;
+        }
+
+        &::after {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle at center, rgba(168, 85, 247, 0.06) 0%, transparent 60%);
+          opacity: 0;
+          transition: opacity 0.5s ease;
+          pointer-events: none;
+        }
 
         &:hover {
-          transform: translateY(-8px);
-          box-shadow: var(--shadow-md);
-            border-color: #7c3aed;
+          transform: translateY(-10px);
+          box-shadow: 0 20px 60px rgba(124, 58, 237, 0.2);
+          border-color: rgba(168, 85, 247, 0.4);
+
+          &::before {
+            opacity: 1;
+          }
+
+          &::after {
+            opacity: 1;
+          }
 
           .dept-icon {
-            transform: scale(1.2) rotate(10deg);
+            transform: scale(1.1);
+            color: #a855f7;
+          }
+
+          .skill-tag {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(124, 58, 237, 0.15));
+            border-color: rgba(168, 85, 247, 0.3);
+            color: #a855f7;
           }
         }
 
         .dept-icon {
-          font-size: 56px;
-          margin-bottom: 20px;
-          color: #fff;       
-          transition: transform var(--transition-normal);
-          
+          font-size: 48px;
+          margin-bottom: 18px;
+          color: #fff;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          display: inline-block;
         }
 
         h3 {
-          font-size: 20px;
-          font-weight: 600;
+          font-size: 18px;
+          font-weight: 700;
           color: var(--text-primary);
-          margin-bottom: 8px;
+          margin-bottom: 6px;
+          letter-spacing: -0.02em;
         }
 
         .dept-count {
-          font-size: 14px;
-color: white;
+          font-size: 13px;
+          color: #a855f7;
           font-weight: 600;
-          margin-bottom: 16px;
+          margin-bottom: 18px;
+          display: inline-block;
+          padding: 3px 14px;
+          background: linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(124, 58, 237, 0.12));
+          border-radius: 20px;
+          letter-spacing: 0.3px;
         }
 
         .skills-list {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: 6px;
           justify-content: center;
 
           .skill-tag {
-            padding: 6px 12px;
+            padding: 5px 12px;
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 12px;
+            border-radius: 8px;
+            font-size: 11px;
             color: var(--text-secondary);
             font-weight: 500;
+            transition: all 0.3s ease;
+            letter-spacing: 0.2px;
           }
         }
       }

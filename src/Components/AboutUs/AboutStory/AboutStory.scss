@@ -101,6 +101,9 @@ color: white;
 
     .story-image {
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       .image-wrapper {
         position: relative;

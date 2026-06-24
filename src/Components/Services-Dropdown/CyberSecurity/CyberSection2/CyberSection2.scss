@@ -58,7 +58,7 @@
       transition: all 0.3s ease;
 
       &:hover {
-        border-color: #008ABD;
+        border-color: #7c3aed;
         transform: translateX(3px);
       }
 
@@ -66,7 +66,7 @@
         width: 32px;
         height: 32px;
         min-width: 32px;
-        background: linear-gradient(135deg, #005BA9 0%, #008ABD 100%);
+        background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
         border-radius: 6px;
         display: flex;
         align-items: center;

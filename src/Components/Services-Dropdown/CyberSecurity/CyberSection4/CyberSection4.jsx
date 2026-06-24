@@ -1,7 +1,7 @@
 import React from "react";
 import "./CyberSection4.scss";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faMapMarkerAlt, faCertificate, faShield, faTools, faHeadset, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faMapMarkerAlt, faCertificate, faShield, faTools, faHeadset, faLock } from '@fortawesome/free-solid-svg-icons';
 
 const CyberSection4 = () => {
   const benefits = [
@@ -28,8 +28,8 @@ const CyberSection4 = () => {
           <div className="benefits-grid">
             {benefits.map((benefit, idx) => (
               <div className="benefit-item" key={idx}>
-                <div className="benefit-check">
-                  <FontAwesomeIcon icon={faCheckCircle} />
+                <div className="benefit-icon">
+                  <FontAwesomeIcon icon={benefit.icon} />
                 </div>
                 <div className="benefit-text">
                   <strong>{benefit.title}</strong>
