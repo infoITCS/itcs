@@ -73,7 +73,7 @@ const HomeFeature = () => {
 
         <div className="feature-footer-highlights">
           <p className="highlight-text">
-            <strong>15+ Years of Experience.</strong> Certified Experts. Proven Results. Technology That Moves Your Business Forward.
+            <strong>16+ Years of Experience.</strong> Certified Experts. Proven Results. Technology That Moves Your Business Forward.
           </p>
         </div>
       </div>

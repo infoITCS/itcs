@@ -112,32 +112,30 @@ const HomeSolutions = () => {
   return (
     <section className="home-solutions">
       <div className="solutions-container">
-        <div className="solutions-header-wrapper">
-          <div className="solutions-header-left">
-            <span className="feature-badge">OUR SERVICES</span>
-            <h2 className="section-title">16+ Years of Industry Experience</h2>
-            <p className="section-description">
-              We uphold the virtues of superior functional resources and excellent
-              customer services with the prime objective of fostering value enablement
-              systems, since 2011.
-            </p>
-          </div>
-          
-          <div className="carousel-controls">
-            <button className="carousel-nav-btn prev" onClick={prevSlide} aria-label="Previous service">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="15 18 9 12 15 6" />
-              </svg>
-            </button>
-            <button className="carousel-nav-btn next" onClick={nextSlide} aria-label="Next service">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6" />
-              </svg>
-            </button>
-          </div>
+        <div className="solutions-header">
+          <span className="feature-badge">OUR SERVICES</span>
+          <h2 className="section-title">16+ Years of Industry Experience</h2>
+          <p className="section-description">
+            We uphold the virtues of superior functional resources and excellent
+            customer services with the prime objective of fostering value enablement
+            systems, since 2010.
+          </p>
         </div>
 
-        <div 
+        <div className="carousel-controls">
+          <button className="carousel-nav-btn prev" onClick={prevSlide} aria-label="Previous service">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <button className="carousel-nav-btn next" onClick={nextSlide} aria-label="Next service">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        </div>
+
+        <div
           className="solutions-carousel-wrapper"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
@@ -170,7 +168,7 @@ const HomeSolutions = () => {
                       </div>
                       <h3 className="card-title">{solution.title}</h3>
                       <p className="card-description">{solution.description}</p>
-                      
+
                       <div className="card-action-link">
                         <span>Explore Solution</span>
                         <svg className="action-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

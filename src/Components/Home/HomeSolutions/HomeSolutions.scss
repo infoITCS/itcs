@@ -22,17 +22,10 @@
   }
 
   /* Header and Controls alignment */
-  .solutions-header-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 50px;
-    gap: 40px;
-  }
-
-  .solutions-header-left {
-    max-width: 750px;
-    text-align: left;
+  .solutions-header {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto 50px;
 
     .section-badge,
     .feature-badge {
@@ -60,15 +53,16 @@
       font-size: 16px;
       color: var(--text-secondary);
       line-height: 1.6;
-      margin: 0;
+      margin: 0 auto;
+      max-width: 800px;
     }
   }
 
   .carousel-controls {
     display: flex;
+    justify-content: center;
     gap: 12px;
-    margin-bottom: 10px;
-    flex-shrink: 0;
+    margin-bottom: 40px;
 
     .carousel-nav-btn {
       width: 48px;
@@ -285,7 +279,7 @@
   .home-solutions {
     padding: 80px 20px;
 
-    .solutions-header-wrapper {
+    .solutions-header {
       margin-bottom: 40px;
     }
 
@@ -298,12 +292,6 @@
 
 @media (max-width: 768px) {
   .home-solutions {
-    .solutions-header-wrapper {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 20px;
-    }
-
     .carousel-controls {
       margin-top: 10px;
     }
@@ -314,11 +302,7 @@
   .home-solutions {
     padding: 60px 15px;
 
-    .solutions-header-wrapper {
-      gap: 15px;
-    }
-
-    .solutions-header-left {
+    .solutions-header {
       .section-title {
         font-size: 26px;
       }
