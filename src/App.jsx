@@ -37,6 +37,7 @@ const SecurityAssessment = lazy(() => import('./Components/Services-Dropdown/Cyb
 const Careers = lazy(() => import('./Components/Careers/Careers'))
 const ApplyJob = lazy(() => import('./Components/Careers/ApplyJob/ApplyJob'))
 const JobDetail = lazy(() => import('./Components/Careers/JobDetail/JobDetail'))
+const NotFound = lazy(() => import('./Components/NotFound/NotFound'))
 
 const Loading = () => (
   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#130d24' }}>
@@ -117,6 +118,7 @@ function App() {
               </AdminRoute>
             }
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
       {!isHideLayout && <Footer />}

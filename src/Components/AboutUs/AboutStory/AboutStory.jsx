@@ -9,10 +9,10 @@ const AboutStory = () => {
       <div className="story-container">
         <div className="story-content">
           <span className="section-badge">OUR STORY</span>
-          <h2>Building the Future Since 2000</h2>
+          <h2>Building the Future Since 2010</h2>
           <p className="lead-text">
-            ITCS was founded with a simple yet powerful vision: to bridge the gap between 
-            businesses and technology. What started as a small IT services company has grown 
+            ITCS was founded with a simple yet powerful vision: to bridge the gap between
+            businesses and technology. What started as a small IT services company has grown
             into a comprehensive technology solutions provider.
           </p>
           <div className="story-points">

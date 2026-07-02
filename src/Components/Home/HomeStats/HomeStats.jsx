@@ -8,7 +8,6 @@ const HomeStats = () => {
     { number: 954, label: "Projects Completed", suffix: "+" },
     { number: 103, label: "Business Partners", suffix: "+" },
     { number: 29, label: "Certified Professionals", suffix: "+" },
-    { number: 16, label: "Tech Team Members", suffix: "+" },
   ];
 
   const [startAnimation, setStartAnimation] = useState(false);
@@ -70,11 +69,6 @@ const HomeStats = () => {
                 {index === 3 && (
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                )}
-                {index === 4 && (
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H11C9.93913 15 8.92172 15.4214 8.17157 16.1716C7.42143 16.9217 7 17.9391 7 19V21M22 17.65C22.6152 17.275 23.1253 16.7685 23.4903 16.1672C23.8553 15.5658 24.0632 14.8885 24.0941 14.1917C24.125 13.4948 23.978 12.8008 23.6674 12.1783C23.3568 11.5557 22.8926 11.0254 22.32 10.64M18.22 10.64C18.7802 10.0787 19.1586 9.36898 19.3112 8.59814C19.4637 7.8273 19.3843 7.0287 19.0817 6.3024C18.7791 5.57611 18.2657 4.95489 17.6052 4.51179C16.9447 4.06869 16.1677 3.82243 15.37 3.80164M15 7C15 9.20914 13.2091 11 11 11C8.79086 11 7 9.20914 7 7C7 4.79086 8.79086 3 11 3C13.2091 3 15 4.79086 15 7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}
               </div>
