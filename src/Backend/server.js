@@ -133,11 +133,16 @@ app.get('*', (req, res) => {
 })
 
 const PORT = process.env.PORT || 5000
+const isPassenger = Boolean(process.env.PASSENGER_APP_ENV)
 const isDirectRun = process.argv[1]
   && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
 
-if (isDirectRun) {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+// Plesk proxy mode sets PORT and expects the app to listen.
+// Phusion Passenger manages the server itself — do not call listen().
+if (!isPassenger && (isDirectRun || process.env.PORT)) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on http://0.0.0.0:${PORT}`)
+  })
 }
 
 export default app
