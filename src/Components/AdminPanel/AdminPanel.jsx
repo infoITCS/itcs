@@ -7,6 +7,7 @@ import BlogApproval from './BlogApproval/BlogApproval';
 import AddCustomBlog from './AddCustomBlog/AddCustomBlog';
 import './AdminPanel.scss';
 import axios from 'axios';
+import { logoutMicrosoftSession } from '../../utils/microsoftAuth';
 import { apiUrl } from '../../config/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -40,17 +41,17 @@ const AdminPanel = () => {
     // Don't redirect here - AdminRoute handles authentication
   }, []);
 
-  const handleLogout = () => {
-    // Clear all localStorage immediately
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('email');
-    
-    // Clear MSAL cache silently (no popup for better UX)
-    instance.clearCache();
-    
-    // Navigate to login immediately with replace to prevent back navigation
-    navigate('/login', { replace: true });
+  const handleLogout = async () => {
+    try {
+      await logoutMicrosoftSession(instance, navigate);
+    } catch (err) {
+      console.error('Logout error:', err);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('email');
+      instance.clearCache();
+      navigate('/login', { replace: true });
+    }
   };
 
   const handleAddAdmin = async (e) => {

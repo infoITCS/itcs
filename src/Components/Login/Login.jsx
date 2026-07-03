@@ -3,6 +3,10 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useMsal } from '@azure/msal-react'
 import { loginRequest } from '../../config/msalConfig'
 import { apiUrl } from '../../config/api'
+import {
+  exchangeMicrosoftAccountForJwt,
+  storeAuthSession,
+} from '../../utils/microsoftAuth'
 import alignitLogo from '../../assets/logos/itcsLogo.png'
 import './Login.scss'
 
@@ -16,35 +20,26 @@ const Login = () => {
   const [loginPassword, setLoginPassword] = useState('')
 
   useEffect(() => {
+    const authError = sessionStorage.getItem('auth_error')
+    if (authError) {
+      sessionStorage.removeItem('auth_error')
+      setError(authError)
+    }
+
     const token = localStorage.getItem('token')
     const user = JSON.parse(localStorage.getItem('user') || 'null')
-    
+
+    if (token && (user?.role === 'admin' || user?.role === 'author')) {
+      navigate('/admin', { replace: true })
+      return
+    }
+
     if (token) {
-      if (user?.role === 'admin' || user?.role === 'author') {
-        navigate('/admin', { replace: true })
-        return
-      } else {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        localStorage.removeItem('email')
-      }
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      localStorage.removeItem('email')
     }
-
-    const accounts = instance.getAllAccounts()
-    if (accounts.length > 0 && !token) {
-      instance.clearCache()
-    }
-
-    instance.handleRedirectPromise().then((response) => {
-      if (response?.account) {
-        handleMicrosoftLoginSuccess(response.account)
-      }
-    }).catch((err) => {
-      console.error('Redirect login error:', err)
-      setError(err.message || 'Failed to sign in with Microsoft 365')
-      setLoading(false)
-    })
-  }, [])
+  }, [navigate])
 
   const handleEmailLogin = async (e) => {
     e.preventDefault()
@@ -61,10 +56,7 @@ const Login = () => {
       const data = await response.json()
       if (!response.ok) throw new Error(data.message || 'Login failed')
 
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.user))
-      localStorage.setItem('email', data.user.email)
-
+      storeAuthSession(data.token, data.user)
       navigate('/admin', { replace: true })
     } catch (err) {
       setError(err.message)
@@ -76,7 +68,7 @@ const Login = () => {
   const handleMicrosoftLogin = async () => {
     setLoading(true)
     setError('')
-    
+
     try {
       if (import.meta.env.PROD) {
         await instance.loginRedirect(loginRequest)
@@ -84,13 +76,14 @@ const Login = () => {
       }
 
       const response = await instance.loginPopup(loginRequest)
-      await handleMicrosoftLoginSuccess(response.account)
+      await exchangeMicrosoftAccountForJwt(instance, response.account)
+      navigate('/admin', { replace: true })
     } catch (err) {
       if (err.name === 'BrowserAuthError' && err.errorCode === 'user_cancelled') {
-        console.log('User cancelled login');
+        console.log('User cancelled login')
       } else {
-        console.error('Login error:', err);
-        setError(err.message || 'Failed to sign in with Microsoft 365');
+        console.error('Login error:', err)
+        setError(err.message || 'Failed to sign in with Microsoft 365')
       }
       setLoading(false)
     }
@@ -109,56 +102,15 @@ const Login = () => {
       }
 
       const response = await instance.loginPopup(request)
-      await handleMicrosoftLoginSuccess(response.account)
-    } catch (err) {
-      if (err.name === 'BrowserAuthError' && err.errorCode === 'user_cancelled') {
-        console.log('User cancelled login');
-      } else {
-        console.error('Login error:', err);
-        setError(err.message || 'Failed to sign in with Microsoft 365');
-      }
-      setLoading(false)
-    }
-  }
-
-  const handleMicrosoftLoginSuccess = async (account) => {
-    try {
-      console.log("Microsoft login popup successful, acquiring token silently...");
-      // Get access token
-      const tokenResponse = await instance.acquireTokenSilent({
-        ...loginRequest,
-        account: account,
-      })
-
-      // Send tokens to backend for verification
-      console.log("Token acquired silently. Sending to backend for verification:", tokenResponse.accessToken ? "Token present" : "No token");
-      const response = await fetch(apiUrl('/api/auth/microsoft'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          accessToken: tokenResponse.accessToken,
-          idToken: tokenResponse.idToken,
-          email: account.username,
-          name: account.name,
-        }),
-      })
-
-      console.log("Backend response received. Status:", response.status);
-      const data = await response.json()
-      if (!response.ok) {
-        throw new Error(data.message || 'Authentication failed.');
-      }
-
-      // Store auth info
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.user))
-      localStorage.setItem('email', data.user.email)
-
-      setLoading(false)
+      await exchangeMicrosoftAccountForJwt(instance, response.account)
       navigate('/admin', { replace: true })
     } catch (err) {
-      console.error('Backend authentication error:', err)
-      setError(err.message.includes('Unexpected token') ? 'Server error: Check backend console' : err.message)
+      if (err.name === 'BrowserAuthError' && err.errorCode === 'user_cancelled') {
+        console.log('User cancelled login')
+      } else {
+        console.error('Login error:', err)
+        setError(err.message || 'Failed to sign in with Microsoft 365')
+      }
       setLoading(false)
     }
   }
@@ -172,8 +124,6 @@ const Login = () => {
             <img src={alignitLogo} alt="ITCS Logo" className="login-logo" />
             <p className="card-subtitle">Log in to access your dashboard</p>
           </div>
-
-
 
           <div className="login-form">
             {error && (
@@ -201,9 +151,9 @@ const Login = () => {
 
             {loginMethod === 'microsoft' ? (
               <>
-                <button 
-                  type="button" 
-                  className="submit-btn microsoft-btn" 
+                <button
+                  type="button"
+                  className="submit-btn microsoft-btn"
                   onClick={handleMicrosoftLogin}
                   disabled={loading}
                 >
