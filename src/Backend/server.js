@@ -4,7 +4,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import { existsSync, mkdirSync } from 'fs'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 import authRoutes from './routes/authRoutes.js'
 import jobRoutes from './routes/jobRoutes.js'
 import blogRoutes from './routes/blogRoutes.js'
@@ -152,5 +152,17 @@ app.get('*', (req, res, next) => {
     if (err) next(err)
   })
 })
+
+const isDirectRun = () => {
+  if (!process.argv[1]) return false
+  return import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
+}
+
+if (isDirectRun()) {
+  const PORT = process.env.PORT || 5000
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`ITCS server listening on http://0.0.0.0:${PORT}`)
+  })
+}
 
 export default app

@@ -10,6 +10,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:server": "npm run dev --prefix src/Backend",
     "build": "vite build",
     "vercel-build": "vite build",
     "plesk:deploy": "npm install && npm run build",

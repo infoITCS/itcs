@@ -29,7 +29,7 @@ const canUseConfiguredBaseUrl =
 export const API_BASE_URL = canUseConfiguredBaseUrl
   ? configuredBaseUrl
   : import.meta.env.DEV
-    ? "http://localhost:5000"
+    ? ""
     : "";
 
 export const apiUrl = (path = "") => {
