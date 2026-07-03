@@ -66,26 +66,8 @@ router.post('/microsoft', async (req, res) => {
 
     let userEmail, userName
 
-    // Verify token with Microsoft Graph API (primary)
-    if (accessToken) {
-      try {
-        const graphResponse = await axios.get('https://graph.microsoft.com/v1.0/me', {
-          headers: { Authorization: `Bearer ${accessToken}` },
-          timeout: 15000
-        })
-
-        const microsoftUser = graphResponse.data
-        userEmail = microsoftUser.mail || microsoftUser.userPrincipalName
-        userName = microsoftUser.displayName || microsoftUser.givenName
-      } catch (graphError) {
-        const errDetail = (graphError.response && graphError.response.data) || graphError.message
-        console.error('Microsoft Graph API error:', typeof errDetail === 'string' ? errDetail : JSON.stringify(errDetail))
-        console.error('Graph API failed, attempting ID token validation...')
-      }
-    }
-
-    // Fallback: validate ID token locally
-    if (!userEmail && idToken) {
+    // Validate ID token first (faster, no external network call)
+    if (idToken) {
       try {
         const decoded = await new Promise((resolve, reject) => {
           jwt.verify(
@@ -111,8 +93,23 @@ router.post('/microsoft', async (req, res) => {
         console.log('ID token validated successfully for:', userEmail)
       } catch (idTokenError) {
         console.error('ID token validation error:', idTokenError.message)
-        const errDetail = (idTokenError.response && idTokenError.response.data) || idTokenError.message
-        return res.status(401).json({ message: `Authentication failed: ${errDetail}` })
+      }
+    }
+
+    // Fallback: verify with Microsoft Graph API
+    if (!userEmail && accessToken) {
+      try {
+        const graphResponse = await axios.get('https://graph.microsoft.com/v1.0/me', {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          timeout: 10000
+        })
+
+        const microsoftUser = graphResponse.data
+        userEmail = microsoftUser.mail || microsoftUser.userPrincipalName
+        userName = microsoftUser.displayName || microsoftUser.givenName
+      } catch (graphError) {
+        const errDetail = (graphError.response && graphError.response.data) || graphError.message
+        console.error('Microsoft Graph API error:', typeof errDetail === 'string' ? errDetail : JSON.stringify(errDetail))
       }
     }
 

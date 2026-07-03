@@ -8,9 +8,7 @@ export const msalConfig = {
   auth: {
     clientId,
     authority: `https://login.microsoftonline.com/${tenantId}`,
-    redirectUri: window.location.origin.includes('localhost')
-      ? `${window.location.origin}${redirectPath}`
-      : `${window.location.origin}${redirectPath}`,
+    redirectUri: `${window.location.origin}${redirectPath}`,
   },
   cache: {
     cacheLocation: 'sessionStorage',
@@ -23,5 +21,10 @@ export const loginRequest = {
 }
 
 const msalInstance = new PublicClientApplication(msalConfig)
+
+export const initializeMsal = async () => {
+  await msalInstance.initialize()
+  return msalInstance.handleRedirectPromise()
+}
 
 export default msalInstance

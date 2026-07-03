@@ -24,7 +24,6 @@ const Login = () => {
         navigate('/admin', { replace: true })
         return
       } else {
-        // Clear invalid or non-admin session to break infinite redirect loop
         localStorage.removeItem('token')
         localStorage.removeItem('user')
         localStorage.removeItem('email')
@@ -35,6 +34,16 @@ const Login = () => {
     if (accounts.length > 0 && !token) {
       instance.clearCache()
     }
+
+    instance.handleRedirectPromise().then((response) => {
+      if (response?.account) {
+        handleMicrosoftLoginSuccess(response.account)
+      }
+    }).catch((err) => {
+      console.error('Redirect login error:', err)
+      setError(err.message || 'Failed to sign in with Microsoft 365')
+      setLoading(false)
+    })
   }, [])
 
   const handleEmailLogin = async (e) => {
@@ -69,6 +78,11 @@ const Login = () => {
     setError('')
     
     try {
+      if (import.meta.env.PROD) {
+        await instance.loginRedirect(loginRequest)
+        return
+      }
+
       const response = await instance.loginPopup(loginRequest)
       await handleMicrosoftLoginSuccess(response.account)
     } catch (err) {
@@ -84,12 +98,17 @@ const Login = () => {
 
   const handleDifferentAccount = async () => {
     setError('')
+    setLoading(true)
     try {
       instance.clearCache()
-      const response = await instance.loginPopup({
-        ...loginRequest,
-        prompt: 'select_account',
-      })
+      const request = { ...loginRequest, prompt: 'select_account' }
+
+      if (import.meta.env.PROD) {
+        await instance.loginRedirect(request)
+        return
+      }
+
+      const response = await instance.loginPopup(request)
       await handleMicrosoftLoginSuccess(response.account)
     } catch (err) {
       if (err.name === 'BrowserAuthError' && err.errorCode === 'user_cancelled') {
@@ -98,6 +117,7 @@ const Login = () => {
         console.error('Login error:', err);
         setError(err.message || 'Failed to sign in with Microsoft 365');
       }
+      setLoading(false)
     }
   }
 

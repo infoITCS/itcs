@@ -39,9 +39,9 @@ app.set('trust proxy', 1)
 
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff')
-  res.setHeader('X-Frame-Options', 'DENY')
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN')
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
-  res.setHeader('X-XSS-Protection', '0')
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups')
   next()
 })
 
@@ -103,11 +103,16 @@ app.use('/api/upload', uploadRoutes)
 app.use('/api/contact', contactRoutes)
 app.use('/diag', diagRoutes)
 
-app.use(express.static(path.join(__dirname, '../../dist')))
+const distPath = path.join(__dirname, '../../dist')
+const indexHtmlPath = path.join(distPath, 'index.html')
+
+if (existsSync(distPath)) {
+  app.use(express.static(distPath))
+}
 
 mongoose
   .connect(process.env.MONGO_URI, {
-    serverSelectionTimeoutMS: 30000,
+    serverSelectionTimeoutMS: 10000,
     family: 4,
   })
   .then(() => {
@@ -128,8 +133,20 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error', message: err.message })
 })
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../dist/index.html'))
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API route not found' })
+  }
+
+  if (!existsSync(indexHtmlPath)) {
+    return res.status(503).send(
+      'Frontend build missing. Run "npm run build" on the server, then restart the app.',
+    )
+  }
+
+  res.sendFile(indexHtmlPath, (err) => {
+    if (err) next(err)
+  })
 })
 
 const PORT = process.env.PORT || 5000
