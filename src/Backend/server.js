@@ -68,6 +68,15 @@ app.use('/uploads', (req, res, next) => {
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    database: isReady() ? 'connected' : 'disconnected',
+    mongoState: mongoose.connection.readyState,
+    environment: process.env.NODE_ENV || 'development',
+  })
+})
+
 const uploadsPath = path.join(__dirname, 'uploads')
 if (!existsSync(uploadsPath)) {
   mkdirSync(uploadsPath, { recursive: true })
@@ -76,7 +85,10 @@ app.use('/uploads', express.static(uploadsPath))
 
 app.use('/api', (req, res, next) => {
   if (!isReady()) {
-    return res.status(503).json({ error: 'Database not connected yet. Try again in a few seconds.' })
+    return res.status(503).json({
+      error: 'Database not connected yet. Try again in a few seconds.',
+      mongoState: mongoose.connection.readyState,
+    })
   }
   next()
 })
