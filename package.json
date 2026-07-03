@@ -14,7 +14,7 @@
     "vercel-build": "vite build",
     "plesk:deploy": "npm install && npm run build",
     "lint": "eslint .",
-    "start": "node src/Backend/server.js",
+    "start": "node app.js",
     "preview": "vite preview"
   },
   "dependencies": {

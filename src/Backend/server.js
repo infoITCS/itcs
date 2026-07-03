@@ -4,7 +4,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import { existsSync, mkdirSync } from 'fs'
-import { fileURLToPath, pathToFileURL } from 'url'
+import { fileURLToPath } from 'url'
 import authRoutes from './routes/authRoutes.js'
 import jobRoutes from './routes/jobRoutes.js'
 import blogRoutes from './routes/blogRoutes.js'
@@ -110,19 +110,23 @@ if (existsSync(distPath)) {
   app.use(express.static(distPath))
 }
 
-mongoose
-  .connect(process.env.MONGO_URI, {
-    serverSelectionTimeoutMS: 10000,
-    family: 4,
-  })
-  .then(() => {
-    const db = mongoose.connection.client.db('ITCSwebsite')
-    setDb(db)
-    console.log('✅ MongoDB Connected —', db.databaseName)
-  })
-  .catch((err) => {
-    console.error('❌ MongoDB Connection Error:', err.message)
-  })
+if (process.env.MONGO_URI) {
+  mongoose
+    .connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 10000,
+      family: 4,
+    })
+    .then(() => {
+      const db = mongoose.connection.client.db('ITCSwebsite')
+      setDb(db)
+      console.log('✅ MongoDB Connected —', db.databaseName)
+    })
+    .catch((err) => {
+      console.error('❌ MongoDB Connection Error:', err.message)
+    })
+} else {
+  console.error('❌ MONGO_URI not set — API routes that need the database will return 503')
+}
 
 app.use((err, req, res, next) => {
   if (err.message === 'Not allowed by CORS') {
@@ -148,18 +152,5 @@ app.get('*', (req, res, next) => {
     if (err) next(err)
   })
 })
-
-const PORT = process.env.PORT || 5000
-const isPassenger = Boolean(process.env.PASSENGER_APP_ENV)
-const isDirectRun = process.argv[1]
-  && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
-
-// Plesk proxy mode sets PORT and expects the app to listen.
-// Phusion Passenger manages the server itself — do not call listen().
-if (!isPassenger && (isDirectRun || process.env.PORT)) {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`)
-  })
-}
 
 export default app
