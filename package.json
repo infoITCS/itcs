@@ -15,6 +15,7 @@
     "plesk:deploy": "npm install && npm run build",
     "lint": "eslint .",
     "start": "node run.js",
+    "check": "node scripts/check-app.js",
     "preview": "vite preview"
   },
   "dependencies": {
