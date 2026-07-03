@@ -41,3 +41,4 @@ mkdir -p src/Backend/uploads tmp
 touch tmp/restart.txt
 
 echo "==> ITCS Plesk deployment finished"
+echo "==> Restart the app in Plesk Node.js after deploy"
