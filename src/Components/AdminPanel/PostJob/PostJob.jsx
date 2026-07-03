@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { apiUrl } from '../../../config/api';
+import { getAuthHeaders } from '../../../config/authHeaders';
 import './PostJob.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -63,7 +64,9 @@ const PostJob = () => {
     setLoading(true);
     try {
       console.log("SENDING DATA TO API:", formData);
-      const res = await axios.post(apiUrl('/api/jobsAdd'), formData);
+      const res = await axios.post(apiUrl('/api/jobsAdd'), formData, {
+        headers: getAuthHeaders(),
+      });
       console.log("API RESPONSE:", res.data);
       
       setMessage({ 
@@ -95,7 +98,9 @@ const PostJob = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Permanently delete this position?')) return;
     try {
-      await axios.delete(apiUrl(`/api/jobsAdd/${id}`));
+      await axios.delete(apiUrl(`/api/jobsAdd/${id}`), {
+        headers: getAuthHeaders(),
+      });
       setJobs(jobs.filter(job => job._id !== id));
       setMessage({ type: 'success', text: 'Position deleted successfully.' });
     } catch (err) {

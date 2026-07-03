@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { apiUrl } from "../../../config/api";
+import { getAuthHeaders } from "../../../config/authHeaders";
 import "./BlogApproval.scss";
 
 export default function BlogApproval() {
@@ -77,7 +78,9 @@ export default function BlogApproval() {
   const updateCustomBlogStatus = async (id, status) => {
     setApprovingIds(prev => ({ ...prev, [id]: true }));
     try {
-      const res = await axios.patch(apiUrl(`/api/custom-blogs/${id}/status`), { status });
+      const res = await axios.patch(apiUrl(`/api/custom-blogs/${id}/status`), { status }, {
+        headers: getAuthHeaders(),
+      });
       console.log('Custom blog status updated:', res.data);
       if (status === 'rejected') {
         setCustomBlogs(prev => prev.filter(blog => blog._id !== id && blog.id !== id));

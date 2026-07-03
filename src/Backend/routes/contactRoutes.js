@@ -3,6 +3,13 @@ import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { rateLimit } from '../middleware/rateLimit.js'
+import {
+  escapeHtml,
+  isValidEmail,
+  sanitizeEmailHeader,
+  trimString,
+} from '../utils/validation.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -11,33 +18,61 @@ dotenv.config({ path: path.join(__dirname, '../../../.env') })
 dotenv.config({ path: path.join(__dirname, '../.env') })
 const router = express.Router()
 
+const CONTACT_RECIPIENT = process.env.CONTACT_EMAIL_TO || 'info@itcs.com.pk'
+const CONTACT_SMTP_USER = process.env.CONTACT_SMTP_USER || process.env.EMAIL_USER
+const CONTACT_SMTP_PASS = process.env.CONTACT_SMTP_PASS || process.env.EMAIL_PASS
+
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.office365.com',
-  port: parseInt(process.env.EMAIL_PORT || '587'),
-  secure: process.env.EMAIL_SECURE === 'true', // false for 587 (STARTTLS)
+  host: process.env.CONTACT_SMTP_HOST || process.env.EMAIL_HOST || 'smtp.office365.com',
+  port: parseInt(process.env.CONTACT_SMTP_PORT || process.env.EMAIL_PORT || '587', 10),
+  secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, 
+    user: CONTACT_SMTP_USER,
+    pass: CONTACT_SMTP_PASS,
   },
   tls: {
-    ciphers: 'SSLv3',
-    rejectUnauthorized: false
-  }
+    minVersion: 'TLSv1.2',
+  },
 })
 
-router.post('/', async (req, res) => {
+const contactRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  keyPrefix: 'contact',
+})
+
+router.post('/', contactRateLimit, async (req, res) => {
   try {
-    const { name, email, phone, subject, message } = req.body
+    const name = trimString(req.body.name, 120)
+    const email = trimString(req.body.email, 254)
+    const phone = trimString(req.body.phone || '', 40)
+    const subject = trimString(req.body.subject, 200)
+    const message = trimString(req.body.message, 10000)
 
     if (!name || !email || !subject || !message) {
       return res.status(400).json({ message: 'All required fields must be filled.' })
     }
 
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'Please provide a valid email address.' })
+    }
+
+    if (!CONTACT_SMTP_USER || !CONTACT_SMTP_PASS) {
+      console.error('Contact form: CONTACT_SMTP_USER or CONTACT_SMTP_PASS not configured')
+      return res.status(500).json({ message: 'Email service is not configured. Please try again later.' })
+    }
+
+    const safeName = escapeHtml(name)
+    const safeEmail = escapeHtml(email)
+    const safePhone = escapeHtml(phone || 'N/A')
+    const safeSubject = escapeHtml(subject)
+    const safeMessage = escapeHtml(message).replace(/\n/g, '<br>')
+
     const mailOptions = {
-      from: `"ITCS Website Contact" <${process.env.EMAIL_USER}>`,
-      to: 'info@itcs.com.pk',
-      replyTo: email,
-      subject: `New Contact Request: ${subject} - ${name}`,
+      from: `"ITCS Website Contact" <${CONTACT_SMTP_USER}>`,
+      to: CONTACT_RECIPIENT,
+      replyTo: sanitizeEmailHeader(email),
+      subject: sanitizeEmailHeader(`New Contact Request: ${subject} - ${name}`),
       html: `
         <!DOCTYPE html>
         <html>
@@ -57,13 +92,13 @@ router.post('/', async (req, res) => {
           <div class="container">
             <div class="header"><h2>New Contact Form Submission</h2></div>
             <div class="content">
-              <div class="section"><div class="label">Name:</div><div class="value">${name}</div></div>
-              <div class="section"><div class="label">Email:</div><div class="value"><a href="mailto:${email}">${email}</a></div></div>
-              <div class="section"><div class="label">Phone:</div><div class="value">${phone || 'N/A'}</div></div>
-              <div class="section"><div class="label">Subject:</div><div class="value">${subject}</div></div>
+              <div class="section"><div class="label">Name:</div><div class="value">${safeName}</div></div>
+              <div class="section"><div class="label">Email:</div><div class="value"><a href="mailto:${safeEmail}">${safeEmail}</a></div></div>
+              <div class="section"><div class="label">Phone:</div><div class="value">${safePhone}</div></div>
+              <div class="section"><div class="label">Subject:</div><div class="value">${safeSubject}</div></div>
               <div class="section">
                 <div class="label">Message:</div>
-                <div class="value">${message.replace(/\\n/g, '<br>')}</div>
+                <div class="value">${safeMessage}</div>
               </div>
             </div>
           </div>

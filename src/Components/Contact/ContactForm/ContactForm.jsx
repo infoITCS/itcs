@@ -41,7 +41,11 @@ const ContactForm = () => {
       });
     } catch (err) {
       console.error("Contact form error:", err);
-      setStatus({ type: "error", message: "Failed to send message. Please try again later." });
+      const serverMessage = err.response?.data?.message;
+      setStatus({
+        type: "error",
+        message: serverMessage || "Failed to send message. Please try again later."
+      });
     } finally {
       setLoading(false);
     }

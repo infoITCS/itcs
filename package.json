@@ -3,10 +3,16 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "app.js",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "vercel-build": "vite build",
+    "plesk:deploy": "npm install && npm run build",
     "lint": "eslint .",
     "start": "node src/Backend/server.js",
     "preview": "vite preview"

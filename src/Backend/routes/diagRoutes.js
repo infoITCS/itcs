@@ -1,54 +1,34 @@
 import express from 'express'
 import nodemailer from 'nodemailer'
-import dotenv from 'dotenv'
-import path from 'path'
-import fs from 'fs'
-import { fileURLToPath } from 'url'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-dotenv.config({ path: path.join(__dirname, '../../../.env') })
-dotenv.config({ path: path.join(__dirname, '../.env') })
+import { requireAdmin } from '../middleware/auth.js'
 
 const router = express.Router()
 
-router.get('/diag-email', async (req, res) => {
+router.get('/diag-email', requireAdmin, async (req, res) => {
   const result = {
-    emailUser: process.env.EMAIL_USER ? 'SET: ' + process.env.EMAIL_USER : 'NOT SET',
-    emailPass: process.env.EMAIL_PASS ? 'SET (' + process.env.EMAIL_PASS.length + ' chars)' : 'NOT SET',
-    envFileExists: false,
-    envFileContent: null,
+    emailUser: process.env.EMAIL_USER ? 'SET' : 'NOT SET',
+    emailPass: process.env.EMAIL_PASS ? 'SET' : 'NOT SET',
+    contactSmtp: process.env.CONTACT_SMTP_USER ? 'SET' : 'NOT SET',
+    hrmSmtp: process.env.HRM_SMTP_USER ? 'SET' : 'NOT SET',
+    verifySuccess: false,
     error: null,
-  }
-
-  const envPath = path.join(__dirname, '../../.env')
-  try {
-    if (fs.existsSync(envPath)) {
-      result.envFileExists = true
-      const content = fs.readFileSync(envPath, 'utf8')
-      result.envFileContent = content.replace(/EMAIL_PASS=.*/g, 'EMAIL_PASS=***HIDDEN***')
-    }
-  } catch (e) {
-    result.envFileReadError = e.message
   }
 
   try {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: process.env.CONTACT_SMTP_HOST || 'smtp-relay.brevo.com',
+      port: parseInt(process.env.CONTACT_SMTP_PORT || '587', 10),
+      secure: false,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: process.env.CONTACT_SMTP_USER,
+        pass: process.env.CONTACT_SMTP_PASS,
       },
     })
 
     await new Promise((resolve, reject) => {
-      transporter.verify(function (error, success) {
-        if (error) {
-          reject(error)
-        } else {
-          resolve(success)
-        }
+      transporter.verify((error, success) => {
+        if (error) reject(error)
+        else resolve(success)
       })
     })
 
@@ -57,7 +37,6 @@ router.get('/diag-email', async (req, res) => {
     result.error = {
       message: error.message,
       code: error.code,
-      command: error.command,
     }
   }
 

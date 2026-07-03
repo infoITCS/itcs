@@ -46,7 +46,23 @@ const ApplyJob = () => {
   };
 
   const handleFileChange = (e) => {
-    setFormData((prev) => ({ ...prev, resume: e.target.files[0] }));
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      setStatus({ type: "error", message: "Only PDF files are allowed." });
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setStatus({ type: "error", message: "Resume must be 5MB or smaller." });
+      e.target.value = "";
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, resume: file }));
+    setStatus({ type: "", message: "" });
   };
 
   const fileToBase64 = (file) => {

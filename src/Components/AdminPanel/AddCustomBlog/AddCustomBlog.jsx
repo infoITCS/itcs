@@ -3,6 +3,7 @@ import axios from 'axios';
 import QuillEditor from '../../Common/QuillEditor';
 import 'react-quill-new/dist/quill.snow.css';
 import { apiUrl } from '../../../config/api';
+import { getAuthHeaders } from '../../../config/authHeaders';
 import './AddCustomBlog.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -287,7 +288,9 @@ const AddCustomBlog = () => {
     if (!window.confirm('Delete this blog permanently?')) return;
     setDeleting(id);
     try {
-      await axios.delete(apiUrl(`/api/custom-blogs/${id}`));
+      await axios.delete(apiUrl(`/api/custom-blogs/${id}`), {
+        headers: getAuthHeaders(),
+      });
       setBlogs(prev => prev.filter(b => b._id !== id));
     } catch {
       alert('Failed to delete blog.');

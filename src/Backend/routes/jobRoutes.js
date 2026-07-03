@@ -1,9 +1,17 @@
 import express from 'express'
 import nodemailer from 'nodemailer'
-import multer from 'multer'
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { rateLimit } from '../middleware/rateLimit.js'
+import {
+  escapeHtml,
+  isValidEmail,
+  parsePdfFromBase64,
+  sanitizeEmailHeader,
+  sanitizeFilename,
+  trimString,
+} from '../utils/validation.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -12,71 +20,84 @@ dotenv.config({ path: path.join(__dirname, '../../../.env') })
 dotenv.config({ path: path.join(__dirname, '../.env') })
 const router = express.Router()
 
-
-const upload = multer({
-  storage: multer.memoryStorage(), 
-  limits: {
-    fileSize: 10 * 1024 * 1024, 
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype === 'application/pdf') {
-      cb(null, true)
-    } else {
-      cb(new Error('Only PDF files are allowed!'), false)
-    }
-  },
-})
+const HRM_RECIPIENT = process.env.HRM_EMAIL_TO || 'hrm@itcs.com.pk'
+const HRM_SMTP_USER = process.env.HRM_SMTP_USER || process.env.EMAIL_USER
+const HRM_SMTP_PASS = process.env.HRM_SMTP_PASS || process.env.EMAIL_PASS
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.HRM_SMTP_HOST || process.env.EMAIL_HOST || 'smtp.office365.com',
+  port: parseInt(process.env.HRM_SMTP_PORT || process.env.EMAIL_PORT || '587', 10),
+  secure: false,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, 
+    user: HRM_SMTP_USER,
+    pass: HRM_SMTP_PASS,
+  },
+  tls: {
+    minVersion: 'TLSv1.2',
   },
 })
 
+const applyRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  keyPrefix: 'job-apply',
+})
 
-router.post('/apply', async (req, res) => {
+router.post('/apply', applyRateLimit, async (req, res) => {
   try {
-    const {
-      fullName,
-      email,
-      phone,
-      preferredLocation,
-      coverLetter = '',
-      experience,
-      linkedin = '',
-      jobTitle = 'Not Specified',
-      jobDepartment = '',
-      jobLocation = '',
-      resume, // Base64 string from frontend
-      resumeName = 'resume.pdf',
-    } = req.body
+    const fullName = trimString(req.body.fullName, 120)
+    const email = trimString(req.body.email, 254)
+    const phone = trimString(req.body.phone, 40)
+    const preferredLocation = trimString(req.body.preferredLocation, 80)
+    const coverLetter = trimString(req.body.coverLetter || '', 10000)
+    const experience = trimString(req.body.experience, 200)
+    const linkedin = trimString(req.body.linkedin || '', 500)
+    const jobTitle = trimString(req.body.jobTitle || 'Not Specified', 200)
+    const jobDepartment = trimString(req.body.jobDepartment || '', 120)
+    const jobLocation = trimString(req.body.jobLocation || '', 120)
+    const resume = req.body.resume
+    const resumeName = sanitizeFilename(req.body.resumeName)
 
     if (!fullName || !email || !phone || !preferredLocation || !experience) {
       return res.status(400).json({ message: 'All required fields must be filled.' })
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'Please provide a valid email address.' })
     }
 
     if (!resume) {
       return res.status(400).json({ message: 'Resume (PDF) is required.' })
     }
 
-    // Decode base64 resume
-    const matches = resume.match(/^data:(.+);base64,(.+)$/)
-    let buffer
-    if (matches) {
-      if (!matches[1].includes('pdf')) {
-        return res.status(400).json({ message: 'Only PDF files are allowed!' })
-      }
-      buffer = Buffer.from(matches[2], 'base64')
-    } else {
-      buffer = Buffer.from(resume, 'base64')
+    if (!HRM_SMTP_USER || !HRM_SMTP_PASS) {
+      console.error('Job application: HRM_SMTP_USER or HRM_SMTP_PASS not configured')
+      return res.status(500).json({ message: 'Email service is not configured. Please try again later.' })
     }
 
+    let buffer
+    try {
+      buffer = parsePdfFromBase64(resume)
+    } catch (pdfError) {
+      return res.status(400).json({ message: pdfError.message })
+    }
+
+    const safeFullName = escapeHtml(fullName)
+    const safeEmail = escapeHtml(email)
+    const safePhone = escapeHtml(phone)
+    const safeExperience = escapeHtml(experience)
+    const safePreferredLocation = escapeHtml(preferredLocation)
+    const safeJobTitle = escapeHtml(jobTitle)
+    const safeJobDepartment = escapeHtml(jobDepartment || 'N/A')
+    const safeJobLocation = escapeHtml(jobLocation || 'N/A')
+    const safeLinkedin = linkedin ? escapeHtml(linkedin) : ''
+    const safeCoverLetter = coverLetter ? escapeHtml(coverLetter).replace(/\n/g, '<br>') : ''
+
     const mailOptions = {
-      from: `"Careers Portal" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_USER,
-      subject: `New Application: ${jobTitle} - ${fullName}`,
+      from: `"ITCS Careers" <${HRM_SMTP_USER}>`,
+      to: HRM_RECIPIENT,
+      replyTo: sanitizeEmailHeader(email),
+      subject: sanitizeEmailHeader(`New Application: ${jobTitle} - ${fullName}`),
       html: `
         <!DOCTYPE html>
         <html>
@@ -99,21 +120,21 @@ router.post('/apply', async (req, res) => {
             <div class="content">
 
               <div class="job-info">
-                <h3>${jobTitle}</h3>
-                <p><strong>Department:</strong> ${jobDepartment || 'N/A'} | <strong>Location:</strong> ${jobLocation || 'N/A'}</p>
+                <h3>${safeJobTitle}</h3>
+                <p><strong>Department:</strong> ${safeJobDepartment} | <strong>Location:</strong> ${safeJobLocation}</p>
               </div>
 
-              <div class="section"><div class="label">Name:</div><div class="value">${fullName}</div></div>
-              <div class="section"><div class="label">Email:</div><div class="value"><a href="mailto:${email}">${email}</a></div></div>
-              <div class="section"><div class="label">Phone:</div><div class="value">${phone}</div></div>
-              ${linkedin ? `<div class="section"><div class="label">LinkedIn:</div><div class="value"><a href="${linkedin}" target="_blank">${linkedin}</a></div></div>` : ''}
-              <div class="section"><div class="label">Experience:</div><div class="value">${experience}</div></div>
-              <div class="section"><div class="label">Preferred Location:</div><div class="value">${preferredLocation}</div></div>
+              <div class="section"><div class="label">Name:</div><div class="value">${safeFullName}</div></div>
+              <div class="section"><div class="label">Email:</div><div class="value"><a href="mailto:${safeEmail}">${safeEmail}</a></div></div>
+              <div class="section"><div class="label">Phone:</div><div class="value">${safePhone}</div></div>
+              ${safeLinkedin ? `<div class="section"><div class="label">LinkedIn:</div><div class="value"><a href="${safeLinkedin}" target="_blank">${safeLinkedin}</a></div></div>` : ''}
+              <div class="section"><div class="label">Experience:</div><div class="value">${safeExperience}</div></div>
+              <div class="section"><div class="label">Preferred Location:</div><div class="value">${safePreferredLocation}</div></div>
 
-              ${coverLetter ? `
+              ${safeCoverLetter ? `
               <div class="section">
                 <div class="label">Cover Letter:</div>
-                <div class="value">${coverLetter.replace(/\n/g, '<br>')}</div>
+                <div class="value">${safeCoverLetter}</div>
               </div>` : ''}
 
               <div style="margin-top: 30px; padding: 15px; background: #fff; border-left: 4px solid #4a9eff; font-style: italic;">
@@ -136,9 +157,8 @@ router.post('/apply', async (req, res) => {
 
     await transporter.sendMail(mailOptions)
 
-    // Success!
     res.json({
-      message: 'Application submitted successfully! We\'ll contact you soon.',
+      message: "Application submitted successfully! We'll contact you soon.",
     })
   } catch (error) {
     console.error('Application submission error:', error)
@@ -149,5 +169,3 @@ router.post('/apply', async (req, res) => {
 })
 
 export default router
-
-
