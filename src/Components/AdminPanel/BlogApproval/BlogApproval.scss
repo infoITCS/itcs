@@ -3,6 +3,10 @@
   padding: 120px clamp(15px, 4vw, 40px) 60px;
   color: var(--text-primary);
   text-align: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 
   h2 {
     font-size: clamp(32px, 4vw, 48px);
@@ -103,9 +107,9 @@
 
   .blog-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-    gap: 32px;
-    max-width: 1400px;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: 24px;
+    max-width: 100%;
     margin: 0 auto;
     width: 100%;
   }
@@ -531,5 +535,15 @@
       grid-template-columns: 1fr;
       max-width: 500px;
     }
+  }
+}
+
+.admin-content .blog-approval-container {
+  padding: 0 0 32px;
+  min-height: auto;
+
+  h2 {
+    margin-bottom: 24px;
+    font-size: clamp(24px, 3vw, 36px);
   }
 }

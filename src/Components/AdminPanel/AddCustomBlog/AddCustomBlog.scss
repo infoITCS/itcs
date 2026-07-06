@@ -3,6 +3,10 @@
   min-height: 100vh;
   color: var(--text-primary);
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 
   .dashboard-topbar {
     display: flex;
@@ -742,4 +746,9 @@
       min-height: 180px;
     }
   }
+}
+
+.admin-content .blog-dashboard {
+  padding: 0;
+  min-height: auto;
 }
