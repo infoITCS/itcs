@@ -116,6 +116,21 @@ router.put('/:id', requireAuthorOrAdmin, async (req, res) => {
   }
 })
 
+router.get('/summaries', requireAuthorOrAdmin, async (req, res) => {
+  try {
+    const query = { status: { $ne: 'rejected' } }
+
+    if (req.user.role === 'author' && !req.user.isAdmin) {
+      query.ownerId = String(req.user._id)
+    }
+
+    const blogs = await db.findBlogSummaries(query)
+    res.status(200).json(blogs)
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching blogs', error: error.message })
+  }
+})
+
 router.get('/all', requireAuthorOrAdmin, async (req, res) => {
   try {
     let query = {}

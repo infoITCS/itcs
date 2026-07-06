@@ -43,6 +43,23 @@ export const findBlogOneBySlug = (slug) =>
 export const findBlogWhere = (query = {}) =>
   coll('customblogs').find(query).sort({ createdAt: -1 }).toArray()
 
+export const findBlogSummaries = (query = {}) =>
+  coll('customblogs').find(query).project({
+    _id: 1,
+    title: 1,
+    slug: 1,
+    author: 1,
+    excerpt: 1,
+    metaDescription: 1,
+    tags: 1,
+    featuredImage: 1,
+    status: 1,
+    publishDate: 1,
+    createdAt: 1,
+    updatedAt: 1,
+    ownerId: 1,
+  }).sort({ createdAt: -1 }).toArray()
+
 export const findBlogById = (id) =>
   coll('customblogs').findOne({ _id: ObjectId.createFromHexString(id) })
 

@@ -17,6 +17,24 @@ export default function BlogApproval() {
   const [searchTerm, setSearchTerm] = useState("");
   const blogsPerPage = 9;
 
+  const estimateReadingMinutes = (text = '') => {
+    const words = String(text).trim().split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.ceil(words / 200));
+  };
+
+  const SkeletonCard = () => (
+    <article className="blog-card skeleton-card">
+      <div className="blog-cover-wrap skeleton-shimmer" />
+      <div className="blog-card__content">
+        <div className="skeleton-shimmer skeleton-line skeleton-line--title" />
+        <div className="skeleton-shimmer skeleton-line skeleton-line--meta" />
+        <div className="skeleton-shimmer skeleton-line" />
+        <div className="skeleton-shimmer skeleton-line" />
+        <div className="skeleton-shimmer skeleton-line skeleton-line--short" />
+      </div>
+    </article>
+  );
+
   const showToast = (message, type = 'success') => {
     const toast = document.createElement('div');
     toast.className = `approval-toast approval-toast--${type}`;
@@ -35,17 +53,10 @@ export default function BlogApproval() {
     setLoading(true);
     setFetchError(null);
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setFetchError("No authentication token found. Please log in again.");
-        return;
-      }
-      const res = await axios.get(apiUrl("/api/custom-blogs/all"), {
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await axios.get(apiUrl("/api/custom-blogs/summaries"), {
+        headers: getAuthHeaders(),
       });
-      const blogs = (res.data || [])
-        .filter(blog => blog.status !== 'rejected')
-        .map(blog => {
+      const blogs = (res.data || []).map(blog => {
           let description = blog.excerpt || blog.metaDescription || "";
           if (typeof description === 'string') {
             description = description.replace(/([?!:])([a-zA-Z])/g, '$1 $2');
@@ -60,7 +71,8 @@ export default function BlogApproval() {
             readable_publish_date: new Date(blog.publishDate).toLocaleDateString(),
             tag_list: blog.tags || [],
             displayAuthor: blog.author,
-            displayDate: new Date(blog.publishDate).toLocaleDateString()
+            displayDate: new Date(blog.publishDate).toLocaleDateString(),
+            reading_time_minutes: estimateReadingMinutes(description),
           };
         });
       blogs.sort((a, b) => new Date(b.publishDate || b.createdAt) - new Date(a.publishDate || a.createdAt));
@@ -145,8 +157,14 @@ export default function BlogApproval() {
     <div className="blog-approval-container">
       <h2>Blogs for Approval</h2>
 
-      {loading && <p className="loading-text">Loading blogs...</p>}
-
+      {loading ? (
+        <div className="blog-grid">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
+        </div>
+      ) : (
+        <>
       {fetchError && (
         <div className="error-banner">
           <p>{fetchError}</p>
@@ -156,7 +174,7 @@ export default function BlogApproval() {
         </div>
       )}
 
-      {!loading && !fetchError && (
+      {!fetchError && (
         <div className="approval-toolbar">
           <div className="search-box">
             <FontAwesomeIcon icon={faSearch} />
@@ -190,7 +208,7 @@ export default function BlogApproval() {
                 Author: {blog.author || "Unknown"} •{" "}
                 {blog.publishDate
                   ? new Date(blog.publishDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-                  : ""} • {Math.ceil((blog.content || '').split(' ').length / 200)} min read
+                  : ""} • {blog.reading_time_minutes || 1} min read
               </p>
               <p className="description">{blog.description}</p>
               <div className="tags-small">
@@ -272,6 +290,8 @@ export default function BlogApproval() {
             Next &rarr;
           </button>
         </div>
+      )}
+        </>
       )}
     </div>
   );
