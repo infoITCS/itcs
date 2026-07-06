@@ -14,25 +14,26 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 const BlogDetail = () => {
-  const { id } = useParams();
+  const { id, slug } = useParams();
+  const postKey = slug || id;
   const [article, setArticle] = useState(null);
   const [customAuthor, setCustomAuthor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [relatedPosts, setRelatedPosts] = useState([]);
 
-  const isCustomBlog = Boolean(id) && !isDevToBlogId(id);
+  const isCustomBlog = Boolean(slug) || (Boolean(id) && !isDevToBlogId(id));
 
   useEffect(() => {
-    if (!id) return;
+    if (!postKey) return;
 
     if (isCustomBlog) {
-      fetchCustomBlog(id);
+      fetchCustomBlog(postKey);
     } else {
       fetchDevToArticle(id);
     }
     fetchRelatedPosts();
-  }, [id, isCustomBlog]);
+  }, [id, slug, postKey, isCustomBlog]);
 
   const fetchRelatedPosts = async () => {
     try {
@@ -69,7 +70,7 @@ const BlogDetail = () => {
         }))
       ];
 
-      const currentId = id;
+      const currentId = postKey;
       const filtered = allPosts.filter(p => String(p.id) !== String(currentId) && String(p.slug) !== String(currentId));
       
       // Shuffle and take 6

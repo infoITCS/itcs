@@ -138,7 +138,15 @@ app.use((err, req, res, next) => {
 })
 
 app.get('/custom-blog/:slug', (req, res) => {
-  res.redirect(301, `/blog/${encodeURIComponent(req.params.slug)}`)
+  res.redirect(301, `/${encodeURIComponent(req.params.slug)}`)
+})
+
+app.get('/blog/:slug', (req, res, next) => {
+  if (/^\d+$/.test(req.params.slug)) {
+    return next()
+  }
+
+  res.redirect(301, `/${encodeURIComponent(req.params.slug)}`)
 })
 
 app.get('*', (req, res, next) => {

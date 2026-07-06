@@ -5,6 +5,7 @@ import Header from './Components/Header/Header'
 import Footer from './Components/Footer/Footer'
 import AdminRoute from './Components/AdminPanel/AdminRoute'
 import { Route, Routes, useLocation, Navigate, useParams } from 'react-router-dom'
+import { isDevToBlogId } from './utils/blogUrls'
 
 const Home = lazy(() => import('./Components/Home/Home'))
 const Services = lazy(() => import('./Components/Services/Services'))
@@ -48,7 +49,15 @@ const Loading = () => (
 
 const CustomBlogRedirect = () => {
   const { slug } = useParams()
-  return <Navigate to={`/blog/${slug}`} replace />
+  return <Navigate to={`/${slug}`} replace />
+}
+
+const LegacyBlogSlugRedirect = () => {
+  const { id } = useParams()
+  if (isDevToBlogId(id)) {
+    return <BlogDetail />
+  }
+  return <Navigate to={`/${id}`} replace />
 }
 
 function App() {
@@ -89,7 +98,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:id" element={<BlogDetail />} />
+          <Route path="/blog/:id" element={<LegacyBlogSlugRedirect />} />
           <Route path="/custom-blog/:slug" element={<CustomBlogRedirect />} />
           <Route
             path="/admin"
@@ -123,6 +132,7 @@ function App() {
               </AdminRoute>
             }
           />
+          <Route path="/:slug" element={<BlogDetail />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
