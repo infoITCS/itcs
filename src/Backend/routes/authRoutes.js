@@ -42,9 +42,7 @@ router.post('/login', async (req, res) => {
         return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    const token = jwt.sign({ id: String(user._id) }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    })
+    const token = jwt.sign({ id: String(user._id) }, process.env.JWT_SECRET)
 
     const userData = { ...user };
     delete userData.password;
@@ -149,9 +147,7 @@ router.post('/microsoft', async (req, res) => {
       return res.status(403).json({ message: 'Access denied. You are not authorized to access the admin panel.' });
     }
 
-    const token = jwt.sign({ id: String(user._id) }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    })
+    const token = jwt.sign({ id: String(user._id) }, process.env.JWT_SECRET)
 
     res.status(200).json({
       message: 'Login successful',
