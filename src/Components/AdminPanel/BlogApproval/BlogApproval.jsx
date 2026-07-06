@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { apiUrl } from "../../../config/api";
 import { getAuthHeaders } from "../../../config/authHeaders";
 import "./BlogApproval.scss";
@@ -12,6 +14,7 @@ export default function BlogApproval() {
   const [approvingIds, setApprovingIds] = useState({});
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
   const blogsPerPage = 9;
 
   const showToast = (message, type = 'success') => {
@@ -102,11 +105,36 @@ export default function BlogApproval() {
     fetchBlogs();
   }, []);
 
-  const allBlogs = customBlogs;
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  const filteredBlogs = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) return customBlogs;
+
+    return customBlogs.filter((blog) => {
+      const haystack = [
+        blog.title,
+        blog.author,
+        blog.displayAuthor,
+        blog.description,
+        blog.status,
+        blog.slug,
+        ...(blog.tags || []),
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(query);
+    });
+  }, [customBlogs, searchTerm]);
+
   const indexOfLastBlog = currentPage * blogsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = allBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
-  const totalPages = Math.ceil(allBlogs.length / blogsPerPage);
+  const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
+  const totalPages = Math.ceil(filteredBlogs.length / blogsPerPage);
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -125,6 +153,25 @@ export default function BlogApproval() {
           <button onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }}>
             Go to Login
           </button>
+        </div>
+      )}
+
+      {!loading && !fetchError && (
+        <div className="approval-toolbar">
+          <div className="search-box">
+            <FontAwesomeIcon icon={faSearch} />
+            <input
+              type="text"
+              placeholder="Search by title, author, tags, or status..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          {searchTerm && (
+            <p className="search-results-count">
+              {filteredBlogs.length} result{filteredBlogs.length === 1 ? "" : "s"} found
+            </p>
+          )}
         </div>
       )}
 
@@ -175,7 +222,11 @@ export default function BlogApproval() {
         ))}
       </div>
 
-      {!loading && allBlogs.length === 0 && <p className="no-blogs">No blogs pending approval.</p>}
+      {!loading && filteredBlogs.length === 0 && (
+        <p className="no-blogs">
+          {searchTerm ? "No blogs match your search." : "No blogs pending approval."}
+        </p>
+      )}
 
       {totalPages > 1 && (
         <div className="modern-pagination">
