@@ -119,7 +119,7 @@ export default function Blog() {
           <div className="blog-grid">
             {currentPosts.length > 0 ? (
               currentPosts.map(post => (
-                <article key={post.id} className="blog-card">
+                <Link key={post.id} to={getBlogPostUrl(post)} className="blog-card">
                   {(post.cover_image || post.social_image) && (
                     <div className="blog-cover-wrap">
                       <img
@@ -146,11 +146,9 @@ export default function Blog() {
                       ))}
                     </div>
 
-                    <Link to={getBlogPostUrl(post)} className="read-more">
-                      Read more
-                    </Link>
+                    <span className="read-more">Read more</span>
                   </div>
-                </article>
+                </Link>
               ))
             ) : (
               <p className="no-posts">No blogs found for this tag.</p>

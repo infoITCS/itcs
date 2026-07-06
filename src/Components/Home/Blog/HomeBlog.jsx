@@ -68,7 +68,7 @@ export default function Blog() {
       <div className="blog-grid">
         {posts.length > 0 ? (
           posts.slice(0, 3).map(post => (
-            <article key={post.id} className="blog-card">
+            <Link key={post.id} to={getBlogPostUrl(post)} className="blog-card">
               {(post.cover_image || post.social_image) && (
                 <div className="blog-cover-wrap">
                   <img
@@ -89,11 +89,9 @@ export default function Blog() {
 
                 <p className="description">{post.description}</p>
 
-                <Link to={getBlogPostUrl(post)} className="read-more">
-                  Read more
-                </Link>
+                <span className="read-more">Read more</span>
               </div>
-            </article>
+            </Link>
           ))
         ) : (
           <p className="no-posts">
