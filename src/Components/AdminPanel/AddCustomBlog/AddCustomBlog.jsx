@@ -281,7 +281,7 @@ const AddCustomBlog = () => {
   };
 
   const handleView = (blog) => {
-    window.open(`/custom-blog/${blog.slug}`, '_blank');
+    window.open(`/blog/${blog.slug}`, '_blank');
   };
 
   const handleDelete = async (id) => {

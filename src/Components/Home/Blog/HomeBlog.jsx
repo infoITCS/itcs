@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { apiUrl } from "../../../config/api";
+import { getBlogPostUrl } from "../../../utils/blogUrls";
 import "./HomeBlog.scss";
 
 export default function Blog() {
@@ -88,7 +89,7 @@ export default function Blog() {
 
                 <p className="description">{post.description}</p>
 
-                <Link to={post.isCustom ? `/custom-blog/${post.slug}` : `/blog/${post.id}`} className="read-more">
+                <Link to={getBlogPostUrl(post)} className="read-more">
                   Read more
                 </Link>
               </div>

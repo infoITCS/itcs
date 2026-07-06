@@ -4,7 +4,7 @@ import ScrollToTop from './Components/ScrollToTop'
 import Header from './Components/Header/Header'
 import Footer from './Components/Footer/Footer'
 import AdminRoute from './Components/AdminPanel/AdminRoute'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Route, Routes, useLocation, Navigate, useParams } from 'react-router-dom'
 
 const Home = lazy(() => import('./Components/Home/Home'))
 const Services = lazy(() => import('./Components/Services/Services'))
@@ -46,6 +46,11 @@ const Loading = () => (
   </div>
 )
 
+const CustomBlogRedirect = () => {
+  const { slug } = useParams()
+  return <Navigate to={`/blog/${slug}`} replace />
+}
+
 function App() {
   const location = useLocation()
   const isHideLayout = ['/signup', '/login', '/forgot-password'].includes(location.pathname) || location.pathname.startsWith('/admin') || location.pathname.startsWith('/reset-password')
@@ -85,7 +90,7 @@ function App() {
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<BlogDetail />} />
-          <Route path="/custom-blog/:slug" element={<BlogDetail />} />
+          <Route path="/custom-blog/:slug" element={<CustomBlogRedirect />} />
           <Route
             path="/admin"
             element={

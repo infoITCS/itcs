@@ -137,6 +137,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error', message: err.message })
 })
 
+app.get('/custom-blog/:slug', (req, res) => {
+  res.redirect(301, `/blog/${encodeURIComponent(req.params.slug)}`)
+})
+
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API route not found' })

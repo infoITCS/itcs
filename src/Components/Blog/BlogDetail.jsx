@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import DOMPurify from "dompurify";
 import axios from "axios";
 import { apiUrl } from "../../config/api";
+import { getBlogPostUrl, isDevToBlogId } from "../../utils/blogUrls";
 import "./Blog.scss";
 import "./BlogDetail.scss";
 
@@ -13,24 +14,25 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 const BlogDetail = () => {
-  const { id, slug } = useParams();
-  const location = useLocation();
+  const { id } = useParams();
   const [article, setArticle] = useState(null);
   const [customAuthor, setCustomAuthor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [relatedPosts, setRelatedPosts] = useState([]);
 
-  const isCustomBlog = location.pathname.includes('/custom-blog/');
+  const isCustomBlog = Boolean(id) && !isDevToBlogId(id);
 
   useEffect(() => {
-    if (isCustomBlog && slug) {
-      fetchCustomBlog(slug);
-    } else if (id) {
+    if (!id) return;
+
+    if (isCustomBlog) {
+      fetchCustomBlog(id);
+    } else {
       fetchDevToArticle(id);
     }
     fetchRelatedPosts();
-  }, [id, slug, isCustomBlog]);
+  }, [id, isCustomBlog]);
 
   const fetchRelatedPosts = async () => {
     try {
@@ -67,7 +69,7 @@ const BlogDetail = () => {
         }))
       ];
 
-      const currentId = isCustomBlog ? slug : id;
+      const currentId = id;
       const filtered = allPosts.filter(p => String(p.id) !== String(currentId) && String(p.slug) !== String(currentId));
       
       // Shuffle and take 6
@@ -224,7 +226,7 @@ const BlogDetail = () => {
               >
                 {relatedPosts.map(post => (
                   <SwiperSlide key={post.id}>
-                    <Link to={post.isCustom ? `/custom-blog/${post.slug}` : `/blog/${post.id}`} className="modern-related-card">
+                    <Link to={getBlogPostUrl(post)} className="modern-related-card">
                       <div className="card-img-wrap">
                         <img 
                           src={post.cover_image || "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800&auto=format&fit=crop"} 
