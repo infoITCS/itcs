@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { apiUrl } from "../../../config/api";
 import { getBlogPostUrl } from "../../../utils/blogUrls";
+import { formatPublishedBlog, sortBlogsByDate } from "../../../utils/blogFormat";
 import "./HomeBlog.scss";
 
 export default function Blog() {
@@ -14,40 +15,7 @@ export default function Blog() {
       setLoading(true);
       try {
         const customRes = await axios.get(apiUrl("/api/custom-blogs/published")).catch(() => ({ data: [] }));
-        const customBlogs = customRes.data || [];
-
-        const formatted = (customBlogs || []).map(blog => {
-          let description = blog.excerpt || blog.metaDescription || "";
-          let title = blog.title || "";
-          title = title.replace(/([?!:])([a-zA-Z])/g, '$1 $2');
-          description = description.replace(/([?!:])([a-zA-Z])/g, '$1 $2');
-
-          return {
-            id: blog._id,
-            title: title,
-            description: description,
-            cover_image: blog.featuredImage,
-            social_image: blog.ogImage,
-            user: { username: blog.author, name: blog.author },
-            published_at: blog.publishDate,
-            readable_publish_date: new Date(blog.publishDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-            reading_time_minutes: Math.ceil((blog.content || '').split(' ').length / 200),
-            tag_list: blog.tags || [],
-            displayAuthor: blog.author,
-            displayDate: blog.publishDate,
-            isCustom: true,
-            slug: blog.slug,
-            updatedAt: blog.updatedAt
-          };
-        });
-
-        formatted.sort((a, b) => {
-          const dateA = new Date(a.updatedAt || a.published_at);
-          const dateB = new Date(b.updatedAt || b.published_at);
-          return dateB - dateA;
-        });
-
-        setPosts(formatted);
+        setPosts(sortBlogsByDate((customRes.data || []).map(formatPublishedBlog)));
 
       } catch (err) {
         console.error("Failed to load blogs:", err);

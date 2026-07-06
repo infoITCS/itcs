@@ -4,6 +4,7 @@ import DOMPurify from "dompurify";
 import axios from "axios";
 import { apiUrl } from "../../config/api";
 import { getBlogPostUrl, isDevToBlogId } from "../../utils/blogUrls";
+import { formatPublishedBlog } from "../../utils/blogFormat";
 import "./Blog.scss";
 import "./BlogDetail.scss";
 
@@ -59,15 +60,15 @@ const BlogDetail = () => {
           isCustom: false,
           slug: b.id
         })),
-        ...customBlogs.map(b => ({
-          id: b._id,
+        ...customBlogs.map(formatPublishedBlog).map(b => ({
+          id: b.id,
           title: b.title,
-          cover_image: b.featuredImage,
-          displayAuthor: b.author,
-          reading_time_minutes: Math.ceil((b.content || "").split(" ").length / 200) || 1,
+          cover_image: b.cover_image,
+          displayAuthor: b.displayAuthor,
+          reading_time_minutes: b.reading_time_minutes,
           isCustom: true,
-          slug: b.slug
-        }))
+          slug: b.slug,
+        })),
       ];
 
       const currentId = postKey;

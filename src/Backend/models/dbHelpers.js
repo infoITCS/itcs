@@ -37,6 +37,22 @@ export const findUserByResetToken = (token) => coll('users').findOne({
 export const findBlogPublished = () =>
   coll('customblogs').find({ status: 'published' }).sort({ createdAt: -1 }).toArray()
 
+export const findBlogPublishedSummaries = () =>
+  coll('customblogs').find({ status: 'published' }).project({
+    _id: 1,
+    title: 1,
+    slug: 1,
+    author: 1,
+    excerpt: 1,
+    metaDescription: 1,
+    tags: 1,
+    featuredImage: 1,
+    ogImage: 1,
+    publishDate: 1,
+    createdAt: 1,
+    updatedAt: 1,
+  }).sort({ createdAt: -1 }).toArray()
+
 export const findBlogOneBySlug = (slug) =>
   coll('customblogs').findOne({ slug })
 

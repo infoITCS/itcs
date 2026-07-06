@@ -148,7 +148,8 @@ router.get('/all', requireAuthorOrAdmin, async (req, res) => {
 
 router.get('/published', async (req, res) => {
   try {
-    const blogs = await db.findBlogPublished()
+    const blogs = await db.findBlogPublishedSummaries()
+    res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
     res.status(200).json(blogs)
   } catch (error) {
     res.status(500).json({ message: 'Server error fetching blogs', error: error.message })
