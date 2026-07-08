@@ -92,9 +92,21 @@ const AddCustomBlog = () => {
     if (blogsLoadedRef.current && !force) return;
     setBlogsLoading(true);
     try {
-      const res = await axios.get(apiUrl('/api/custom-blogs/list'), {
-        headers: getAuthHeaders(),
-      });
+      let res;
+      try {
+        res = await axios.get(apiUrl('/api/custom-blogs/list'), {
+          headers: getAuthHeaders(),
+        });
+      } catch (err) {
+        // Fallback for older backend deployments without the /list route
+        if (err?.response?.status === 404) {
+          res = await axios.get(apiUrl('/api/custom-blogs/all'), {
+            headers: getAuthHeaders(),
+          });
+        } else {
+          throw err;
+        }
+      }
       setBlogs(Array.isArray(res.data) ? res.data : []);
       blogsLoadedRef.current = true;
       setBlogsLoaded(true);
@@ -303,20 +315,36 @@ const AddCustomBlog = () => {
   const handleEdit = async (blog) => {
     setEditingLoading(true);
     try {
-      const res = await axios.get(apiUrl(`/api/custom-blogs/${blog._id}/edit`), {
-        headers: getAuthHeaders(),
-      });
-      const full = res.data;
+      let full;
       let coverImage = '';
 
-      if (full.hasCover) {
-        try {
-          const coverRes = await axios.get(apiUrl(`/api/custom-blogs/${blog._id}/cover`), {
+      try {
+        const res = await axios.get(apiUrl(`/api/custom-blogs/${blog._id}/edit`), {
+          headers: getAuthHeaders(),
+        });
+        full = res.data;
+
+        if (full.hasCover) {
+          try {
+            const coverRes = await axios.get(apiUrl(`/api/custom-blogs/${blog._id}/cover`), {
+              headers: getAuthHeaders(),
+            });
+            coverImage = coverRes.data?.featuredImage || '';
+          } catch {
+            coverImage = '';
+          }
+        }
+      } catch (err) {
+        // Fallback for older backends: fetch all blogs and pick this one
+        if (err?.response?.status === 404) {
+          const res = await axios.get(apiUrl('/api/custom-blogs/all'), {
             headers: getAuthHeaders(),
           });
-          coverImage = coverRes.data?.featuredImage || '';
-        } catch {
-          coverImage = '';
+          const posts = Array.isArray(res.data) ? res.data : [];
+          full = posts.find(p => p._id === blog._id || String(p.id) === String(blog._id)) || {};
+          coverImage = full.featuredImage || '';
+        } else {
+          throw err;
         }
       }
 

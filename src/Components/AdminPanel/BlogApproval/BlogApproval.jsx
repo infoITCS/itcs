@@ -55,9 +55,21 @@ export default function BlogApproval() {
     setLoading(true);
     setFetchError(null);
     try {
-      const res = await axios.get(apiUrl("/api/custom-blogs/approval-list"), {
-        headers: getAuthHeaders(),
-      });
+      let res;
+      try {
+        res = await axios.get(apiUrl("/api/custom-blogs/approval-list"), {
+          headers: getAuthHeaders(),
+        });
+      } catch (err) {
+        // Fallback for older backend deployments without the /approval-list route
+        if (err?.response?.status === 404) {
+          res = await axios.get(apiUrl("/api/custom-blogs/summaries"), {
+            headers: getAuthHeaders(),
+          });
+        } else {
+          throw err;
+        }
+      }
       const blogs = (res.data || []).map(blog => {
           let description = blog.excerpt || blog.metaDescription || "";
           if (typeof description === 'string') {
