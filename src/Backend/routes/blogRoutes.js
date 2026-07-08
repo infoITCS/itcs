@@ -10,6 +10,32 @@ import {
 const ObjectId = mongoose.Types.ObjectId
 const router = express.Router()
 
+const MAX_BLOG_BYTES = 15 * 1024 * 1024
+
+const estimatePayloadBytes = (obj) => {
+  try {
+    return Buffer.byteLength(JSON.stringify(obj), 'utf8')
+  } catch {
+    return MAX_BLOG_BYTES + 1
+  }
+}
+
+const resolveUniqueSlug = async (slug, excludeId = null) => {
+  if (!slug) return slug
+
+  let candidate = slug
+  let counter = 1
+
+  while (true) {
+    const existing = await db.findBlogOneBySlug(candidate)
+    if (!existing || (excludeId && String(existing._id) === String(excludeId))) {
+      return candidate
+    }
+    candidate = `${slug}-${counter}`
+    counter += 1
+  }
+}
+
 router.post('/', requireAuthorOrAdmin, async (req, res) => {
   try {
     let {
@@ -29,17 +55,10 @@ router.post('/', requireAuthorOrAdmin, async (req, res) => {
     author = author || req.user.fullName || req.user.email
 
     if (slug) {
-      let existing = await db.findBlogOneBySlug(slug)
-      if (existing) {
-        let counter = 1
-        while (await db.findBlogOneBySlug(`${slug}-${counter}`)) {
-          counter += 1
-        }
-        slug = `${slug}-${counter}`
-      }
+      slug = await resolveUniqueSlug(slug)
     }
 
-    const saved = await db.createBlog({
+    const blogPayload = {
       title,
       slug,
       content,
@@ -53,7 +72,15 @@ router.post('/', requireAuthorOrAdmin, async (req, res) => {
       status: 'pending',
       ownerId,
       publishDate: new Date(),
-    })
+    }
+
+    if (estimatePayloadBytes(blogPayload) > MAX_BLOG_BYTES) {
+      return res.status(413).json({
+        message: 'Blog is too large. Please use a smaller image or reduce content length.',
+      })
+    }
+
+    const saved = await db.createBlog(blogPayload)
     res.status(201).json({ message: 'Blog submitted for approval!', data: saved })
   } catch (error) {
     console.error('Save error:', error)
@@ -88,21 +115,35 @@ router.put('/:id', requireAuthorOrAdmin, async (req, res) => {
       status,
     } = req.body
 
+    let resolvedSlug = slug
+    if (resolvedSlug && resolvedSlug !== existing.slug) {
+      resolvedSlug = await resolveUniqueSlug(resolvedSlug, existing._id)
+    }
+
     const updateData = {
       title,
-      slug,
+      slug: resolvedSlug,
       content,
       author,
       excerpt,
       tags: Array.isArray(tags) ? tags : [],
-      featuredImage,
       metaTitle,
       metaDescription,
       metaKeywords,
     }
 
+    if (featuredImage !== undefined) {
+      updateData.featuredImage = featuredImage
+    }
+
     if (status && (req.user.isAdmin || req.user.role === 'admin')) {
       updateData.status = status
+    }
+
+    if (estimatePayloadBytes({ ...existing, ...updateData }) > MAX_BLOG_BYTES) {
+      return res.status(413).json({
+        message: 'Blog is too large. Please use a smaller image or reduce content length.',
+      })
     }
 
     const updated = await db.updateBlogById(req.params.id, updateData)
@@ -112,7 +153,13 @@ router.put('/:id', requireAuthorOrAdmin, async (req, res) => {
     res.json({ message: 'Blog updated successfully!', data: updated })
   } catch (error) {
     console.error('Update error:', error)
-    res.status(500).json({ message: 'Failed to update blog', error: error.message })
+    const isTooLarge = /too large|BSON|size/i.test(error.message || '')
+    res.status(isTooLarge ? 413 : 500).json({
+      message: isTooLarge
+        ? 'Blog is too large. Please use a smaller image or reduce content length.'
+        : 'Failed to update blog',
+      error: error.message,
+    })
   }
 })
 
@@ -233,6 +280,30 @@ router.get('/:id/cover', requireAuthorOrAdmin, async (req, res) => {
 
     res.set('Cache-Control', 'private, max-age=3600')
     res.json({ featuredImage: blog.featuredImage || null })
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message })
+  }
+})
+
+router.get('/:id/edit', requireAuthorOrAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid ID' })
+    }
+
+    const blog = await db.findBlogForEdit(id)
+    if (!blog) return res.status(404).json({ error: 'Blog not found' })
+
+    if (!canManageBlog(req.user, blog)) {
+      return res.status(403).json({ message: 'Forbidden' })
+    }
+
+    const coverMeta = await db.findBlogCoverById(id)
+    res.json({
+      ...blog,
+      hasCover: !!(coverMeta?.featuredImage),
+    })
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message })
   }

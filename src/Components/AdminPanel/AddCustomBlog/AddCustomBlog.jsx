@@ -127,10 +127,20 @@ const AddCustomBlog = () => {
   };
 
   const compressImage = (file) => {
-    return new Promise((resolve) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/bmp'];
+    const isAllowed = allowedTypes.includes(file.type) || file.type.startsWith('image/');
+
+    return new Promise((resolve, reject) => {
+      if (!isAllowed) {
+        reject(new Error('Unsupported image format. Please use JPG, PNG, or WebP.'));
+        return;
+      }
+
       const reader = new FileReader();
+      reader.onerror = () => reject(new Error('Failed to read image file.'));
       reader.onload = (e) => {
         const img = new Image();
+        img.onerror = () => reject(new Error('Could not process this image. Try JPG, PNG, or WebP.'));
         img.onload = () => {
           const canvas = document.createElement('canvas');
           let width = img.width;
@@ -143,20 +153,25 @@ const AddCustomBlog = () => {
               height = Math.round((height * max_width) / width);
               width = max_width;
             }
-          } else {
-            if (height > max_height) {
-              width = Math.round((width * max_height) / height);
-              height = max_height;
-            }
+          } else if (height > max_height) {
+            width = Math.round((width * max_height) / height);
+            height = max_height;
           }
 
           canvas.width = width;
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
-          
-          // Compress to JPEG with 70% quality to ensure small size (< 500KB)
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+          const useWebp = file.type === 'image/webp';
+          const mime = useWebp ? 'image/webp' : 'image/jpeg';
+          const quality = useWebp ? 0.82 : 0.7;
+          let compressedDataUrl = canvas.toDataURL(mime, quality);
+
+          if (compressedDataUrl.length > 700000 && !useWebp) {
+            compressedDataUrl = canvas.toDataURL('image/jpeg', 0.55);
+          }
+
           resolve(compressedDataUrl);
         };
         img.src = e.target.result;
@@ -166,12 +181,27 @@ const AddCustomBlog = () => {
   };
 
   const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Show loading indicator or directly compress
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 8 * 1024 * 1024) {
+      setMessage({ type: 'error', text: 'Image is too large. Please use a file under 8 MB.' });
+      e.target.value = '';
+      return;
+    }
+
+    try {
       const compressed = await compressImage(file);
       setImageFile(file);
       setImagePreview(compressed);
+      setFormData((prev) => ({ ...prev, featuredImage: '' }));
+      setMessage({ type: '', text: '' });
+    } catch (err) {
+      setMessage({
+        type: 'error',
+        text: err.message || 'Could not process image. Please use JPG, PNG, or WebP.',
+      });
+      e.target.value = '';
     }
   };
 
@@ -188,9 +218,9 @@ const AddCustomBlog = () => {
     }
 
     try {
-      let imageUrl = formData.featuredImage;
-      if (imagePreview) {
-        imageUrl = imagePreview; // Save image as Base64 string directly
+      let imageUrl = formData.featuredImage || '';
+      if (imageFile && imagePreview) {
+        imageUrl = imagePreview;
       }
 
       const plainTextContent = stripHtml(formData.content);
@@ -213,6 +243,10 @@ const AddCustomBlog = () => {
         tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
         excerpt: excerpt
       };
+
+      if (editingId && !imageFile) {
+        delete blogData.featuredImage;
+      }
 
       if (editingId) {
         await axios.put(apiUrl(`/api/custom-blogs/${editingId}`), blogData, {
@@ -269,10 +303,23 @@ const AddCustomBlog = () => {
   const handleEdit = async (blog) => {
     setEditingLoading(true);
     try {
-      const res = await axios.get(apiUrl(`/api/custom-blogs/${blog._id}`), {
+      const res = await axios.get(apiUrl(`/api/custom-blogs/${blog._id}/edit`), {
         headers: getAuthHeaders(),
       });
       const full = res.data;
+      let coverImage = '';
+
+      if (full.hasCover) {
+        try {
+          const coverRes = await axios.get(apiUrl(`/api/custom-blogs/${blog._id}/cover`), {
+            headers: getAuthHeaders(),
+          });
+          coverImage = coverRes.data?.featuredImage || '';
+        } catch {
+          coverImage = '';
+        }
+      }
+
       setEditingId(full._id);
       setFormData({
         title: full.title || '',
@@ -281,12 +328,13 @@ const AddCustomBlog = () => {
         author: full.author || '',
         excerpt: full.excerpt || '',
         tags: full.tags ? full.tags.join(', ') : '',
-        featuredImage: full.featuredImage || '',
+        featuredImage: coverImage,
         metaTitle: full.metaTitle || '',
         metaDescription: full.metaDescription || '',
         metaKeywords: full.metaKeywords || ''
       });
-      setImagePreview(full.featuredImage || null);
+      setImagePreview(coverImage || null);
+      setImageFile(null);
       setDashboardTab('create');
       setAutoSlug(false);
       window.scrollTo(0, 0);
@@ -473,7 +521,7 @@ const AddCustomBlog = () => {
                 <div className="form-group">
                   <label>Featured Image</label>
                   <div className={`image-upload-box ${imagePreview ? 'has-preview' : ''}`}>
-                    <input type="file" id="blog-img" onChange={handleImageChange} hidden accept="image/*" />
+                    <input type="file" id="blog-img" onChange={handleImageChange} hidden accept="image/jpeg,image/png,image/webp,image/gif,image/*" />
                     <label htmlFor="blog-img" className="upload-label">
                       {imagePreview ? (
                         <><img src={imagePreview} alt="Preview" className="preview-img" /><span className="change-img"><FontAwesomeIcon icon={faImage} /> Change Image</span></>

@@ -16,6 +16,14 @@ const coll = (name) => {
   return _db.collection(name)
 }
 
+const blogIdFilter = (id) => {
+  const str = String(id)
+  if (ObjectId.isValid(str)) {
+    return { _id: ObjectId.createFromHexString(str) }
+  }
+  return { _id: str }
+}
+
 // Users
 export const findUserByEmail = (email) => coll('users').findOne({ email })
 export const findUserById = (id) => coll('users').findOne({ _id: ObjectId.createFromHexString(id) })
@@ -110,13 +118,17 @@ export const findBlogListItems = (query = {}) =>
   ]).toArray()
 
 export const findBlogById = (id) =>
-  coll('customblogs').findOne({ _id: ObjectId.createFromHexString(id) })
+  coll('customblogs').findOne(blogIdFilter(id))
+
+export const findBlogForEdit = (id) =>
+  coll('customblogs').findOne(blogIdFilter(id), {
+    projection: { featuredImage: 0 },
+  })
 
 export const findBlogCoverById = (id) =>
-  coll('customblogs').findOne(
-    { _id: ObjectId.createFromHexString(id) },
-    { projection: { featuredImage: 1, ownerId: 1 } }
-  )
+  coll('customblogs').findOne(blogIdFilter(id), {
+    projection: { featuredImage: 1, ownerId: 1 },
+  })
 
 export const findBlogCoversByIds = (ids = []) => {
   const objectIds = ids
@@ -141,15 +153,15 @@ export const createBlog = async (data) => {
 
 export const updateBlogById = async (id, update) => {
   const result = await coll('customblogs').findOneAndUpdate(
-    { _id: ObjectId.createFromHexString(id) },
+    blogIdFilter(id),
     { $set: { ...update, updatedAt: new Date() } },
     { returnDocument: 'after' }
   )
-  return result
+  return result?.value ?? result ?? null
 }
 
 export const deleteBlogById = async (id) => {
-  const result = await coll('customblogs').deleteOne({ _id: ObjectId.createFromHexString(id) })
+  const result = await coll('customblogs').deleteOne(blogIdFilter(id))
   return result.deletedCount > 0 ? { _id: id } : null
 }
 
