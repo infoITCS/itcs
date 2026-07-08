@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import QuillEditor from '../../Common/QuillEditor';
+import BlogCoverImage from '../../Common/BlogCoverImage';
 import 'react-quill-new/dist/quill.snow.css';
 import { apiUrl } from '../../../config/api';
 import { getAuthHeaders } from '../../../config/authHeaders';
@@ -33,6 +34,9 @@ const AddCustomBlog = () => {
   const [dashboardTab, setDashboardTab] = useState('create');
   const [blogs, setBlogs] = useState([]);
   const [blogsLoading, setBlogsLoading] = useState(false);
+  const [blogsLoaded, setBlogsLoaded] = useState(false);
+  const [editingLoading, setEditingLoading] = useState(false);
+  const blogsLoadedRef = useRef(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
@@ -84,14 +88,16 @@ const AddCustomBlog = () => {
   const pendingBlogs = blogs.filter(b => b.status === 'pending').length;
   const draftedBlogs = blogs.filter(b => b.status === 'draft' || !b.status).length;
 
-  const fetchBlogs = useCallback(async () => {
+  const fetchBlogs = useCallback(async (force = false) => {
+    if (blogsLoadedRef.current && !force) return;
     setBlogsLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(apiUrl('/api/custom-blogs/all'), {
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await axios.get(apiUrl('/api/custom-blogs/list'), {
+        headers: getAuthHeaders(),
       });
       setBlogs(Array.isArray(res.data) ? res.data : []);
+      blogsLoadedRef.current = true;
+      setBlogsLoaded(true);
     } catch {
       setBlogs([]);
     } finally {
@@ -100,8 +106,8 @@ const AddCustomBlog = () => {
   }, []);
 
   useEffect(() => {
-    if (dashboardTab === 'manage') fetchBlogs();
-  }, [dashboardTab, fetchBlogs]);
+    fetchBlogs();
+  }, [fetchBlogs]);
 
   const filteredBlogs = blogs.filter(blog => {
     const matchesSearch = !searchTerm ||
@@ -225,7 +231,7 @@ const AddCustomBlog = () => {
       setImagePreview(null);
       setEditingId(null);
       setAutoSlug(true);
-      fetchBlogs();
+      fetchBlogs(true);
     } catch (err) {
       console.error('Publish error:', err);
       const isConnectionError = err.code === 'ERR_NETWORK' || err.message.includes('Network Error');
@@ -260,24 +266,35 @@ const AddCustomBlog = () => {
     setMessage({ type: '', text: '' });
   };
 
-  const handleEdit = (blog) => {
-    setEditingId(blog._id);
-    setFormData({
-      title: blog.title || '',
-      slug: blog.slug || '',
-      content: blog.content || '',
-      author: blog.author || '',
-      excerpt: blog.excerpt || '',
-      tags: blog.tags ? blog.tags.join(', ') : '',
-      featuredImage: blog.featuredImage || '',
-      metaTitle: blog.metaTitle || '',
-      metaDescription: blog.metaDescription || '',
-      metaKeywords: blog.metaKeywords || ''
-    });
-    setImagePreview(blog.featuredImage || null);
-    setDashboardTab('create');
-    setAutoSlug(false);
-    window.scrollTo(0, 0);
+  const handleEdit = async (blog) => {
+    setEditingLoading(true);
+    try {
+      const res = await axios.get(apiUrl(`/api/custom-blogs/${blog._id}`), {
+        headers: getAuthHeaders(),
+      });
+      const full = res.data;
+      setEditingId(full._id);
+      setFormData({
+        title: full.title || '',
+        slug: full.slug || '',
+        content: full.content || '',
+        author: full.author || '',
+        excerpt: full.excerpt || '',
+        tags: full.tags ? full.tags.join(', ') : '',
+        featuredImage: full.featuredImage || '',
+        metaTitle: full.metaTitle || '',
+        metaDescription: full.metaDescription || '',
+        metaKeywords: full.metaKeywords || ''
+      });
+      setImagePreview(full.featuredImage || null);
+      setDashboardTab('create');
+      setAutoSlug(false);
+      window.scrollTo(0, 0);
+    } catch {
+      alert('Failed to load blog for editing.');
+    } finally {
+      setEditingLoading(false);
+    }
   };
 
   const handleView = (blog) => {
@@ -514,7 +531,7 @@ const AddCustomBlog = () => {
             </div>
           </div>
 
-          {blogsLoading ? (
+          {blogsLoading && !blogsLoaded ? (
             <div className="skeleton-grid">
               {[1, 2, 3, 4, 5, 6].map(i => (
                 <div key={i} className="skeleton-card"><div className="skeleton-img" /><div className="skeleton-line w-70" /><div className="skeleton-line w-50" /><div className="skeleton-line w-40" /></div>
@@ -536,11 +553,15 @@ const AddCustomBlog = () => {
                 return (
                   <div key={blog._id} className="blog-card-dash">
                     <div className="card-dash-img">
-                      {blog.featuredImage ? (
-                        <img src={blog.featuredImage} alt={blog.title} />
-                      ) : (
-                        <div className="dash-img-placeholder"><FontAwesomeIcon icon={faImage} /></div>
-                      )}
+                      <BlogCoverImage
+                        blogId={blog._id}
+                        title={blog.title || 'Untitled'}
+                        featuredImage={blog.featuredImage}
+                        hasCover={blog.hasCover}
+                        className="card-cover-fill"
+                        imgClassName="card-cover-img"
+                        placeholderClassName="dash-img-placeholder"
+                      />
                       <span className={`status-badge ${badge.cls}`}><FontAwesomeIcon icon={badge.icon} /> {badge.label}</span>
                     </div>
                     <div className="card-dash-body">
@@ -558,7 +579,9 @@ const AddCustomBlog = () => {
                     </div>
                     <div className="card-dash-actions">
                       <button className="action-btn action-view" title="View" onClick={() => handleView(blog)}><FontAwesomeIcon icon={faExternalLinkAlt} /></button>
-                      <button className="action-btn action-edit" title="Edit" onClick={() => handleEdit(blog)}><FontAwesomeIcon icon={faEdit} /></button>
+                      <button className="action-btn action-edit" title="Edit" onClick={() => handleEdit(blog)} disabled={editingLoading}>
+                        <FontAwesomeIcon icon={editingLoading ? faClock : faEdit} />
+                      </button>
                       <button className={`action-btn action-delete ${deleting === blog._id ? 'loading' : ''}`} title="Delete" onClick={() => handleDelete(blog._id)} disabled={deleting === blog._id}>
                         <FontAwesomeIcon icon={deleting === blog._id ? faClock : faTrashAlt} />
                       </button>

@@ -76,8 +76,62 @@ export const findBlogSummaries = (query = {}) =>
     ownerId: 1,
   }).sort({ createdAt: -1 }).toArray()
 
+/** Lightweight list — omits content; URL covers inline, base64 loaded lazily */
+export const findBlogListItems = (query = {}) =>
+  coll('customblogs').aggregate([
+    { $match: query },
+    { $sort: { createdAt: -1 } },
+    {
+      $project: {
+        _id: 1,
+        title: 1,
+        slug: 1,
+        author: 1,
+        excerpt: 1,
+        metaDescription: 1,
+        tags: 1,
+        status: 1,
+        publishDate: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        ownerId: 1,
+        featuredImage: {
+          $cond: [
+            { $regexMatch: { input: { $ifNull: ['$featuredImage', ''] }, regex: /^https?:\/\//i } },
+            '$featuredImage',
+            null,
+          ],
+        },
+        hasCover: {
+          $gt: [{ $strLenCP: { $ifNull: ['$featuredImage', ''] } }, 0],
+        },
+      },
+    },
+  ]).toArray()
+
 export const findBlogById = (id) =>
   coll('customblogs').findOne({ _id: ObjectId.createFromHexString(id) })
+
+export const findBlogCoverById = (id) =>
+  coll('customblogs').findOne(
+    { _id: ObjectId.createFromHexString(id) },
+    { projection: { featuredImage: 1, ownerId: 1 } }
+  )
+
+export const findBlogCoversByIds = (ids = []) => {
+  const objectIds = ids
+    .filter((id) => ObjectId.isValid(id))
+    .map((id) => ObjectId.createFromHexString(id))
+  if (!objectIds.length) return Promise.resolve([])
+
+  return coll('customblogs')
+    .find({
+      _id: { $in: objectIds },
+      featuredImage: { $exists: true, $nin: [null, ''] },
+    })
+    .project({ _id: 1, featuredImage: 1, ownerId: 1 })
+    .toArray()
+}
 
 export const createBlog = async (data) => {
   const doc = { ...data, createdAt: new Date(), updatedAt: new Date() }

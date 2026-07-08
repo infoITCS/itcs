@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 import axios from 'axios'
 import { apiUrl } from '../../../config/api'
+import { getAuthHeaders } from '../../../config/authHeaders'
 import './AdminBlogDetail.scss'
 
 const AdminCustomBlogDetail = () => {
@@ -14,15 +15,10 @@ const AdminCustomBlogDetail = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const token = localStorage.getItem('token')
-        const res = await axios.get(apiUrl('/api/custom-blogs/all'), {
-          headers: { Authorization: `Bearer ${token}` }
+        const res = await axios.get(apiUrl(`/api/custom-blogs/${id}`), {
+          headers: getAuthHeaders(),
         })
-        const posts = res.data || []
-        const found = posts.find(
-          (item) => item._id === id || String(item.id) === String(id)
-        )
-        setBlog(found || null)
+        setBlog(res.data || null)
       } catch (err) {
         console.error('Error fetching custom blog:', err)
       } finally {

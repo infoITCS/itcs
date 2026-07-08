@@ -131,6 +131,33 @@ router.get('/summaries', requireAuthorOrAdmin, async (req, res) => {
   }
 })
 
+router.get('/list', requireAuthorOrAdmin, async (req, res) => {
+  try {
+    let query = {}
+
+    if (req.user.role === 'author' && !req.user.isAdmin) {
+      query = { ownerId: String(req.user._id) }
+    }
+
+    const blogs = await db.findBlogListItems(query)
+    res.set('Cache-Control', 'private, max-age=15')
+    res.status(200).json(blogs)
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching blogs', error: error.message })
+  }
+})
+
+router.get('/approval-list', requireAdmin, async (req, res) => {
+  try {
+    const query = { status: { $ne: 'rejected' } }
+    const blogs = await db.findBlogListItems(query)
+    res.set('Cache-Control', 'private, max-age=15')
+    res.status(200).json(blogs)
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching blogs', error: error.message })
+  }
+})
+
 router.get('/all', requireAuthorOrAdmin, async (req, res) => {
   try {
     let query = {}
@@ -160,6 +187,71 @@ router.get('/slug/:slug', async (req, res) => {
   try {
     const blog = await db.findBlogOneBySlug(req.params.slug)
     if (!blog) return res.status(404).json({ message: 'Blog not found' })
+    res.json(blog)
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message })
+  }
+})
+
+router.post('/covers', requireAuthorOrAdmin, async (req, res) => {
+  try {
+    const { ids } = req.body
+    if (!Array.isArray(ids) || !ids.length) {
+      return res.status(400).json({ error: 'ids array required' })
+    }
+
+    const limitedIds = ids.filter((id) => ObjectId.isValid(id)).slice(0, 50)
+    const covers = await db.findBlogCoversByIds(limitedIds)
+    const isAuthorOnly = req.user.role === 'author' && !req.user.isAdmin
+
+    const result = {}
+    for (const blog of covers) {
+      if (isAuthorOnly && blog.ownerId !== String(req.user._id)) continue
+      result[String(blog._id)] = blog.featuredImage || null
+    }
+
+    res.set('Cache-Control', 'private, max-age=3600')
+    res.json(result)
+  } catch (error) {
+    res.status(500).json({ message: 'Server error fetching covers', error: error.message })
+  }
+})
+
+router.get('/:id/cover', requireAuthorOrAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid ID' })
+    }
+
+    const blog = await db.findBlogCoverById(id)
+    if (!blog) return res.status(404).json({ error: 'Blog not found' })
+
+    if (req.user.role === 'author' && !req.user.isAdmin && blog.ownerId !== String(req.user._id)) {
+      return res.status(403).json({ message: 'Forbidden' })
+    }
+
+    res.set('Cache-Control', 'private, max-age=3600')
+    res.json({ featuredImage: blog.featuredImage || null })
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message })
+  }
+})
+
+router.get('/:id', requireAuthorOrAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid ID' })
+    }
+
+    const blog = await db.findBlogById(id)
+    if (!blog) return res.status(404).json({ error: 'Blog not found' })
+
+    if (!canManageBlog(req.user, blog)) {
+      return res.status(403).json({ message: 'Forbidden' })
+    }
+
     res.json(blog)
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message })

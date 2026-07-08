@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { apiUrl } from "../../../config/api";
 import { getAuthHeaders } from "../../../config/authHeaders";
+import BlogCoverImage, { primeBlogCovers } from '../../Common/BlogCoverImage';
 import "./BlogApproval.scss";
 
 export default function BlogApproval() {
@@ -12,6 +13,7 @@ export default function BlogApproval() {
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [approvingIds, setApprovingIds] = useState({});
+  const [coverMap, setCoverMap] = useState({});
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,7 +55,7 @@ export default function BlogApproval() {
     setLoading(true);
     setFetchError(null);
     try {
-      const res = await axios.get(apiUrl("/api/custom-blogs/summaries"), {
+      const res = await axios.get(apiUrl("/api/custom-blogs/approval-list"), {
         headers: getAuthHeaders(),
       });
       const blogs = (res.data || []).map(blog => {
@@ -65,13 +67,16 @@ export default function BlogApproval() {
             ...blog,
             id: blog._id,
             description,
-            cover_image: blog.featuredImage,
             user: { username: blog.author },
             published_at: blog.publishDate,
-            readable_publish_date: new Date(blog.publishDate).toLocaleDateString(),
+            readable_publish_date: blog.publishDate
+              ? new Date(blog.publishDate).toLocaleDateString()
+              : '',
             tag_list: blog.tags || [],
             displayAuthor: blog.author,
-            displayDate: new Date(blog.publishDate).toLocaleDateString(),
+            displayDate: blog.publishDate
+              ? new Date(blog.publishDate).toLocaleDateString()
+              : '',
             reading_time_minutes: estimateReadingMinutes(description),
           };
         });
@@ -153,6 +158,22 @@ export default function BlogApproval() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  useEffect(() => {
+    const ids = currentBlogs
+      .filter((b) => b.hasCover && !b.featuredImage)
+      .map((b) => b._id);
+    if (!ids.length) return;
+
+    axios
+      .post(apiUrl('/api/custom-blogs/covers'), { ids }, { headers: getAuthHeaders() })
+      .then((res) => {
+        const data = res.data || {};
+        primeBlogCovers(data);
+        setCoverMap((prev) => ({ ...prev, ...data }));
+      })
+      .catch(() => {});
+  }, [currentBlogs]);
+
   return (
     <div className="blog-approval-container">
       <h2>Blogs for Approval</h2>
@@ -196,10 +217,16 @@ export default function BlogApproval() {
       <div className="blog-grid">
         {currentBlogs.map(blog => (
           <article key={blog._id} className="blog-card">
-            {blog.featuredImage && (
-              <div className="blog-cover-wrap">
-                <img src={blog.featuredImage} alt={blog.title} className="blog-cover" loading="lazy" />
-              </div>
+            {(blog.featuredImage || blog.hasCover) && (
+              <BlogCoverImage
+                blogId={blog._id}
+                title={blog.title}
+                featuredImage={blog.featuredImage || coverMap[blog._id]}
+                hasCover={blog.hasCover}
+                wrapClassName="blog-cover-wrap"
+                imgClassName="blog-cover"
+                placeholderClassName="blog-cover-wrap blog-cover-placeholder"
+              />
             )}
 
             <div className="blog-card__content">
