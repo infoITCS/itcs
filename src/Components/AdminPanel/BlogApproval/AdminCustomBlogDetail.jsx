@@ -33,6 +33,23 @@ const AdminCustomBlogDetail = () => {
     navigate('/admin/blogs')
   }
 
+  const cleanContent = (html) => {
+    if (!html) return ''
+    const stripWrapStyles = (node) => {
+      if (node.style) {
+        node.style.removeProperty('word-break')
+        node.style.removeProperty('overflow-wrap')
+        node.style.removeProperty('word-wrap')
+        node.style.removeProperty('white-space')
+        node.style.removeProperty('hyphens')
+      }
+    }
+    DOMPurify.addHook('afterSanitizeAttributes', stripWrapStyles)
+    const clean = DOMPurify.sanitize(html)
+    DOMPurify.removeHook('afterSanitizeAttributes')
+    return clean
+  }
+
   if (loading) return <p>Loading...</p>
   if (!blog) return <p>Custom blog not found.</p>
 
@@ -51,7 +68,7 @@ const AdminCustomBlogDetail = () => {
       <p className="author-name">Author: {author}</p>
       <div
         className="blog-body"
-        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(body) }}
+        dangerouslySetInnerHTML={{ __html: cleanContent(body) }}
       />
       <div className="return-button-wrapper">
         <button className="return-btn" onClick={handleReturn}>

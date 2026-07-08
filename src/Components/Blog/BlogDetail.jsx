@@ -25,6 +25,23 @@ const BlogDetail = () => {
 
   const isCustomBlog = Boolean(slug) || (Boolean(id) && !isDevToBlogId(id));
 
+  const cleanContent = (html) => {
+    if (!html) return "";
+    const stripWrapStyles = (node) => {
+      if (node.style) {
+        node.style.removeProperty("word-break");
+        node.style.removeProperty("overflow-wrap");
+        node.style.removeProperty("word-wrap");
+        node.style.removeProperty("white-space");
+        node.style.removeProperty("hyphens");
+      }
+    };
+    DOMPurify.addHook("afterSanitizeAttributes", stripWrapStyles);
+    const clean = DOMPurify.sanitize(html);
+    DOMPurify.removeHook("afterSanitizeAttributes");
+    return clean;
+  };
+
   useEffect(() => {
     if (!postKey) return;
 
@@ -195,7 +212,7 @@ const BlogDetail = () => {
 
       <div className="blog-body">
         {article.body_html ? (
-          <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.body_html) }} />
+          <div dangerouslySetInnerHTML={{ __html: cleanContent(article.body_html) }} />
         ) : (
           <p>No content available</p>
         )}

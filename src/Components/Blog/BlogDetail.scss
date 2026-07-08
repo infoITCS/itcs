@@ -109,8 +109,20 @@
     padding: 50px 60px; 
     box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
-    word-break: normal;
-    overflow-wrap: break-word;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    hyphens: none !important;
+
+    p, span, li, div, td, th, a, strong, em, b, i, u, blockquote, h1, h2, h3, h4, h5, h6, ol, ul {
+      overflow-wrap: break-word !important;
+      word-break: normal !important;
+      word-wrap: break-word !important;
+      white-space: normal !important;
+      hyphens: none !important;
+      -webkit-hyphens: none !important;
+      line-break: auto !important;
+      max-width: 100%;
+    }
 
     p { margin-bottom: 28px; font-size: 22px; color: #fff; }
     h2, h3, h4 {
