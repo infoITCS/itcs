@@ -690,7 +690,16 @@
     min-height: 280px;
     max-height: 500px;
     overflow-y: auto;
-    font-size: 15px; line-height: 1.8; color: var(--text-primary);
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text-primary);
+
+    h1 { font-size: 2em; }
+    h2 { font-size: 1.5em; }
+    h3 { font-size: 1.17em; }
+    h4 { font-size: 1em; }
+    h5 { font-size: 0.83em; }
+    h6 { font-size: 0.67em; }
   }
 
   .ql-toolbar {
