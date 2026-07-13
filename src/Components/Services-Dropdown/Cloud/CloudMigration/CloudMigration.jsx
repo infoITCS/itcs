@@ -30,7 +30,7 @@ const CloudMigration = () => {
           <div className="breadcrumb">
             <Link to="/services">Services</Link>
             <span>/</span>
-            <Link to="/services/cloud">Cloud Solutions</Link>
+            <Link to="/cloud">Cloud Solutions</Link>
             <span>/</span>
             <span className="current">Cloud Migration</span>
           </div>
@@ -47,7 +47,7 @@ const CloudMigration = () => {
               Get Migration Quote
               <FontAwesomeIcon icon={faArrowRight} />
             </Link>
-            <Link to="/services/cloud" className="btn-secondary">
+            <Link to="/cloud" className="btn-secondary">
               Back to Cloud Solutions
             </Link>
           </div>
@@ -162,7 +162,7 @@ const CloudMigration = () => {
               Get Free Assessment
               <FontAwesomeIcon icon={faArrowRight} />
             </Link>
-            <Link to="/services/cloud" className="btn-secondary">
+            <Link to="/cloud" className="btn-secondary">
               View All Services
             </Link>
           </div>

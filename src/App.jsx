@@ -76,23 +76,46 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/home" element={<Home />} />
             <Route path="/services" element={<Services />} />
-            <Route path="/services/cloud" element={<Cloud />} />
-            <Route path="/services/cloud/design" element={<CloudDesign />} />
-            <Route path="/services/cloud/migration" element={<CloudMigration />} />
-            <Route path="/services/cloud/security" element={<CloudSecurity />} />
-            <Route path="/services/cyber-security" element={<CyberSecurity />} />
-            <Route path="/services/cyber-security/assessment" element={<SecurityAssessment />} />
-            <Route path="/services/consulting" element={<Consulting />} />
-            <Route path="/services/enterprise-solutions" element={<Enterprise />} />
-            <Route path="/services/it-services" element={<ITServices />} />
-            <Route path="/services/network-solutions" element={<Network />} />
-            <Route path="/services/network-solutions/design" element={<NetworkDesign />} />
-            <Route path="/services/network-solutions/security" element={<NetworkSecurity />} />
-            <Route path="/services/network-solutions/support" element={<NetworkSupport />} />
-            <Route path="/services/web-development" element={<WebDevelopment />} />
+
+            {/* Canonical short SEO paths */}
+            <Route path="/cloud" element={<Cloud />} />
+            <Route path="/cloud/design" element={<CloudDesign />} />
+            <Route path="/cloud/migration" element={<CloudMigration />} />
+            <Route path="/cloud/security" element={<CloudSecurity />} />
+            <Route path="/cyber-security" element={<CyberSecurity />} />
+            <Route path="/cybersecurity/assessment" element={<SecurityAssessment />} />
+            <Route path="/consulting" element={<Consulting />} />
+            <Route path="/enterprise-solutions" element={<Enterprise />} />
+            <Route path="/it-services" element={<ITServices />} />
+            <Route path="/network-solutions" element={<Network />} />
+            <Route path="/network-solutions/design" element={<NetworkDesign />} />
+            <Route path="/network-solutions/security" element={<NetworkSecurity />} />
+            <Route path="/network-solutions/support" element={<NetworkSupport />} />
+            <Route path="/web-development" element={<WebDevelopment />} />
+
+            {/* Old /services/* URLs redirect to short paths */}
+            <Route path="/services/cloud" element={<Navigate to="/cloud" replace />} />
+            <Route path="/services/cloud/design" element={<Navigate to="/cloud/design" replace />} />
+            <Route path="/services/cloud/migration" element={<Navigate to="/cloud/migration" replace />} />
+            <Route path="/services/cloud/security" element={<Navigate to="/cloud/security" replace />} />
+            <Route path="/services/cyber-security" element={<Navigate to="/cybersecurity" replace />} />
+            <Route path="/services/cyber-security/assessment" element={<Navigate to="/cybersecurity/assessment" replace />} />
+            <Route path="/cyber-security" element={<Navigate to="/cybersecurity" replace />} />
+            <Route path="/cyber-security/assessment" element={<Navigate to="/cybersecurity/assessment" replace />} />
+            <Route path="/services/consulting" element={<Navigate to="/consulting" replace />} />
+            <Route path="/services/enterprise-solutions" element={<Navigate to="/enterprise-solutions" replace />} />
+            <Route path="/services/it-services" element={<Navigate to="/it-services" replace />} />
+            <Route path="/services/network-solutions" element={<Navigate to="/network-solutions" replace />} />
+            <Route path="/services/network-solutions/design" element={<Navigate to="/network-solutions/design" replace />} />
+            <Route path="/services/network-solutions/security" element={<Navigate to="/network-solutions/security" replace />} />
+            <Route path="/services/network-solutions/support" element={<Navigate to="/network-solutions/support" replace />} />
+            <Route path="/services/web-development" element={<Navigate to="/web-development" replace />} />
+
             <Route path="/vision-mission" element={<Vision />} />
             <Route path="/about-us" element={<AboutUs />} />
+            <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/contact-us" element={<Contact />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/careers/:id" element={<JobDetail />} />
             <Route path="/apply" element={<ApplyJob />} />

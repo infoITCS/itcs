@@ -22,13 +22,13 @@ const Footer = () => {
   ];
 
   const services = [
-    { name: 'Cloud Solutions', path: '/services/cloud' },
-    { name: 'IT Consulting', path: '/services/consulting' },
-    { name: 'Enterprise Solutions', path: '/services/enterprise-solutions' },
-    { name: 'IT Services', path: '/services/it-services' },
-    { name: 'Network Solutions', path: '/services/network-solutions' },
-    { name: 'Cybersecurity', path: '/services/cyber-security' },
-    { name: 'Web Development', path: '/services/web-development' },
+    { name: 'Cloud Solutions', path: '/cloud' },
+    { name: 'IT Consulting', path: '/consulting' },
+    { name: 'Enterprise Solutions', path: '/enterprise-solutions' },
+    { name: 'IT Services', path: '/it-services' },
+    { name: 'Network Solutions', path: '/network-solutions' },
+    { name: 'Cybersecurity', path: '/cybersecurity' },
+    { name: 'Web Development', path: '/web-development' },
   ];
 
   const quickLinks = [

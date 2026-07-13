@@ -45,13 +45,13 @@ const Header = () => {
                     Services
                   </Link>
                   <ul className="dropdown-menu" aria-labelledby="servicesDropdown">
-                    <li><NavLink className="dropdown-item" to="/services/cloud" onClick={closeMenu}><FontAwesomeIcon icon={faCloud} className="dropdown-icon" /> Cloud Solutions</NavLink></li>
-                    <li><NavLink className="dropdown-item" to="/services/cyber-security" onClick={closeMenu}><FontAwesomeIcon icon={faShieldHalved} className="dropdown-icon" /> Cybersecurity</NavLink></li>
-                    <li><NavLink className="dropdown-item" to="/services/consulting" onClick={closeMenu}><FontAwesomeIcon icon={faHandshake} className="dropdown-icon" /> Consulting</NavLink></li>
-                    <li><NavLink className="dropdown-item" to="/services/enterprise-solutions" onClick={closeMenu}><FontAwesomeIcon icon={faBuilding} className="dropdown-icon" /> Enterprise Solutions</NavLink></li>
-                    <li><NavLink className="dropdown-item" to="/services/it-services" onClick={closeMenu}><FontAwesomeIcon icon={faLaptopCode} className="dropdown-icon" /> IT Services</NavLink></li>
-                    <li><NavLink className="dropdown-item" to="/services/network-solutions" onClick={closeMenu}><FontAwesomeIcon icon={faNetworkWired} className="dropdown-icon" /> Network Solutions</NavLink></li>
-                    <li><NavLink className="dropdown-item" to="/services/web-development" onClick={closeMenu}><FontAwesomeIcon icon={faCode} className="dropdown-icon" /> Web Development</NavLink></li>
+                    <li><NavLink className="dropdown-item" to="/cloud" onClick={closeMenu}><FontAwesomeIcon icon={faCloud} className="dropdown-icon" /> Cloud Solutions</NavLink></li>
+                    <li><NavLink className="dropdown-item" to="/cybersecurity" onClick={closeMenu}><FontAwesomeIcon icon={faShieldHalved} className="dropdown-icon" /> Cybersecurity</NavLink></li>
+                    <li><NavLink className="dropdown-item" to="/consulting" onClick={closeMenu}><FontAwesomeIcon icon={faHandshake} className="dropdown-icon" /> Consulting</NavLink></li>
+                    <li><NavLink className="dropdown-item" to="/enterprise-solutions" onClick={closeMenu}><FontAwesomeIcon icon={faBuilding} className="dropdown-icon" /> Enterprise Solutions</NavLink></li>
+                    <li><NavLink className="dropdown-item" to="/it-services" onClick={closeMenu}><FontAwesomeIcon icon={faLaptopCode} className="dropdown-icon" /> IT Services</NavLink></li>
+                    <li><NavLink className="dropdown-item" to="/network-solutions" onClick={closeMenu}><FontAwesomeIcon icon={faNetworkWired} className="dropdown-icon" /> Network Solutions</NavLink></li>
+                    <li><NavLink className="dropdown-item" to="/web-development" onClick={closeMenu}><FontAwesomeIcon icon={faCode} className="dropdown-icon" /> Web Development</NavLink></li>
                   </ul>
                 </li>
                 

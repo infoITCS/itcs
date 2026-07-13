@@ -32,7 +32,7 @@ const CyberHero = () => {
         </p>
 
         <div className="hero-actions">
-          <button className="btn-secondary" onClick={() => navigate('/services/cyber-security/assessment')}>
+          <button className="btn-secondary" onClick={() => navigate('/cybersecurity/assessment')}>
             Security Assessment
             <span className="btn-icon">▶</span>
           </button>

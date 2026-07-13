@@ -33,7 +33,7 @@ const NetworkSecurity = () => {
           <div className="breadcrumb">
             <Link to="/services">Services</Link>
             <span>/</span>
-            <Link to="/services/network-solutions">Network Solutions</Link>
+            <Link to="/network-solutions">Network Solutions</Link>
             <span>/</span>
             <span className="current">Network Security</span>
           </div>
@@ -50,7 +50,7 @@ const NetworkSecurity = () => {
               Get Free Security Assessment
               <FontAwesomeIcon icon={faArrowRight} />
             </Link>
-            <Link to="/services/network-solutions" className="btn-secondary">
+            <Link to="/network-solutions" className="btn-secondary">
               Back to Network Solutions
             </Link>
           </div>
@@ -164,7 +164,7 @@ const NetworkSecurity = () => {
               Get Free Consultation
               <FontAwesomeIcon icon={faArrowRight} />
             </Link>
-            <Link to="/services/network-solutions" className="btn-secondary">
+            <Link to="/network-solutions" className="btn-secondary">
               View All Services
             </Link>
           </div>

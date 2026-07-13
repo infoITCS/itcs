@@ -12,21 +12,21 @@ const HomeServices = () => {
       title: "MODERN WORKPLACE",
       description: "Unleash the potential of modern work with an array of transformative solutions.",
       color: "#7c3aed",
-      link: "/services/it-services",
+      link: "/it-services",
     },
     {
       icon: CloudLogo,
       title: "CLOUD COMPUTING",
       description: "We are equipped to guide you through the transformative potential of Azure.",
       color: "#008ABD",
-      link: "/services/cloud",
+      link: "/cloud",
     },
     {
       icon: SoftwareLicensing,
       title: "SOFTWARE LICENSING",
       description: "Choose the licensing option that aligns seamlessly with your business rhythm.",
       color: "#00A894",
-      link: "/services/enterprise-solutions",
+      link: "/enterprise-solutions",
     }
   ];
 

@@ -33,7 +33,7 @@ const CloudSecurity = () => {
           <div className="breadcrumb">
             <Link to="/services">Services</Link>
             <span>/</span>
-            <Link to="/services/cloud">Cloud Solutions</Link>
+            <Link to="/cloud">Cloud Solutions</Link>
             <span>/</span>
             <span className="current">Cloud Security</span>
           </div>
@@ -50,7 +50,7 @@ const CloudSecurity = () => {
               Get Security Assessment
               <FontAwesomeIcon icon={faArrowRight} />
             </Link>
-            <Link to="/services/cloud" className="btn-secondary">
+            <Link to="/cloud" className="btn-secondary">
               Back to Cloud Solutions
             </Link>
           </div>
@@ -163,7 +163,7 @@ const CloudSecurity = () => {
               Get Free Assessment
               <FontAwesomeIcon icon={faArrowRight} />
             </Link>
-            <Link to="/services/cloud" className="btn-secondary">
+            <Link to="/cloud" className="btn-secondary">
               View All Services
             </Link>
           </div>

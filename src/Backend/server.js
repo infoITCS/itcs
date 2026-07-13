@@ -163,6 +163,31 @@ app.get('/blog/:slug', (req, res, next) => {
   res.redirect(301, `/${encodeURIComponent(req.params.slug)}`)
 })
 
+const serviceRedirects = {
+  '/services/cloud': '/cloud',
+  '/services/cloud/design': '/cloud/design',
+  '/services/cloud/migration': '/cloud/migration',
+  '/services/cloud/security': '/cloud/security',
+  '/services/cyber-security': '/cybersecurity',
+  '/services/cyber-security/assessment': '/cybersecurity/assessment',
+  '/cyber-security': '/cybersecurity',
+  '/cyber-security/assessment': '/cybersecurity/assessment',
+  '/services/consulting': '/consulting',
+  '/services/enterprise-solutions': '/enterprise-solutions',
+  '/services/it-services': '/it-services',
+  '/services/network-solutions': '/network-solutions',
+  '/services/network-solutions/design': '/network-solutions/design',
+  '/services/network-solutions/security': '/network-solutions/security',
+  '/services/network-solutions/support': '/network-solutions/support',
+  '/services/web-development': '/web-development',
+}
+
+Object.entries(serviceRedirects).forEach(([from, to]) => {
+  app.get(from, (req, res) => {
+    res.redirect(301, to)
+  })
+})
+
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API route not found' })

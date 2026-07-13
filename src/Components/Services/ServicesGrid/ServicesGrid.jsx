@@ -17,49 +17,49 @@ const ServicesGrid = () => {
       logo: cloud,
       title: "Cloud Solutions",
       description: "Unlock Business 4.0 with our Microsoft Cloud partnership for a smooth edge-to-cloud transformation",
-      path: "/services/cloud",
+      path: "/cloud",
       features: ["Azure Migration", "Cloud Security", "Cost Optimization"]
     },
     {
       logo: cybersecurity,
       title: "Cybersecurity",
       description: "Cybersecurity: a growth imperative in today's expanding digital threat landscape.",
-      path: "/services/cyber-security",
+      path: "/cybersecurity",
       features: ["Threat Detection", "Security Audits", "Incident Response"]
     },
     {
       logo: consulting,
       title: "IT Consulting",
       description: "Thrive amidst change with a transformative strategy centered on purpose.",
-      path: "/services/consulting",
+      path: "/consulting",
       features: ["Strategy Planning", "Digital Transformation", "Tech Advisory"]
     },
     {
       logo: enterpriseSol,
       title: "Enterprise Solutions",
       description: "Transform your business with intelligent solutions and a holistic approach to enterprise applications.",
-      path: "/services/enterprise-solutions",
+      path: "/enterprise-solutions",
       features: ["ERP Systems", "CRM Solutions", "Business Intelligence"]
     },
     {
       logo: itServices,
       title: "IT Services",
       description: "Expert managed IT services for smooth and efficient technology operations.",
-      path: "/services/it-services",
+      path: "/it-services",
       features: ["24/7 Support", "Infrastructure Management", "Help Desk"]
     },
     {
       logo: networkSolutions,
       title: "Network Solutions",
       description: "Optimize network performance and security with our comprehensive network solutions.",
-      path: "/services/network-solutions",
+      path: "/network-solutions",
       features: ["Network Design", "Performance Monitoring", "Security Implementation"]
     },
     {
       logo: webDevelopment,
       title: "Web Development",
       description: "Build modern, responsive websites and web applications that drive business growth.",
-      path: "/services/web-development",
+      path: "/web-development",
       features: ["Custom Websites", "E-Commerce", "Web Applications"]
     },
   ];

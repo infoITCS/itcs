@@ -35,7 +35,7 @@ const NetworkHero = () => {
         We design, implement, and manage networks that drive business productivity.
       </p>
       <div className="hero-actions">
-        <button className="btn-secondary" onClick={() => navigate('/services/network-solutions/design')}>
+        <button className="btn-secondary" onClick={() => navigate('/network-solutions/design')}>
           Network Design
           <span>→</span>
         </button>
