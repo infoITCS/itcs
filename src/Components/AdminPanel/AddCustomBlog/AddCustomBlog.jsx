@@ -5,6 +5,7 @@ import BlogCoverImage from '../../Common/BlogCoverImage';
 import 'react-quill-new/dist/quill.snow.css';
 import { apiUrl } from '../../../config/api';
 import { getAuthHeaders } from '../../../config/authHeaders';
+import { normalizeBlogHtml } from '../../../utils/blogFormat';
 import './AddCustomBlog.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -135,7 +136,7 @@ const AddCustomBlog = () => {
   };
 
   const handleContentChange = (content) => {
-    setFormData(prev => ({ ...prev, content }));
+    setFormData(prev => ({ ...prev, content: normalizeBlogHtml(content) }));
   };
 
   const compressImage = (file) => {
@@ -251,6 +252,7 @@ const AddCustomBlog = () => {
 
       const blogData = {
         ...formData,
+        content: normalizeBlogHtml(formData.content),
         featuredImage: imageUrl,
         tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
         excerpt: excerpt
@@ -352,7 +354,7 @@ const AddCustomBlog = () => {
       setFormData({
         title: full.title || '',
         slug: full.slug || '',
-        content: full.content || '',
+        content: normalizeBlogHtml(full.content || ''),
         author: full.author || '',
         excerpt: full.excerpt || '',
         tags: full.tags ? full.tags.join(', ') : '',

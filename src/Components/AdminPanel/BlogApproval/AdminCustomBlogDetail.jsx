@@ -4,6 +4,7 @@ import DOMPurify from 'dompurify'
 import axios from 'axios'
 import { apiUrl } from '../../../config/api'
 import { getAuthHeaders } from '../../../config/authHeaders'
+import { normalizeBlogHtml } from '../../../utils/blogFormat'
 import './AdminBlogDetail.scss'
 
 const AdminCustomBlogDetail = () => {
@@ -45,7 +46,7 @@ const AdminCustomBlogDetail = () => {
       }
     }
     DOMPurify.addHook('afterSanitizeAttributes', stripWrapStyles)
-    const clean = DOMPurify.sanitize(html)
+    const clean = DOMPurify.sanitize(normalizeBlogHtml(html))
     DOMPurify.removeHook('afterSanitizeAttributes')
     return clean
   }

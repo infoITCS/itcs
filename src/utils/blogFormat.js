@@ -3,6 +3,18 @@ export const estimateReadingMinutes = (text = '') => {
   return Math.max(1, Math.ceil(words / 200))
 }
 
+/**
+ * Quill / Word paste often stores every space as &nbsp;, which prevents
+ * line wrapping and forces the browser to split words mid-character.
+ * Convert those to normal spaces so published posts wrap at word boundaries.
+ */
+export const normalizeBlogHtml = (html = '') => {
+  if (!html) return ''
+  return String(html)
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/\u00a0/g, ' ')
+}
+
 export const formatPublishedBlog = (blog) => {
   let description = blog.excerpt || blog.metaDescription || ''
   let title = blog.title || ''
