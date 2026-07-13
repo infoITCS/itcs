@@ -82,7 +82,7 @@ function App() {
             <Route path="/cloud/design" element={<CloudDesign />} />
             <Route path="/cloud/migration" element={<CloudMigration />} />
             <Route path="/cloud/security" element={<CloudSecurity />} />
-            <Route path="/cyber-security" element={<CyberSecurity />} />
+            <Route path="/cybersecurity" element={<CyberSecurity />} />
             <Route path="/cybersecurity/assessment" element={<SecurityAssessment />} />
             <Route path="/consulting" element={<Consulting />} />
             <Route path="/enterprise-solutions" element={<Enterprise />} />
@@ -98,10 +98,10 @@ function App() {
             <Route path="/services/cloud/design" element={<Navigate to="/cloud/design" replace />} />
             <Route path="/services/cloud/migration" element={<Navigate to="/cloud/migration" replace />} />
             <Route path="/services/cloud/security" element={<Navigate to="/cloud/security" replace />} />
-            <Route path="/services/cyber-security" element={<Navigate to="/cybersecurity" replace />} />
-            <Route path="/services/cyber-security/assessment" element={<Navigate to="/cybersecurity/assessment" replace />} />
-            <Route path="/cyber-security" element={<Navigate to="/cybersecurity" replace />} />
-            <Route path="/cyber-security/assessment" element={<Navigate to="/cybersecurity/assessment" replace />} />
+            <Route path="/services/cybersecurity" element={<Navigate to="/cybersecurity" replace />} />
+            <Route path="/services/cybersecurity/assessment" element={<Navigate to="/cybersecurity/assessment" replace />} />
+            <Route path="/cybersecurity" element={<Navigate to="/cybersecurity" replace />} />
+            <Route path="/cybersecurity/assessment" element={<Navigate to="/cybersecurity/assessment" replace />} />
             <Route path="/services/consulting" element={<Navigate to="/consulting" replace />} />
             <Route path="/services/enterprise-solutions" element={<Navigate to="/enterprise-solutions" replace />} />
             <Route path="/services/it-services" element={<Navigate to="/it-services" replace />} />
