@@ -107,7 +107,21 @@ const distPath = path.join(__dirname, '../../dist')
 const indexHtmlPath = path.join(distPath, 'index.html')
 
 if (existsSync(distPath)) {
-  app.use(express.static(distPath))
+  app.use(
+    express.static(distPath, {
+      index: false,
+      setHeaders(res, filePath) {
+        if (filePath.endsWith(`${path.sep}index.html`) || filePath.endsWith('/index.html')) {
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+          return
+        }
+
+        if (filePath.includes(`${path.sep}assets${path.sep}`) || filePath.includes('/assets/')) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+        }
+      },
+    }),
+  )
 }
 
 if (process.env.MONGO_URI) {
@@ -160,6 +174,7 @@ app.get('*', (req, res, next) => {
     )
   }
 
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
   res.sendFile(indexHtmlPath, (err) => {
     if (err) next(err)
   })
