@@ -36,7 +36,7 @@ const AddCustomBlog = () => {
   const [blogs, setBlogs] = useState([]);
   const [blogsLoading, setBlogsLoading] = useState(false);
   const [blogsLoaded, setBlogsLoaded] = useState(false);
-  const [editingLoading, setEditingLoading] = useState(false);
+  const [editingLoadingId, setEditingLoadingId] = useState(null);
   const blogsLoadedRef = useRef(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -136,7 +136,7 @@ const AddCustomBlog = () => {
   };
 
   const handleContentChange = (content) => {
-    setFormData(prev => ({ ...prev, content: normalizeBlogHtml(content) }));
+    setFormData(prev => ({ ...prev, content }));
   };
 
   const compressImage = (file) => {
@@ -315,63 +315,55 @@ const AddCustomBlog = () => {
   };
 
   const handleEdit = async (blog) => {
-    setEditingLoading(true);
+    setEditingLoadingId(blog._id);
     try {
-      let full;
-      let coverImage = '';
+      const res = await axios.get(apiUrl(`/api/custom-blogs/${blog._id}/edit`), {
+        headers: getAuthHeaders(),
+      });
+      const full = res.data || {};
 
-      try {
-        const res = await axios.get(apiUrl(`/api/custom-blogs/${blog._id}/edit`), {
-          headers: getAuthHeaders(),
-        });
-        full = res.data;
-
-        if (full.hasCover) {
-          try {
-            const coverRes = await axios.get(apiUrl(`/api/custom-blogs/${blog._id}/cover`), {
-              headers: getAuthHeaders(),
-            });
-            coverImage = coverRes.data?.featuredImage || '';
-          } catch {
-            coverImage = '';
-          }
-        }
-      } catch (err) {
-        // Fallback for older backends: fetch all blogs and pick this one
-        if (err?.response?.status === 404) {
-          const res = await axios.get(apiUrl('/api/custom-blogs/all'), {
+      let coverImage = blog.featuredImage || '';
+      if (!coverImage && full.hasCover) {
+        try {
+          const coverRes = await axios.get(apiUrl(`/api/custom-blogs/${blog._id}/cover`), {
             headers: getAuthHeaders(),
           });
-          const posts = Array.isArray(res.data) ? res.data : [];
-          full = posts.find(p => p._id === blog._id || String(p.id) === String(blog._id)) || {};
-          coverImage = full.featuredImage || '';
-        } else {
-          throw err;
+          coverImage = coverRes.data?.featuredImage || '';
+        } catch {
+          coverImage = '';
         }
       }
 
+      // Switch tab first so the manage grid unmounts before heavy Quill work
+      setDashboardTab('create');
       setEditingId(full._id);
+      setAutoSlug(false);
+      setImageFile(null);
+      setImagePreview(coverImage || null);
       setFormData({
         title: full.title || '',
         slug: full.slug || '',
-        content: normalizeBlogHtml(full.content || ''),
+        content: '',
         author: full.author || '',
         excerpt: full.excerpt || '',
         tags: full.tags ? full.tags.join(', ') : '',
         featuredImage: coverImage,
         metaTitle: full.metaTitle || '',
         metaDescription: full.metaDescription || '',
-        metaKeywords: full.metaKeywords || ''
+        metaKeywords: full.metaKeywords || '',
       });
-      setImagePreview(coverImage || null);
-      setImageFile(null);
-      setDashboardTab('create');
-      setAutoSlug(false);
       window.scrollTo(0, 0);
+
+      // Load large HTML after paint so the UI stays responsive
+      const rawContent = full.content || '';
+      window.setTimeout(() => {
+        const content = normalizeBlogHtml(rawContent);
+        setFormData((prev) => ({ ...prev, content }));
+      }, 0);
     } catch {
       alert('Failed to load blog for editing.');
     } finally {
-      setEditingLoading(false);
+      setEditingLoadingId(null);
     }
   };
 
@@ -657,8 +649,13 @@ const AddCustomBlog = () => {
                     </div>
                     <div className="card-dash-actions">
                       <button className="action-btn action-view" title="View" onClick={() => handleView(blog)}><FontAwesomeIcon icon={faExternalLinkAlt} /></button>
-                      <button className="action-btn action-edit" title="Edit" onClick={() => handleEdit(blog)} disabled={editingLoading}>
-                        <FontAwesomeIcon icon={editingLoading ? faClock : faEdit} />
+                      <button
+                        className="action-btn action-edit"
+                        title="Edit"
+                        onClick={() => handleEdit(blog)}
+                        disabled={editingLoadingId === blog._id}
+                      >
+                        <FontAwesomeIcon icon={editingLoadingId === blog._id ? faClock : faEdit} />
                       </button>
                       <button className={`action-btn action-delete ${deleting === blog._id ? 'loading' : ''}`} title="Delete" onClick={() => handleDelete(blog._id)} disabled={deleting === blog._id}>
                         <FontAwesomeIcon icon={deleting === blog._id ? faClock : faTrashAlt} />
