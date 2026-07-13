@@ -27,11 +27,11 @@ const AboutHero = () => {
             <p>Years Experience</p>
           </div>
           <div className="stat-item">
-            <h3>500+</h3>
+            <h3>954+</h3>
             <p>Projects Delivered</p>
           </div>
           <div className="stat-item">
-            <h3>200+</h3>
+            <h3>497+</h3>
             <p>Happy Clients</p>
           </div>
           <div className="stat-item">
