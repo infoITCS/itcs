@@ -117,7 +117,8 @@ const BlogDetail = () => {
         cover_image: blog.featuredImage,
         publishDate: blog.publishDate,
         reading_time_minutes: Math.ceil((blog.content || "").split(" ").length / 200),
-        user: { name: blog.author }
+        user: { name: blog.author },
+        tag_list: blog.tags || [],
       });
 
       if (blog.author) setCustomAuthor(blog.author);
@@ -180,6 +181,7 @@ const BlogDetail = () => {
   if (!article) return <div className="blog-detail-not-found"><h2>Blog not found</h2><Link to="/blog" className="back-btn">Go Back</Link></div>;
 
   const displayAuthor = customAuthor || article.user?.name || article.user?.username || "Unknown Author";
+  const articleTags = (article.tag_list || article.tags || []).filter(Boolean);
 
   return (
     <div className="blog-detail">
@@ -215,6 +217,23 @@ const BlogDetail = () => {
           <div dangerouslySetInnerHTML={{ __html: cleanContent(article.body_html) }} />
         ) : (
           <p>No content available</p>
+        )}
+
+        {articleTags.length > 0 && (
+          <div className="blog-detail-tags">
+            <h3 className="tags-heading">Tags</h3>
+            <div className="tags-list">
+              {articleTags.map((tag) => (
+                <Link
+                  key={tag}
+                  to={`/blog?tag=${encodeURIComponent(tag)}`}
+                  className="detail-tag"
+                >
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          </div>
         )}
 
         {relatedPosts.length > 0 && (

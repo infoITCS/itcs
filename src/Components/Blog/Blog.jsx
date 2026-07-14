@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { apiUrl } from "../../config/api";
 import { getBlogPostUrl } from "../../utils/blogUrls";
@@ -8,10 +8,10 @@ import "./Blog.scss";
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
-  const [tags, setTags] = useState([]);
-  const [activeTag, setActiveTag] = useState("all");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams] = useSearchParams();
+  const activeTag = searchParams.get("tag")?.trim() || "";
   const postsPerPage = 9;
 
   useEffect(() => {
@@ -23,11 +23,6 @@ export default function Blog() {
           (customRes.data || []).map(formatPublishedBlog)
         );
         setPosts(formatted);
-
-        const allTags = formatted.flatMap(blog => blog.tag_list || []);
-        const uniqueTags = Array.from(new Set(allTags)).sort();
-        setTags(["all", ...uniqueTags]);
-
       } catch (err) {
         console.error("Failed to load blogs:", err);
       } finally {
@@ -38,9 +33,15 @@ export default function Blog() {
     fetchBlogs();
   }, []);
 
-  const filteredPosts = activeTag === "all"
-    ? posts
-    : posts.filter(post => post.tag_list?.includes(activeTag));
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTag]);
+
+  const filteredPosts = activeTag
+    ? posts.filter(post =>
+        post.tag_list?.some(tag => tag.toLowerCase() === activeTag.toLowerCase())
+      )
+    : posts;
 
   // Pagination Logic
   const indexOfLastPost = currentPage * postsPerPage;
@@ -80,7 +81,16 @@ export default function Blog() {
 
   return (
     <div className="blog-public-container">
-      <h2 className="blog-public-title">Our Blogs</h2>
+      <h2 className="blog-public-title">
+        {activeTag ? `Blogs tagged “${activeTag}”` : "Our Blogs"}
+      </h2>
+
+      {activeTag && (
+        <div className="tag-filter-banner">
+          <span className="active-tag-chip">#{activeTag}</span>
+          <Link to="/blog" className="clear-tag-filter">View all blogs</Link>
+        </div>
+      )}
 
       {loading ? (
         <div className="blog-grid">
@@ -125,7 +135,11 @@ export default function Blog() {
                 </Link>
               ))
             ) : (
-              <p className="no-posts">No blogs found for this tag.</p>
+              <p className="no-posts">
+                {activeTag
+                  ? `No blogs found for the tag “${activeTag}”.`
+                  : "No blogs found."}
+              </p>
             )}
           </div>
 

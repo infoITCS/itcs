@@ -148,6 +148,48 @@
     code { background: rgba(255, 255, 255, 0.1); padding: 5px 10px; border-radius: 6px; font-family: "Fira Code", monospace; font-size: 16px; color: #7bc9ff; }
     pre { background: rgba(0, 0, 0, 0.4); padding: 20px; border-radius: 10px; overflow-x: auto; margin-bottom: 30px; font-size: 16px; }
 
+    .blog-detail-tags {
+      margin: 48px 0 0;
+      padding-top: 40px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+      .tags-heading {
+        font-size: 18px;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 16px;
+        border-left: none;
+        padding-left: 0;
+      }
+
+      .tags-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .detail-tag {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(74, 158, 255, 0.12);
+        color: #7bc9ff;
+        padding: 8px 16px;
+        border-radius: 100px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid rgba(74, 158, 255, 0.2);
+        transition: all 0.25s ease;
+
+        &:hover {
+          background: rgba(74, 158, 255, 0.22);
+          border-color: rgba(74, 158, 255, 0.4);
+          color: #fff;
+          text-decoration: none;
+        }
+      }
+    }
+
     /* Related Blogs - Now properly nested inside .blog-body */
     .related-blogs-section {
       width: 100%;
