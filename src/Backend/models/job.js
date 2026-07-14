@@ -4,6 +4,7 @@ mongoose.set('bufferTimeoutMS', 120000);
 
 const jobSchema = new mongoose.Schema({
   title: { type: String, required: true },
+  slug: { type: String, unique: true, sparse: true },
   department: { type: String, required: true },
   type: { type: String, default: 'Full-time' },
   location: { type: String, required: true },

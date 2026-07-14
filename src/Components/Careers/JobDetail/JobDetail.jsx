@@ -2,20 +2,20 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { apiUrl } from "../../../config/api";
+import { getJobUrl } from "../../../utils/blogUrls";
+import { isMongoObjectId } from "../../../utils/slugify";
 import "./JobDetail.scss";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faLocationDot, 
-  faClock, 
-  faBriefcase, 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faLocationDot,
+  faClock,
+  faBriefcase,
   faArrowLeft,
-  faEnvelope,
-  faPhone,
   faCircleCheck,
   faStar,
   faGraduationCap,
-  faChevronRight
-} from '@fortawesome/free-solid-svg-icons';
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 const JobDetail = () => {
   const { id } = useParams();
@@ -27,37 +27,60 @@ const JobDetail = () => {
   useEffect(() => {
     const fetchJob = async () => {
       setLoading(true);
+      setError("");
       try {
         const res = await axios.get(apiUrl(`/api/jobsAdd/${id}?t=${Date.now()}`));
-        setJob(res.data);
+        const data = res.data;
+        setJob(data);
+
+        const canonical = getJobUrl(data).replace("/careers/", "");
+        if (canonical && id !== canonical) {
+          navigate(`/careers/${canonical}`, { replace: true });
+        }
       } catch (err) {
         console.error("Fetch error:", err);
         setError("Position details are currently unavailable.");
+        setJob(null);
       } finally {
         setLoading(false);
       }
     };
     fetchJob();
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [id, navigate]);
 
-  if (loading) return (
-    <div className="theme-loading">
-      <div className="theme-spinner"></div>
-      <p>Loading Position Details...</p>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="theme-loading">
+        <div className="theme-spinner"></div>
+        <p>Loading Position Details...</p>
+      </div>
+    );
+  }
 
-  if (error || !job) return (
-    <div className="theme-error">
-      <h2>Position Not Found</h2>
-      <p>{error}</p>
-      <button className="theme-btn" onClick={() => navigate("/careers")}>Back to Careers</button>
-    </div>
-  );
+  if (error || !job) {
+    return (
+      <div className="theme-error">
+        <h2>Position Not Found</h2>
+        <p>{error}</p>
+        <button className="theme-btn" onClick={() => navigate("/careers")}>
+          Back to Careers
+        </button>
+      </div>
+    );
+  }
 
-  const parseList = (text) => text ? text.split(/\r?\n/).filter(l => l.trim() !== "") : [];
-  
+  if (isMongoObjectId(id) && job.slug && id !== job.slug) {
+    return (
+      <div className="theme-loading">
+        <div className="theme-spinner"></div>
+        <p>Loading Position Details...</p>
+      </div>
+    );
+  }
+
+  const parseList = (text) => (text ? text.split(/\r?\n/).filter((l) => l.trim() !== "") : []);
+
   const handleApply = () => {
     navigate("/apply", { state: { job } });
   };
@@ -95,18 +118,19 @@ const JobDetail = () => {
             </header>
 
             <div className="content-blocks">
-              {/* About Role - Keep in main column */}
               {job.aboutRole && (
                 <section className="detail-section">
                   <div className="section-head">
-                    <div className="head-icon"><FontAwesomeIcon icon={faStar} /></div>
-                  <h2>About This Role</h2>
-                </div>
-                <div className="section-body">
-                  <p>{job.aboutRole}</p>
-                </div>
-              </section>
-            )}
+                    <div className="head-icon">
+                      <FontAwesomeIcon icon={faStar} />
+                    </div>
+                    <h2>About This Role</h2>
+                  </div>
+                  <div className="section-body">
+                    <p>{job.aboutRole}</p>
+                  </div>
+                </section>
+              )}
             </div>
           </div>
 
@@ -141,13 +165,13 @@ const JobDetail = () => {
           </div>
         </div>
 
-        {/* Full Width Detail Sections */}
         <div className="full-width-content">
-          {/* Responsibilities - Full Width */}
           {job.responsibilities && (
             <section className="detail-section-full">
               <div className="section-head">
-                <div className="head-icon"><FontAwesomeIcon icon={faCircleCheck} /></div>
+                <div className="head-icon">
+                  <FontAwesomeIcon icon={faCircleCheck} />
+                </div>
                 <h2>Key Responsibilities</h2>
               </div>
               <div className="section-body">
@@ -163,11 +187,12 @@ const JobDetail = () => {
             </section>
           )}
 
-          {/* Qualifications - Full Width */}
           {job.qualifications && (
             <section className="detail-section-full">
               <div className="section-head">
-                <div className="head-icon"><FontAwesomeIcon icon={faGraduationCap} /></div>
+                <div className="head-icon">
+                  <FontAwesomeIcon icon={faGraduationCap} />
+                </div>
                 <h2>Qualifications & Skills</h2>
               </div>
               <div className="section-body">
@@ -183,10 +208,11 @@ const JobDetail = () => {
             </section>
           )}
 
-          {/* Benefits Section */}
           <section className="benefits-section-full">
             <div className="section-head-centered">
-              <div className="head-icon"><FontAwesomeIcon icon={faStar} /></div>
+              <div className="head-icon">
+                <FontAwesomeIcon icon={faStar} />
+              </div>
               <h2>Exclusive Employee Benefits</h2>
               <p>We invest in our people to ensure a fulfilling and rewarding career journey.</p>
             </div>
@@ -199,7 +225,7 @@ const JobDetail = () => {
                 { title: "Paid Certifications", desc: "Upskill with company-sponsored training" },
                 { title: "Monthly Rewards", desc: "Recognition for outstanding performance" },
                 { title: "Quarterly Meetups", desc: "Team building & social engagements" },
-                { title: "Referral Bonuses", desc: "Rewards for bringing in top talent" }
+                { title: "Referral Bonuses", desc: "Rewards for bringing in top talent" },
               ].map((benefit, i) => (
                 <div className="benefit-card-full" key={i}>
                   <div className="card-icon">

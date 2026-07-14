@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { apiUrl } from "../../../config/api";
-import { getBlogPostUrl } from "../../../utils/blogUrls";
+import { getBlogPostUrl, getAuthorUrl } from "../../../utils/blogUrls";
 import { formatPublishedBlog, sortBlogsByDate } from "../../../utils/blogFormat";
 import "./HomeBlog.scss";
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -16,7 +17,6 @@ export default function Blog() {
       try {
         const customRes = await axios.get(apiUrl("/api/custom-blogs/published")).catch(() => ({ data: [] }));
         setPosts(sortBlogsByDate((customRes.data || []).map(formatPublishedBlog)));
-
       } catch (err) {
         console.error("Failed to load blogs:", err);
       } finally {
@@ -35,7 +35,7 @@ export default function Blog() {
 
       <div className="blog-grid">
         {posts.length > 0 ? (
-          posts.slice(0, 3).map(post => (
+          posts.slice(0, 3).map((post) => (
             <Link key={post.id} to={getBlogPostUrl(post)} className="blog-card">
               {(post.cover_image || post.social_image) && (
                 <div className="blog-cover-wrap">
@@ -52,7 +52,18 @@ export default function Blog() {
                 <h3>{post.title}</h3>
 
                 <p className="meta">
-                  {post.displayAuthor} • {post.readable_publish_date} • {post.reading_time_minutes} min read
+                  <span
+                    className="meta-author"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      navigate(getAuthorUrl(post.displayAuthor));
+                    }}
+                  >
+                    {post.displayAuthor}
+                  </span>
+                  {" • "}
+                  {post.readable_publish_date} • {post.reading_time_minutes} min read
                 </p>
 
                 <p className="description">{post.description}</p>
@@ -62,9 +73,7 @@ export default function Blog() {
             </Link>
           ))
         ) : (
-          <p className="no-posts">
-            {loading ? "Loading..." : "No blogs found."}
-          </p>
+          <p className="no-posts">{loading ? "Loading..." : "No blogs found."}</p>
         )}
       </div>
     </div>

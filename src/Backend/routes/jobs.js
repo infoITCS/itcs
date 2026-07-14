@@ -2,8 +2,41 @@ import express from 'express'
 import * as db from '../models/dbHelpers.js'
 import jobsSeedData from '../data/jobsSeedData.js'
 import { requireAdmin } from '../middleware/auth.js'
+import { toUrlSlug, isMongoObjectId } from '../utils/slugify.js'
 
 const router = express.Router()
+
+const withJobSlug = (job) => {
+  if (!job) return job
+  return { ...job, slug: job.slug || toUrlSlug(job.title) }
+}
+
+const resolveUniqueJobSlug = async (title) => {
+  const base = toUrlSlug(title) || 'job'
+  let slug = base
+  let n = 1
+  while (await db.findJobBySlug(slug)) {
+    slug = `${base}-${n++}`
+  }
+  return slug
+}
+
+const findJobByParam = async (param) => {
+  if (isMongoObjectId(param)) {
+    try {
+      const byId = await db.findJobById(param)
+      if (byId) return byId
+    } catch {
+      // fall through to slug lookup
+    }
+  }
+
+  const bySlug = await db.findJobBySlug(param)
+  if (bySlug) return bySlug
+
+  const jobs = await db.findAllJobs()
+  return jobs.find((job) => (job.slug || toUrlSlug(job.title)) === param) || null
+}
 
 router.post('/seed/init', requireAdmin, async (req, res) => {
   try {
@@ -16,10 +49,17 @@ router.post('/seed/init', requireAdmin, async (req, res) => {
       })
     }
 
-    const savedJobs = await Promise.all(jobsSeedData.map((j) => db.createJob(j)))
+    const savedJobs = await Promise.all(
+      jobsSeedData.map(async (j) =>
+        db.createJob({
+          ...j,
+          slug: await resolveUniqueJobSlug(j.title),
+        })
+      )
+    )
     res.status(201).json({
       message: `Successfully seeded ${savedJobs.length} jobs`,
-      jobs: savedJobs,
+      jobs: savedJobs.map(withJobSlug),
     })
   } catch (err) {
     console.error('Error seeding jobs:', err)
@@ -57,8 +97,11 @@ router.post('/', requireAdmin, async (req, res) => {
       return res.status(400).json({ message: 'Title, department, and location are required' })
     }
 
+    const slug = await resolveUniqueJobSlug(title)
+
     const savedJob = await db.createJob({
       title,
+      slug,
       department,
       type: type || 'Full-time',
       location,
@@ -68,7 +111,7 @@ router.post('/', requireAdmin, async (req, res) => {
       qualifications: qualifications || '',
       description: aboutRole || '',
     })
-    res.status(201).json({ message: 'Job created successfully', job: savedJob })
+    res.status(201).json({ message: 'Job created successfully', job: withJobSlug(savedJob) })
   } catch (err) {
     console.error('Error creating job:', err)
     res.status(500).json({ message: 'Failed to create job' })
@@ -78,7 +121,7 @@ router.post('/', requireAdmin, async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const jobs = await db.findAllJobs()
-    res.json(jobs)
+    res.json(jobs.map(withJobSlug))
   } catch (err) {
     console.error('Error fetching jobs:', err)
     res.status(500).json({ message: 'Failed to fetch jobs' })
@@ -88,13 +131,13 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params
-    const job = await db.findJobById(id)
+    const job = await findJobByParam(id)
 
     if (!job) {
       return res.status(404).json({ message: 'Job not found' })
     }
 
-    res.json(job)
+    res.json(withJobSlug(job))
   } catch (err) {
     console.error('Error fetching job:', err)
     res.status(500).json({ message: 'Failed to fetch job' })
@@ -104,11 +147,10 @@ router.get('/:id', async (req, res) => {
 router.delete('/:id', requireAdmin, async (req, res) => {
   try {
     const { id } = req.params
-
-    const job = await db.findJobById(id)
+    const job = await findJobByParam(id)
     if (!job) return res.status(404).json({ message: 'Job not found' })
 
-    await db.deleteJobById(id)
+    await db.deleteJobById(String(job._id))
     res.json({ message: 'Job deleted successfully' })
   } catch (err) {
     console.error('Error deleting job:', err)

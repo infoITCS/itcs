@@ -102,6 +102,16 @@
     font-size: 0.85rem;
     color: var(--text-muted);
     margin-bottom: 1rem;
+
+    .meta-author {
+      cursor: pointer;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: var(--accent-purple-light-2);
+        text-decoration: underline;
+      }
+    }
   }
 
   .description {

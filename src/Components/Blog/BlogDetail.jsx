@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
 import axios from "axios";
 import { apiUrl } from "../../config/api";
-import { getBlogPostUrl, isDevToBlogId } from "../../utils/blogUrls";
+import { getBlogPostUrl, getTagUrl, getAuthorUrl, isDevToBlogId } from "../../utils/blogUrls";
 import { formatPublishedBlog, normalizeBlogHtml } from "../../utils/blogFormat";
 import "./Blog.scss";
 import "./BlogDetail.scss";
@@ -16,6 +16,7 @@ import 'swiper/css/pagination';
 
 const BlogDetail = () => {
   const { id, slug } = useParams();
+  const navigate = useNavigate();
   const postKey = slug || id;
   const [article, setArticle] = useState(null);
   const [customAuthor, setCustomAuthor] = useState(null);
@@ -194,7 +195,9 @@ const BlogDetail = () => {
       <div className="blog-meta-modern center-meta">
         <div className="meta-item">
           <span className="meta-label">Author</span>
-          <span className="meta-value">{displayAuthor}</span>
+          <Link to={getAuthorUrl(displayAuthor)} className="meta-value author-link">
+            {displayAuthor}
+          </Link>
         </div>
         <div className="meta-divider"></div>
         <div className="meta-item">
@@ -226,7 +229,7 @@ const BlogDetail = () => {
               {articleTags.map((tag) => (
                 <Link
                   key={tag}
-                  to={`/blog?tag=${encodeURIComponent(tag)}`}
+                  to={getTagUrl(tag)}
                   className="detail-tag"
                 >
                   #{tag}
@@ -275,7 +278,25 @@ const BlogDetail = () => {
                       <div className="card-content">
                         <h3>{post.title}</h3>
                         <div className="card-footer">
-                          <span>{post.displayAuthor}</span>
+                          <span
+                            className="related-author-link"
+                            role="link"
+                            tabIndex={0}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              navigate(getAuthorUrl(post.displayAuthor));
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                navigate(getAuthorUrl(post.displayAuthor));
+                              }
+                            }}
+                          >
+                            {post.displayAuthor}
+                          </span>
                           <div className="dot"></div>
                           <span>{post.reading_time_minutes || 1} min read</span>
                         </div>

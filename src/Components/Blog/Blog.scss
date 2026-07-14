@@ -209,6 +209,20 @@
         background: rgba(124, 58, 237, 0.2);
         border-color: rgba(124, 58, 237, 0.3);
       }
+
+      &.tag-link {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .meta-author {
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--accent-purple-light-2);
+      text-decoration: underline;
     }
   }
 

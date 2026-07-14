@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { apiUrl } from "../../config/api";
-import { getBlogPostUrl } from "../../utils/blogUrls";
+import { getAuthorUrl, getBlogPostUrl, getTagUrl, toUrlSlug } from "../../utils/blogUrls";
 import { formatPublishedBlog, sortBlogsByDate } from "../../utils/blogFormat";
 import "./Blog.scss";
 
@@ -10,9 +10,14 @@ export default function Blog() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const { tagSlug: tagSlugParam, authorSlug: authorSlugParam } = useParams();
   const [searchParams] = useSearchParams();
-  const activeTag = searchParams.get("tag")?.trim() || "";
+  const navigate = useNavigate();
   const postsPerPage = 9;
+
+  const legacyTag = searchParams.get("tag")?.trim() || "";
+  const activeTagSlug = tagSlugParam || (legacyTag ? toUrlSlug(legacyTag) : "");
+  const activeAuthorSlug = authorSlugParam || "";
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -35,15 +40,35 @@ export default function Blog() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeTag]);
+  }, [activeTagSlug, activeAuthorSlug]);
 
-  const filteredPosts = activeTag
-    ? posts.filter(post =>
-        post.tag_list?.some(tag => tag.toLowerCase() === activeTag.toLowerCase())
-      )
-    : posts;
+  if (!tagSlugParam && legacyTag) {
+    return <Navigate to={`/tag/${toUrlSlug(legacyTag)}`} replace />;
+  }
 
-  // Pagination Logic
+  const displayTag =
+    posts
+      .flatMap((post) => post.tag_list || [])
+      .find((tag) => toUrlSlug(tag) === activeTagSlug) ||
+    legacyTag ||
+    activeTagSlug.replace(/-/g, " ");
+
+  const displayAuthor =
+    posts
+      .map((post) => post.displayAuthor)
+      .find((author) => toUrlSlug(author) === activeAuthorSlug) ||
+    activeAuthorSlug.replace(/-/g, " ");
+
+  const filteredPosts = posts.filter((post) => {
+    if (activeTagSlug) {
+      return post.tag_list?.some((tag) => toUrlSlug(tag) === activeTagSlug);
+    }
+    if (activeAuthorSlug) {
+      return toUrlSlug(post.displayAuthor) === activeAuthorSlug;
+    }
+    return true;
+  });
+
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
@@ -51,50 +76,64 @@ export default function Blog() {
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Function to format date like "September 23, 2025"
   const formatDate = (dateStr, isCustom = false) => {
-    if (!dateStr) return '';
-    // If it's already a formatted string (for Dev.to), return as is
-    if (typeof dateStr === 'string' && !isCustom && isNaN(Date.parse(dateStr))) {
+    if (!dateStr) return "";
+    if (typeof dateStr === "string" && !isCustom && isNaN(Date.parse(dateStr))) {
       return dateStr;
     }
     const date = new Date(dateStr);
     return date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
   };
 
-  // Skeleton Card Component
+  const handleAuthorClick = (e, author) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (author) navigate(getAuthorUrl(author));
+  };
+
+  const handleTagClick = (e, tag) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (tag) navigate(getTagUrl(tag));
+  };
+
   const SkeletonCard = () => (
     <div className="blog-card skeleton-card">
-      <div className="blog-cover-wrap skeleton-shimmer" style={{height: '200px'}}></div>
+      <div className="blog-cover-wrap skeleton-shimmer" style={{ height: "200px" }}></div>
       <div className="blog-card__content">
-        <div className="skeleton-shimmer" style={{height: '24px', width: '85%', marginBottom: '12px', borderRadius: '6px'}}></div>
-        <div className="skeleton-shimmer" style={{height: '14px', width: '60%', marginBottom: '16px', borderRadius: '4px'}}></div>
-        <div className="skeleton-shimmer" style={{height: '14px', width: '100%', marginBottom: '8px', borderRadius: '4px'}}></div>
-        <div className="skeleton-shimmer" style={{height: '14px', width: '90%', marginBottom: '8px', borderRadius: '4px'}}></div>
-        <div className="skeleton-shimmer" style={{height: '14px', width: '40%', borderRadius: '4px'}}></div>
+        <div className="skeleton-shimmer" style={{ height: "24px", width: "85%", marginBottom: "12px", borderRadius: "6px" }}></div>
+        <div className="skeleton-shimmer" style={{ height: "14px", width: "60%", marginBottom: "16px", borderRadius: "4px" }}></div>
+        <div className="skeleton-shimmer" style={{ height: "14px", width: "100%", marginBottom: "8px", borderRadius: "4px" }}></div>
+        <div className="skeleton-shimmer" style={{ height: "14px", width: "90%", marginBottom: "8px", borderRadius: "4px" }}></div>
+        <div className="skeleton-shimmer" style={{ height: "14px", width: "40%", borderRadius: "4px" }}></div>
       </div>
     </div>
   );
 
+  const pageTitle = activeTagSlug
+    ? `Blogs tagged “${displayTag}”`
+    : activeAuthorSlug
+      ? `Posts by ${displayAuthor}`
+      : "Our Blogs";
+
   return (
     <div className="blog-public-container">
-      <h2 className="blog-public-title">
-        {activeTag ? `Blogs tagged “${activeTag}”` : "Our Blogs"}
-      </h2>
+      <h2 className="blog-public-title">{pageTitle}</h2>
 
-      {activeTag && (
+      {(activeTagSlug || activeAuthorSlug) && (
         <div className="tag-filter-banner">
-          <span className="active-tag-chip">#{activeTag}</span>
+          {activeTagSlug && <span className="active-tag-chip">#{displayTag}</span>}
+          {activeAuthorSlug && <span className="active-tag-chip">{displayAuthor}</span>}
           <Link to="/blog" className="clear-tag-filter">View all blogs</Link>
         </div>
       )}
 
       {loading ? (
         <div className="blog-grid">
-          {[1, 2, 3, 4, 5, 6].map(i => (
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <SkeletonCard key={i} />
           ))}
         </div>
@@ -102,7 +141,7 @@ export default function Blog() {
         <>
           <div className="blog-grid">
             {currentPosts.length > 0 ? (
-              currentPosts.map(post => (
+              currentPosts.map((post) => (
                 <Link key={post.id} to={getBlogPostUrl(post)} className="blog-card">
                   {(post.cover_image || post.social_image) && (
                     <div className="blog-cover-wrap">
@@ -119,14 +158,37 @@ export default function Blog() {
                     <h3>{post.title}</h3>
 
                     <p className="meta">
-                      {post.displayAuthor} • {formatDate(post.displayDate, post.isCustom)} • {post.reading_time_minutes} min read
+                      <span
+                        className="meta-author"
+                        onClick={(e) => handleAuthorClick(e, post.displayAuthor)}
+                        role="link"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") handleAuthorClick(e, post.displayAuthor);
+                        }}
+                      >
+                        {post.displayAuthor}
+                      </span>
+                      {" • "}
+                      {formatDate(post.displayDate, post.isCustom)} • {post.reading_time_minutes} min read
                     </p>
 
                     <p className="description">{post.description}</p>
 
                     <div className="tags-small">
-                      {post.tag_list?.slice(0, 3).map(tag => (
-                        <span key={tag}>#{tag}</span>
+                      {post.tag_list?.slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          className="tag-link"
+                          onClick={(e) => handleTagClick(e, tag)}
+                          role="link"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") handleTagClick(e, tag);
+                          }}
+                        >
+                          #{tag}
+                        </span>
                       ))}
                     </div>
 
@@ -136,14 +198,15 @@ export default function Blog() {
               ))
             ) : (
               <p className="no-posts">
-                {activeTag
-                  ? `No blogs found for the tag “${activeTag}”.`
-                  : "No blogs found."}
+                {activeTagSlug
+                  ? `No blogs found for the tag “${displayTag}”.`
+                  : activeAuthorSlug
+                    ? `No blogs found for author “${displayAuthor}”.`
+                    : "No blogs found."}
               </p>
             )}
           </div>
 
-          {/* Modern Pagination UI */}
           {totalPages > 1 && (
             <div className="modern-pagination">
               <button className="pagination-arrow" onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
@@ -161,7 +224,11 @@ export default function Blog() {
                   }
 
                   if (start > 1) {
-                    pages.push(<button key={1} className="page-number" onClick={() => paginate(1)}>1</button>);
+                    pages.push(
+                      <button key={1} className="page-number" onClick={() => paginate(1)}>
+                        1
+                      </button>
+                    );
                     if (start > 2) pages.push(<span key="start-ellipsis" className="page-ellipsis">&hellip;</span>);
                   }
 
@@ -171,13 +238,19 @@ export default function Blog() {
                         key={i}
                         className={`page-number ${currentPage === i ? "active" : ""}`}
                         onClick={() => paginate(i)}
-                      >{i}</button>
+                      >
+                        {i}
+                      </button>
                     );
                   }
 
                   if (end < totalPages) {
                     if (end < totalPages - 1) pages.push(<span key="end-ellipsis" className="page-ellipsis">&hellip;</span>);
-                    pages.push(<button key={totalPages} className="page-number" onClick={() => paginate(totalPages)}>{totalPages}</button>);
+                    pages.push(
+                      <button key={totalPages} className="page-number" onClick={() => paginate(totalPages)}>
+                        {totalPages}
+                      </button>
+                    );
                   }
 
                   return pages;

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { apiUrl } from "../../../config/api";
+import { getJobUrl } from "../../../utils/blogUrls";
 import "./CareerPositions.scss";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLocationDot, faClock, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationDot, faClock, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const CareerPositions = () => {
   const navigate = useNavigate();
@@ -30,9 +31,10 @@ const CareerPositions = () => {
     loadJobs();
   }, []);
 
-  const filteredPositions = selectedDepartment === "All"
-    ? positions
-    : positions.filter((pos) => pos.department === selectedDepartment);
+  const filteredPositions =
+    selectedDepartment === "All"
+      ? positions
+      : positions.filter((pos) => pos.department === selectedDepartment);
 
   return (
     <section className="career-positions" id="positions">
@@ -67,10 +69,10 @@ const CareerPositions = () => {
         ) : (
           <div className="positions-grid">
             {filteredPositions.map((position) => (
-              <div 
-                key={position._id} 
-                className="position-card" 
-                onClick={() => navigate(`/careers/${position._id}`)}
+              <div
+                key={position._id}
+                className="position-card"
+                onClick={() => navigate(getJobUrl(position))}
               >
                 <div className="card-top">
                   <div className="tags">
@@ -81,9 +83,9 @@ const CareerPositions = () => {
                     <FontAwesomeIcon icon={faArrowRight} />
                   </div>
                 </div>
-                
+
                 <h3>{position.title}</h3>
-                
+
                 <div className="position-meta">
                   <div className="meta-item">
                     <FontAwesomeIcon icon={faLocationDot} />
@@ -96,11 +98,9 @@ const CareerPositions = () => {
                 </div>
 
                 <p className="position-description">
-                  {position.aboutRole ? (
-                    position.aboutRole.substring(0, 130) + "..."
-                  ) : (
-                    position.description?.substring(0, 130) + "..."
-                  )}
+                  {position.aboutRole
+                    ? position.aboutRole.substring(0, 130) + "..."
+                    : position.description?.substring(0, 130) + "..."}
                 </p>
 
                 <div className="card-footer">

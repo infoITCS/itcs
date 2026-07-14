@@ -55,7 +55,7 @@ const Header = () => {
                   </ul>
                 </li>
                 
-                <li className="nav-item"><Link className="nav-link" to="/vision-mission" onClick={closeMenu}>Vision & Mission</Link></li>
+                <li className="nav-item"><Link className="nav-link" to="/mission-vision" onClick={closeMenu}>Vision & Mission</Link></li>
                 <li className="nav-item"><Link className="nav-link" to="/blog" onClick={closeMenu}>Blogs</Link></li>
                 <li className="nav-item"><Link className="nav-link" to="/about-us" onClick={closeMenu}>About Us</Link></li>
                 <li className="nav-item"><Link className="nav-link" to="/contact" onClick={closeMenu}>Contact</Link></li>

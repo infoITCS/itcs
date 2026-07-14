@@ -41,6 +41,7 @@ const Careers = lazyWithRetry(() => import('./Components/Careers/Careers'))
 const ApplyJob = lazyWithRetry(() => import('./Components/Careers/ApplyJob/ApplyJob'))
 const JobDetail = lazyWithRetry(() => import('./Components/Careers/JobDetail/JobDetail'))
 const NotFound = lazyWithRetry(() => import('./Components/NotFound/NotFound'))
+const Privacy = lazyWithRetry(() => import('./Components/Privacy/Privacy'))
 
 const Loading = () => (
   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', paddingTop: '120px' }}>
@@ -111,7 +112,8 @@ function App() {
             <Route path="/services/network-solutions/support" element={<Navigate to="/network-solutions/support" replace />} />
             <Route path="/services/web-development" element={<Navigate to="/web-development" replace />} />
 
-            <Route path="/vision-mission" element={<Vision />} />
+            <Route path="/mission-vision" element={<Vision />} />
+            <Route path="/vision-mission" element={<Navigate to="/mission-vision" replace />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<Contact />} />
@@ -119,11 +121,14 @@ function App() {
             <Route path="/careers" element={<Careers />} />
             <Route path="/careers/:id" element={<JobDetail />} />
             <Route path="/apply" element={<ApplyJob />} />
+            <Route path="/privacy-policy" element={<Privacy />} />
 
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/tag/:tagSlug" element={<Blog />} />
+            <Route path="/author/:authorSlug" element={<Blog />} />
             <Route path="/blog/:id" element={<LegacyBlogSlugRedirect />} />
             <Route path="/custom-blog/:slug" element={<CustomBlogRedirect />} />
             <Route

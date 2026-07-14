@@ -188,6 +188,9 @@ export const findAllJobs = () =>
 export const findJobById = (id) =>
   coll('jobs').findOne({ _id: ObjectId.createFromHexString(id) })
 
+export const findJobBySlug = (slug) =>
+  coll('jobs').findOne({ slug })
+
 export const createJob = async (data) => {
   const doc = { ...data, createdAt: new Date() }
   const result = await coll('jobs').insertOne(doc)
