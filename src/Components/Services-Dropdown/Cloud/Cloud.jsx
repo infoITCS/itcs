@@ -6,6 +6,8 @@ import CloudSection2 from './CloudSection2/CloudSection2';
 import CloudSection4 from './CloudSection4/CloudSection4';
 import PartnerLogos from '../_shared/PartnerLogos/PartnerLogos';
 import { faMicrosoft, faAws, faGoogle } from '@fortawesome/free-brands-svg-icons';
+import PageSEO from '../../Common/PageSEO';
+import { SEO_META } from '../../../config/seoMeta';
 
 const cloudPartners = [
   { icon: faMicrosoft, name: 'Microsoft Azure', type: 'Gold Partner', description: 'Certified cloud solutions architect with deep expertise in Azure infrastructure, migration, and managed services.', status: 'Verified Partner' },
@@ -18,8 +20,10 @@ const Cloud = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  const seo = SEO_META.cloud;
   return (
     <>
+      <PageSEO title={seo.title} description={seo.description} path={seo.path} />
       <CloudHero />
       <CloudSection2 />
       <CloudFeatures />

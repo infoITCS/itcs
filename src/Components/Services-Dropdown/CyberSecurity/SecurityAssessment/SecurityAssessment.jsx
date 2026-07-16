@@ -3,9 +3,12 @@ import './SecurityAssessment.scss'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShieldAlt, faSearch, faLock, faBug, faServer, faFingerprint } from '@fortawesome/free-solid-svg-icons'
+import PageSEO from '../../../Common/PageSEO'
+import { SEO_META } from '../../../../config/seoMeta'
 
 const SecurityAssessment = () => {
   const navigate = useNavigate()
+  const seo = SEO_META.securityAssessment
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -29,6 +32,7 @@ const SecurityAssessment = () => {
 
   return (
     <div className="security-assessment">
+      <PageSEO title={seo.title} description={seo.description} path={seo.path} />
       <section className="sa-hero">
         <div className="hero-badge">
           <FontAwesomeIcon icon={faShieldAlt} />

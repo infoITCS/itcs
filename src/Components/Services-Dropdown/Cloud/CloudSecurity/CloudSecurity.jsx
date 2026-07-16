@@ -3,11 +3,15 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShieldAlt, faLock, faEye, faUserShield, faServer, faShieldVirus, faLockOpen, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import '../../_shared/nested-pages.scss';
+import PageSEO from '../../../Common/PageSEO';
+import { SEO_META } from '../../../../config/seoMeta';
 
 const CloudSecurity = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const seo = SEO_META.cloudSecurity;
 
   const benefits = [
     { icon: faShieldAlt, title: 'Data Protection', description: 'Enterprise-grade encryption and security controls' },
@@ -25,6 +29,7 @@ const CloudSecurity = () => {
 
   return (
     <div className="nested-page">
+      <PageSEO title={seo.title} description={seo.description} path={seo.path} />
       <section className="nested-hero">
         <div className="nested-hero-bg">
           <div className="network-pattern"></div>

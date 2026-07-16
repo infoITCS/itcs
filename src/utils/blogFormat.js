@@ -26,6 +26,8 @@ export const formatPublishedBlog = (blog) => {
     id: blog._id,
     title,
     description,
+    metaTitle: blog.metaTitle,
+    metaDescription: blog.metaDescription || description,
     cover_image: blog.featuredImage,
     social_image: blog.ogImage,
     user: { username: blog.author, name: blog.author },

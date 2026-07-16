@@ -4,11 +4,15 @@ import '../../_shared/service-common.scss';
 import './NetworkDesign.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faProjectDiagram, faNetworkWired, faServer, faShieldAlt, faCheckCircle, faArrowRight, faWifi, faTools, faSignal } from '@fortawesome/free-solid-svg-icons';
+import PageSEO from '../../../Common/PageSEO';
+import { SEO_META } from '../../../../config/seoMeta';
 
 const NetworkDesign = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const seo = SEO_META.networkDesign;
 
   const services = [
     { icon: faNetworkWired, title: 'LAN/WAN Design', desc: 'Local and wide area networks' },
@@ -42,6 +46,7 @@ const NetworkDesign = () => {
 
   return (
     <div className="nested-page">
+      <PageSEO title={seo.title} description={seo.description} path={seo.path} />
       <section className="network-hero-section">
         <div className="hero-badge">
           <FontAwesomeIcon icon={faProjectDiagram} />

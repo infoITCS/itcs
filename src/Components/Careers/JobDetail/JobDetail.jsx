@@ -4,6 +4,8 @@ import axios from "axios";
 import { apiUrl } from "../../../config/api";
 import { getJobUrl } from "../../../utils/blogUrls";
 import { isMongoObjectId } from "../../../utils/slugify";
+import PageSEO from "../../Common/PageSEO";
+import { jobSeoFromJob, SEO_META } from "../../../config/seoMeta";
 import "./JobDetail.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -61,6 +63,7 @@ const JobDetail = () => {
   if (error || !job) {
     return (
       <div className="theme-error">
+        <PageSEO title="Position Not Found | ITCS" description={SEO_META.careers.description} path="/careers" noindex />
         <h2>Position Not Found</h2>
         <p>{error}</p>
         <button className="theme-btn" onClick={() => navigate("/careers")}>
@@ -87,6 +90,7 @@ const JobDetail = () => {
 
   return (
     <div className="job-detail-themed">
+      <PageSEO {...jobSeoFromJob(job)} />
       <div className="theme-radial-top"></div>
       <div className="theme-radial-bottom"></div>
 

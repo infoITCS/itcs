@@ -3,11 +3,15 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeadset, faTools, faClock, faPhoneAlt, faArrowRight, faServer, faWifi, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
 import '../NetworkNew.scss';
+import PageSEO from '../../../Common/PageSEO';
+import { SEO_META } from '../../../../config/seoMeta';
 
 const NetworkSupport = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const seo = SEO_META.networkSupport;
 
   const services = [
     { icon: faTools, title: 'Network Maintenance', description: 'Regular maintenance to keep your network running optimally' },
@@ -25,6 +29,7 @@ const NetworkSupport = () => {
 
   return (
     <div className="nested-page">
+      <PageSEO title={seo.title} description={seo.description} path={seo.path} />
       <section className="nested-hero">
         <div className="nested-hero-bg">
           <div className="network-pattern"></div>

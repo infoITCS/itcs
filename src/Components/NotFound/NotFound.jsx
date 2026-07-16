@@ -1,12 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import PageSEO from '../Common/PageSEO';
+import { SEO_META } from '../../config/seoMeta';
 import './NotFound.scss';
 
 const NotFound = () => {
   const navigate = useNavigate();
+  const seo = SEO_META.notFound;
 
   return (
     <div className="not-found-wrapper">
+      <PageSEO title={seo.title} description={seo.description} path={seo.path} noindex />
       <div className="glow-circle gc-1"></div>
       <div className="glow-circle gc-2"></div>
       

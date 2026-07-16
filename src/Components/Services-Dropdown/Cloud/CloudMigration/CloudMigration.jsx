@@ -3,11 +3,15 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloudUploadAlt, faServer, faDatabase, faSync, faCheckCircle, faArrowRight, faArrowLeft, faTasks, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
 import '../../_shared/nested-pages.scss';
+import PageSEO from '../../../Common/PageSEO';
+import { SEO_META } from '../../../../config/seoMeta';
 
 const CloudMigration = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const seo = SEO_META.cloudMigration;
 
   const benefits = [
     { icon: faCheckCircle, title: 'Zero Downtime', description: 'Seamless migration with minimal business disruption' },
@@ -25,6 +29,7 @@ const CloudMigration = () => {
 
   return (
     <div className="nested-page">
+      <PageSEO title={seo.title} description={seo.description} path={seo.path} />
       <section className="nested-hero">
         <div className="hero-content">
           <div className="breadcrumb">

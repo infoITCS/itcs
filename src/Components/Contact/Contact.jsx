@@ -2,11 +2,15 @@ import React from 'react'
 import ContactHero from './ContactHero/ContactHero'
 import ContactForm from './ContactForm/ContactForm'
 import ContactMap from './ContactMap/ContactMap'
+import PageSEO from '../Common/PageSEO'
+import { SEO_META } from '../../config/seoMeta'
 import './Contact.scss'
 
 const Contact = () => {
+  const seo = SEO_META.contact
   return (
     <>
+      <PageSEO title={seo.title} description={seo.description} path={seo.path} />
       <ContactHero />
       <ContactForm />
       <ContactMap />

@@ -3,11 +3,15 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloud, faServer, faDatabase, faNetworkWired, faCheckCircle, faArrowRight, faLaptop, faBuilding, faShop } from '@fortawesome/free-solid-svg-icons';
 import '../../_shared/nested-pages.scss';
+import PageSEO from '../../../Common/PageSEO';
+import { SEO_META } from '../../../../config/seoMeta';
 
 const CloudDesign = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const seo = SEO_META.cloudDesign;
 
   const benefits = [
     { icon: faCheckCircle, title: 'Scalable Architecture', description: 'Future-proof cloud designs that grow with your business' },
@@ -25,6 +29,7 @@ const CloudDesign = () => {
 
   return (
     <div className="nested-page">
+      <PageSEO title={seo.title} description={seo.description} path={seo.path} />
       <section className="nested-hero">
         <div className="hero-content">
           <div className="breadcrumb">

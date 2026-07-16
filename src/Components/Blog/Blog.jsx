@@ -4,6 +4,8 @@ import axios from "axios";
 import { apiUrl } from "../../config/api";
 import { getAuthorUrl, getBlogPostUrl, getTagUrl, toUrlSlug } from "../../utils/blogUrls";
 import { formatPublishedBlog, sortBlogsByDate } from "../../utils/blogFormat";
+import PageSEO from "../Common/PageSEO";
+import { SEO_META, blogFilterSeo } from "../../config/seoMeta";
 import "./Blog.scss";
 
 export default function Blog() {
@@ -79,6 +81,12 @@ export default function Blog() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const seo = activeTagSlug
+    ? blogFilterSeo({ tag: activeTagSlug, tagLabel: displayTag })
+    : activeAuthorSlug
+      ? blogFilterSeo({ authorSlug: activeAuthorSlug, authorLabel: displayAuthor })
+      : SEO_META.blog;
+
   const formatDate = (dateStr, isCustom = false) => {
     if (!dateStr) return "";
     if (typeof dateStr === "string" && !isCustom && isNaN(Date.parse(dateStr))) {
@@ -121,6 +129,12 @@ export default function Blog() {
 
   return (
     <div className="blog-public-container">
+      <PageSEO
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+        noindex={seo.noindex}
+      />
       <h2 className="blog-public-title">{pageTitle}</h2>
 
       {(activeTagSlug || activeAuthorSlug) && (

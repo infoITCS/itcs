@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { apiUrl } from "../../../config/api";
+import PageSEO from "../../Common/PageSEO";
+import { SEO_META } from "../../../config/seoMeta";
 import "./ApplyJob.scss";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -132,8 +134,14 @@ const ApplyJob = () => {
 
   return (
     <div className="apply-job-themed">
+      <PageSEO
+        title={job?.title ? `Apply for ${job.title} | ITCS` : SEO_META.apply.title}
+        description={SEO_META.apply.description}
+        path={SEO_META.apply.path}
+        noindex
+      />
       <div className="theme-radial-top"></div>
-      
+
       <div className="apply-container">
         <div className="apply-header">
           <button className="btn-back" onClick={() => navigate(-1)}>

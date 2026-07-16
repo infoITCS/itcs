@@ -5,6 +5,8 @@ import axios from "axios";
 import { apiUrl } from "../../config/api";
 import { getBlogPostUrl, getTagUrl, getAuthorUrl, isDevToBlogId } from "../../utils/blogUrls";
 import { formatPublishedBlog, normalizeBlogHtml } from "../../utils/blogFormat";
+import PageSEO from "../Common/PageSEO";
+import { blogSeoFromArticle, SEO_META } from "../../config/seoMeta";
 import "./Blog.scss";
 import "./BlogDetail.scss";
 
@@ -116,10 +118,15 @@ const BlogDetail = () => {
         title: blog.title,
         body_html: blog.content,
         cover_image: blog.featuredImage,
+        social_image: blog.ogImage,
         publishDate: blog.publishDate,
         reading_time_minutes: Math.ceil((blog.content || "").split(" ").length / 200),
         user: { name: blog.author },
         tag_list: blog.tags || [],
+        metaTitle: blog.metaTitle,
+        metaDescription: blog.metaDescription || blog.excerpt,
+        description: blog.excerpt || blog.metaDescription,
+        slug: blog.slug,
       });
 
       if (blog.author) setCustomAuthor(blog.author);
@@ -162,6 +169,7 @@ const BlogDetail = () => {
   if (loading) {
     return (
       <div className="blog-detail skeleton-wrapper">
+        <PageSEO title={SEO_META.blog.title} description={SEO_META.blog.description} path={SEO_META.blog.path} />
         <div className="skeleton-cover"></div>
         <div className="skeleton-title"></div>
         <div className="skeleton-meta"></div>
@@ -178,14 +186,32 @@ const BlogDetail = () => {
     );
   }
   
-  if (error) return <div className="blog-detail-error"><h2>Oops!</h2><p>{error}</p><Link to="/blog" className="back-btn">Go Back</Link></div>;
-  if (!article) return <div className="blog-detail-not-found"><h2>Blog not found</h2><Link to="/blog" className="back-btn">Go Back</Link></div>;
+  if (error) return (
+    <div className="blog-detail-error">
+      <PageSEO title="Blog Not Found | ITCS" description={SEO_META.blog.description} path="/blog" noindex />
+      <h2>Oops!</h2><p>{error}</p><Link to="/blog" className="back-btn">Go Back</Link>
+    </div>
+  );
+  if (!article) return (
+    <div className="blog-detail-not-found">
+      <PageSEO title="Blog Not Found | ITCS" description={SEO_META.blog.description} path="/blog" noindex />
+      <h2>Blog not found</h2><Link to="/blog" className="back-btn">Go Back</Link>
+    </div>
+  );
 
   const displayAuthor = customAuthor || article.user?.name || article.user?.username || "Unknown Author";
   const articleTags = (article.tag_list || article.tags || []).filter(Boolean);
+  const postPath = getBlogPostUrl(article.slug ? { ...article, isCustom: true } : { ...article, id: postKey, isCustom: isCustomBlog });
+  const seo = blogSeoFromArticle(article, postPath);
 
   return (
     <div className="blog-detail">
+      <PageSEO
+        title={seo.title}
+        description={seo.description}
+        path={seo.path}
+        image={seo.image}
+      />
       {article.cover_image && (
         <img src={article.cover_image} alt={article.title} className="detail-cover" />
       )}

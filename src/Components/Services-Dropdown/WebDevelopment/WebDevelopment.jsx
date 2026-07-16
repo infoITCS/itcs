@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCode, faLaptopCode, faMobileAlt, faShoppingCart, faSearch, faCloud, faPalette, faRocket, faCheckCircle, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import PartnerLogos from '../_shared/PartnerLogos/PartnerLogos';
 import { faMicrosoft, faGoogle, faWordpress } from '@fortawesome/free-brands-svg-icons';
+import PageSEO from '../../Common/PageSEO';
+import { SEO_META } from '../../../config/seoMeta';
 
 const webPartners = [
   { icon: faMicrosoft, name: 'Microsoft Technologies', type: 'Technology Partner', description: 'Built on Microsoft technologies including .NET, Azure, and SharePoint for enterprise web solutions.', status: 'Verified Partner' },
@@ -17,6 +19,8 @@ const WebDevelopment = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const seo = SEO_META.webDevelopment;
 
   const services = [
     { icon: faCode, title: 'Custom Websites', desc: 'Tailored web solutions' },
@@ -50,6 +54,7 @@ const WebDevelopment = () => {
 
   return (
     <div className="nested-page">
+      <PageSEO title={seo.title} description={seo.description} path={seo.path} />
       <section className="network-hero-section">
         <div className="hero-badge">
           <FontAwesomeIcon icon={faCode} />

@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { MsalProvider } from "@azure/msal-react";
 import msalInstance, { initializeMsal } from "./config/msalConfig";
 import "./index.css";
@@ -27,11 +28,13 @@ const LoadingScreen = () => (
 const renderApp = () => {
   root.render(
     <StrictMode>
-      <MsalProvider instance={msalInstance}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </MsalProvider>
+      <HelmetProvider>
+        <MsalProvider instance={msalInstance}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </MsalProvider>
+      </HelmetProvider>
     </StrictMode>
   );
 };
