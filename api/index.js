@@ -70,8 +70,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Long blogs often include base64 cover images; keep under MongoDB's 16MB doc limit
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
 const isSitemapPath = (req) => {
   const path = req.path || '';
@@ -132,6 +133,12 @@ app.get('/api/health', (req, res) => {
 app.use((err, req, res, next) => {
   if (err.message === 'Not allowed by CORS') {
     return res.status(403).json({ message: 'CORS policy blocked this request.' });
+  }
+
+  if (err.type === 'entity.too.large' || err.status === 413) {
+    return res.status(413).json({
+      message: 'Blog is too large. Please use a smaller image or reduce content length.',
+    });
   }
 
   console.error('Unhandled error:', err);

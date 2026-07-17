@@ -291,7 +291,7 @@ const AddCustomBlog = () => {
       }
       
       if (err.response?.status === 413) {
-        serverMsg = "Image is still too large. Please upload a smaller image.";
+        serverMsg = serverMsg || 'Blog is too large. Please use a smaller cover image, avoid pasting large images into the editor, or shorten the content.';
       }
 
       setMessage({
