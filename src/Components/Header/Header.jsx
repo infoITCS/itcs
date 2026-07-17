@@ -16,7 +16,13 @@ const Header = () => {
     <div className="header">
       <div className="header-img">
         <a href="/">
-          <img src={alignitLogo} alt="ITCS Logo" width="150" height="83" decoding="async" />
+          <img
+            src={alignitLogo}
+            alt="ITCS Logo"
+            width="150"
+            height="83"
+            decoding="async"
+          />
         </a>
       </div>
 

@@ -103,9 +103,24 @@
   }
 
   .header-img {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    line-height: 0;
+
+    a {
+      display: flex;
+      align-items: center;
+      line-height: 0;
+    }
+
     img {
       width: 150px;
-      filter: brightness(1.1);
+      height: auto;
+      display: block;
+      object-fit: contain;
+      // Keep logo crisp on retina; avoid soft filters
+      image-rendering: -webkit-optimize-contrast;
     }
   }
 
@@ -264,7 +279,7 @@
 
     .header-img {
       img {
-        width: 120px;
+        width: 128px;
       }
     }
 
@@ -418,7 +433,7 @@
 
     .header-img {
       img {
-        width: 90px;
+        width: 112px;
       }
     }
 
@@ -494,7 +509,7 @@
 
     .header-img {
       img {
-        width: 65px;
+        width: 108px;
       }
     }
 
@@ -566,7 +581,7 @@
   @media (max-width: 360px) {
     .header-img {
       img {
-        width: 55px;
+        width: 100px;
       }
     }
 
@@ -626,7 +641,7 @@
     padding: 15px 20px;
 
     .header-img img {
-      width: 110px;
+      width: 130px;
     }
 
     .links {
