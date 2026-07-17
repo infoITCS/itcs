@@ -7,7 +7,7 @@ import { faBriefcase, faChartLine, faHandshake, faLightbulb, faRocket, faUsers, 
 import PartnerLogos from '../_shared/PartnerLogos/PartnerLogos';
 import { faMicrosoft, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { faBuilding, faClipboardCheck } from '@fortawesome/free-solid-svg-icons';
-import consultingImg from 'assets/images/Consulting-images/business-consulting-new.jpg';
+import consultingImg from 'assets/images/Consulting-images/business-consulting-new.webp';
 
 const consultingPartners = [
   { icon: faMicrosoft, name: 'Microsoft Consulting', type: 'Gold Partner', description: 'Authorized Microsoft consulting partner for enterprise transformation, cloud strategy, and digital workplace solutions.', status: 'Verified Partner' },

@@ -1,7 +1,7 @@
 // import React from 'react';
 // import { useForm, ValidationError } from '@formspree/react';
 // import "./Csection3.scss";
-// import CSection3img from "./../../../assets/images/contact-section3.jpg";
+// import CSection3img from "./../../../assets/images/contact-section3.webp";
 
 // const Csection3 = () => {
 //   const [state, handleSubmit] = useForm("xovjnypa");
@@ -100,7 +100,7 @@
 import React, { useRef } from 'react';
 import { useForm, ValidationError } from '@formspree/react';
 import "./Csection3.scss";
-import CSection3img from "./../../../assets/images/contact-section3.jpg";
+import CSection3img from "./../../../assets/images/contact-section3.webp";
 
 const Csection3 = () => {
   const [state, handleSubmit] = useForm("myzkdqdn");

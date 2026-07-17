@@ -2,7 +2,7 @@ import React from 'react'
 import "./CloudSection2.scss"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloud, faDatabase, faGlobe, faShieldAlt } from '@fortawesome/free-solid-svg-icons';
-import CloudHeroImg from './../../../../assets/images/cloudSection2.jpg'
+import CloudHeroImg from './../../../../assets/images/cloudSection2.webp'
 
 const CloudSection2 = () => {
   const services = [

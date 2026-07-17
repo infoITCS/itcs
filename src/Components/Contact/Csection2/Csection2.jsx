@@ -1,8 +1,8 @@
 import React from "react";
 import "./Csection2.scss";
-import technicalSupport from "./../../../assets/logos/support-icon.png";
-import phoneIcon from "./../../../assets/logos/phone-icon.png";
-import mailIcon from "./../../../assets/logos/email-icon.png";
+import technicalSupport from "./../../../assets/logos/support-icon.webp";
+import phoneIcon from "./../../../assets/logos/phone-icon.webp";
+import mailIcon from "./../../../assets/logos/email-icon.webp";
 
 const Csection2 = () => {
   const cardData = [

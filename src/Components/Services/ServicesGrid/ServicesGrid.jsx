@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./ServicesGrid.scss";
-import cloud from "./../../../assets/logos/SCloud.png";
-import cybersecurity from "./../../../assets/logos/SCybersecurity.png";
-import consulting from "./../../../assets/logos/SConsulting.png";
-import enterpriseSol from "./../../../assets/logos/SEnterpriseSol.png";
-import itServices from "./../../../assets/logos/SITservices.png";
-import networkSolutions from "./../../../assets/logos/SNetworkSolutions.png";
-import webDevelopment from "./../../../assets/logos/SNetworkSolutions.png";
+import cloud from "./../../../assets/logos/SCloud.webp";
+import cybersecurity from "./../../../assets/logos/SCybersecurity.webp";
+import consulting from "./../../../assets/logos/SConsulting.webp";
+import enterpriseSol from "./../../../assets/logos/SEnterpriseSol.webp";
+import itServices from "./../../../assets/logos/SITservices.webp";
+import networkSolutions from "./../../../assets/logos/SNetworkSolutions.webp";
+import webDevelopment from "./../../../assets/logos/SNetworkSolutions.webp";
 
 const ServicesGrid = () => {
   const navigate = useNavigate();

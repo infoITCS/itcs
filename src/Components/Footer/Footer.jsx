@@ -1,5 +1,5 @@
 import React from 'react';
-import itcsLogo from "../../assets/logos/itcsLogo.png";
+import itcsLogo from "../../assets/logos/itcsLogo.webp";
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {

@@ -1,6 +1,6 @@
 import React from "react";
 import "./CareerSection1.scss";
-import careerImage from "./../../../assets/images/career-section1-img.jpg";
+import careerImage from "./../../../assets/images/career-section1-img.webp";
 const CareerSection1 = () => {
   return (
     <>

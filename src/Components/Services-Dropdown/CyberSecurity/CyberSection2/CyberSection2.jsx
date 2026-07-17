@@ -2,7 +2,7 @@ import React from 'react'
 import "./CyberSection2.scss"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShieldAlt, faLock, faUserShield, faBell, faFingerprint, faServer } from '@fortawesome/free-solid-svg-icons';
-import CyberImg from './../../../../assets/images/CyberSecurity-images/cyberSection3-img.png';
+import CyberImg from './../../../../assets/images/CyberSecurity-images/cyberSection3-img.webp';
 
 const CyberSection2 = () => {
   const services = [

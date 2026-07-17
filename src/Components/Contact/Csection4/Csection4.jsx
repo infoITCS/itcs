@@ -1,8 +1,8 @@
 import React from "react";
 import "./Csection4.scss";
-import KarachiImage from "./../../../assets/images/Karachi-office.png";
-import LahoreImage from "./../../../assets/images/Lahore-office.png";
-import IslamabadImage from "./../../../assets/images/Islamabad-office.png";
+import KarachiImage from "./../../../assets/images/Karachi-office.webp";
+import LahoreImage from "./../../../assets/images/Lahore-office.webp";
+import IslamabadImage from "./../../../assets/images/Islamabad-office.webp";
 const Csection4 = () => {
   const offices = [
     {

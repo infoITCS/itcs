@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { apiUrl } from '../../config/api';
-import alignitLogo from '../../assets/logos/itcsLogo.png';
+import alignitLogo from '../../assets/logos/itcsLogo.webp';
 import './Login.scss';
 
 const ForgotPassword = () => {

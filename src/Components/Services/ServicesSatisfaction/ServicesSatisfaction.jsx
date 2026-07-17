@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import "./ServicesSatisfaction.scss";
-import monumentImage from "./../../../assets/images/services-side.jpg";
+import monumentImage from "./../../../assets/images/services-side.webp";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloud, faLock, faBuilding, faCog, faNetworkWired, faBriefcase } from '@fortawesome/free-solid-svg-icons';
 

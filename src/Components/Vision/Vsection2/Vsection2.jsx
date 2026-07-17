@@ -1,6 +1,6 @@
 import React from "react";
 import "./Vsection2.scss";
-import islamicimg from "./../../../assets/images/islamic-ideology.jpg";
+import islamicimg from "./../../../assets/images/islamic-ideology.webp";
 const Vsection2 = () => {
   const cardsData = [
     {

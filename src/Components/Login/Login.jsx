@@ -7,7 +7,7 @@ import {
   exchangeMicrosoftAccountForJwt,
   storeAuthSession,
 } from '../../utils/microsoftAuth'
-import alignitLogo from '../../assets/logos/itcsLogo.png'
+import alignitLogo from '../../assets/logos/itcsLogo.webp'
 import './Login.scss'
 
 const Login = () => {

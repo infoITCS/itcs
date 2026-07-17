@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./HomeSolutions.scss";
-import cloud from "./../../../assets/logos/Cloud.png";
-import cybersecurity from "./../../../assets/logos/Cybersecurity.png";
-import consulting from "./../../../assets/logos/Consulting.png";
-import enterpriseSol from "./../../../assets/logos/EnterpriseSol.png";
-import itServices from "./../../../assets/logos/ITservices.png";
-import networkSolutions from "./../../../assets/logos/NetworkSolutions.png";
+import cloud from "./../../../assets/logos/Cloud.webp";
+import cybersecurity from "./../../../assets/logos/Cybersecurity.webp";
+import consulting from "./../../../assets/logos/Consulting.webp";
+import enterpriseSol from "./../../../assets/logos/EnterpriseSol.webp";
+import itServices from "./../../../assets/logos/ITservices.webp";
+import networkSolutions from "./../../../assets/logos/NetworkSolutions.webp";
 
 const HomeSolutions = () => {
   const navigate = useNavigate();
