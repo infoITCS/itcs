@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-
-  <url>
-       <loc>https://www.itcs.com.pk/</loc>
-       <lastmod>2026-07-13T06:58:34+00:00</lastmod>
-       <changefreq>daily</changefreq>
-       <priority>1.0000</priority>
-  </url>
-</urlset>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!--
+    Plesk serves static files from dist/. This index points crawlers to the
+    dynamic sitemap at /api/sitemap.xml (handled by Node.js), which includes
+    all static pages plus every published blog automatically.
+  -->
+  <sitemap>
+    <loc>https://itcs.com.pk/api/sitemap.xml</loc>
+  </sitemap>
+</sitemapindex>

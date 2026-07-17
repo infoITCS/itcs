@@ -32,4 +32,9 @@ Disallow:
 User-agent: *
 Disallow: 
 Disallow: /cgi-bin/
-Sitemap: https://www.itcs.com.pk/sitemap.xml
+Disallow: /admin
+Disallow: /login
+Disallow: /forgot-password
+Disallow: /reset-password
+Sitemap: https://itcs.com.pk/sitemap.xml
+Sitemap: https://itcs.com.pk/api/sitemap.xml

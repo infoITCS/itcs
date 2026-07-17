@@ -9,6 +9,7 @@ import jobsRoutes from '../src/Backend/routes/jobs.js';
 import contactRoutes from '../src/Backend/routes/contactRoutes.js';
 import { setDb } from '../src/Backend/models/dbHelpers.js';
 import { assertJwtSecretStrength } from '../src/Backend/utils/validation.js';
+import { buildSitemapXml, getSiteOrigin } from '../src/Backend/utils/sitemap.js';
 
 let mongooseConnection = null;
 let connectingPromise = null;
@@ -72,15 +73,40 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+const isSitemapPath = (req) => {
+  const path = req.path || '';
+  return path === '/sitemap.xml' || path === '/api/sitemap.xml';
+};
+
 app.use(async (req, res, next) => {
   try {
     await getMongoConnection();
     next();
   } catch (error) {
     console.error('MongoDB connection error:', error);
+    // Sitemap can still return static pages without DB
+    if (isSitemapPath(req)) {
+      return next();
+    }
     res.status(500).json({ error: 'Database connection failed' });
   }
 });
+
+const sendSitemap = async (req, res) => {
+  try {
+    const xml = await buildSitemapXml(getSiteOrigin(req));
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+    res.status(200).send(xml);
+  } catch (error) {
+    console.error('Sitemap generation error:', error);
+    res.status(500).json({ error: 'Failed to generate sitemap' });
+  }
+};
+
+// Dynamic sitemap: static pages + all published blog slugs (auto-updates).
+app.get('/sitemap.xml', sendSitemap);
+app.get('/api/sitemap.xml', sendSitemap);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);

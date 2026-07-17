@@ -15,6 +15,7 @@ import contactRoutes from './routes/contactRoutes.js'
 import diagRoutes from './routes/diagRoutes.js'
 import { setDb, isReady } from './models/dbHelpers.js'
 import { assertJwtSecretStrength } from './utils/validation.js'
+import { buildSitemapXml, getSiteOrigin } from './utils/sitemap.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -102,6 +103,22 @@ app.use('/api/custom-blogs', blogRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/contact', contactRoutes)
 app.use('/diag', diagRoutes)
+
+// Dynamic sitemap (static pages + published blogs). Must be before express.static
+// so it is not overridden by the built public/sitemap.xml in dist/.
+const sendSitemap = async (req, res) => {
+  try {
+    const xml = await buildSitemapXml(getSiteOrigin(req))
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8')
+    res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
+    res.status(200).send(xml)
+  } catch (error) {
+    console.error('Sitemap generation error:', error)
+    res.status(500).json({ error: 'Failed to generate sitemap' })
+  }
+}
+app.get('/sitemap.xml', sendSitemap)
+app.get('/api/sitemap.xml', sendSitemap)
 
 const distPath = path.join(__dirname, '../../dist')
 const indexHtmlPath = path.join(distPath, 'index.html')
