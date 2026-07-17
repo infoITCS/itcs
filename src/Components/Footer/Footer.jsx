@@ -47,7 +47,7 @@ const Footer = () => {
 
         <div className="footer-col brand-col">
           <a href="/" className="footer-logo-link">
-            <img src={itcsLogo} alt="ITCS Logo" className="footer-logo" />
+            <img src={itcsLogo} alt="ITCS Logo" className="footer-logo" width="150" height="83" loading="lazy" decoding="async" />
           </a>
           <p className="footer-desc">
             ITCS strives to provide its customers with the best possible
