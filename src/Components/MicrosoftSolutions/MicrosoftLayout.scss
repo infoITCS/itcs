@@ -1,0 +1,245 @@
+.ms-solutions {
+  --ms-blue: #0078d4;
+  --ms-blue-dark: #005a9e;
+  --ms-ink: #1b1b1b;
+  --ms-muted: #605e5c;
+  --ms-line: #edebe9;
+  --ms-surface: #faf9f8;
+  --ms-white: #ffffff;
+  --ms-accent: var(--page-accent, var(--ms-blue));
+  --ms-font: "Segoe UI", "Segoe UI Web (West European)", Candara, Calibri, sans-serif;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--ms-font);
+  color: var(--ms-ink);
+  background:
+    radial-gradient(1200px 500px at 10% -10%, color-mix(in srgb, var(--ms-accent) 18%, transparent), transparent 60%),
+    radial-gradient(900px 400px at 100% 0%, rgba(0, 120, 212, 0.08), transparent 55%),
+    linear-gradient(180deg, #f3f6fa 0%, var(--ms-surface) 28%, var(--ms-white) 100%);
+}
+
+.ms-skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--ms-blue);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  z-index: 100;
+}
+
+.ms-skip:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+.ms-topbar {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--ms-line);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.ms-topbar__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ms-brands {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.ms-brands__itcs img {
+  display: block;
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.ms-brands__divider {
+  width: 1px;
+  height: 36px;
+  background: var(--ms-line);
+}
+
+.ms-brands__ms {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--ms-ink);
+}
+
+.ms-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.ms-link-quiet {
+  color: var(--ms-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.ms-link-quiet:hover {
+  color: var(--ms-blue);
+}
+
+.ms-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.15rem;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.ms-btn--primary {
+  background: var(--ms-accent);
+  color: #fff;
+}
+
+.ms-btn--primary:hover {
+  background: var(--ms-blue-dark);
+  color: #fff;
+}
+
+.ms-btn--ghost {
+  background: transparent;
+  color: var(--ms-ink);
+  border-color: #8a8886;
+}
+
+.ms-btn--ghost:hover {
+  border-color: var(--ms-accent);
+  color: var(--ms-accent);
+}
+
+.ms-subnav {
+  border-bottom: 1px solid var(--ms-line);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.ms-subnav__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.ms-subnav__link {
+  flex: 0 0 auto;
+  padding: 0.85rem 0.9rem;
+  text-decoration: none;
+  color: var(--ms-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+
+.ms-subnav__link:hover {
+  color: var(--ms-ink);
+}
+
+.ms-subnav__link.is-active {
+  color: var(--ms-accent);
+  border-bottom-color: var(--ms-accent);
+}
+
+.ms-main {
+  flex: 1;
+  width: 100%;
+}
+
+.ms-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--ms-line);
+  background: #111827;
+  color: #d1d5db;
+}
+
+.ms-footer__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 2.5rem;
+}
+
+.ms-footer__brands {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.ms-footer__brands img {
+  height: 36px;
+  width: auto;
+  background: #fff;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.ms-footer__links {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem 1.25rem;
+}
+
+.ms-footer__links a {
+  color: #f3f4f6;
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+
+.ms-footer__links a:hover {
+  color: #60a5fa;
+}
+
+.ms-footer__note {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  max-width: 720px;
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .ms-topbar__inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ms-brands__itcs img {
+    height: 40px;
+  }
+
+  .ms-link-quiet {
+    display: none;
+  }
+}

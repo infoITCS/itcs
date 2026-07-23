@@ -145,6 +145,42 @@ export const SEO_META = {
     description:
       "Articles and insights from ITCS on cloud computing, cybersecurity, networking, digital transformation, and practical technology guidance for businesses.",
   },
+  microsoftHub: {
+    path: "/microsoft",
+    title: "Microsoft Solutions | ITCS Partner Landing Pages",
+    description:
+      "Explore ITCS Microsoft solution areas: AI Workforce, AI Business Process, Security, Cloud & AI Platforms, and Surface — powered by Microsoft technologies.",
+  },
+  microsoftAiWorkforce: {
+    path: "/microsoft/ai-workforce",
+    title: "Microsoft 365 Copilot & AI Workforce | ITCS",
+    description:
+      "Adopt Microsoft 365 Copilot with ITCS. AI Workforce solutions for secure productivity, Copilot Studio, and enterprise rollout across Pakistan.",
+  },
+  microsoftAiBusinessProcess: {
+    path: "/microsoft/ai-business-process",
+    title: "AI Business Process with Power Platform | ITCS",
+    description:
+      "Automate business processes with Microsoft Power Platform and Dynamics 365. ITCS delivers AI-powered workflows and apps for enterprises in Pakistan.",
+  },
+  microsoftSecurity: {
+    path: "/microsoft/security",
+    title: "Microsoft Security & Zero Trust | ITCS",
+    description:
+      "Deploy Microsoft Defender, Entra ID, Sentinel, and Purview with ITCS. Enterprise security and Zero Trust solutions for organizations in Pakistan.",
+  },
+  microsoftCloudAiPlatforms: {
+    path: "/microsoft/cloud-ai-platforms",
+    title: "Azure Cloud & AI Platforms | ITCS",
+    description:
+      "Design and run Microsoft Azure Cloud & AI Platforms with ITCS — landing zones, Azure OpenAI, Fabric, and secure hybrid cloud for Pakistan enterprises.",
+  },
+  microsoftSurface: {
+    path: "/microsoft/surface",
+    title: "Microsoft Surface for Business | ITCS",
+    description:
+      "Deploy Microsoft Surface devices with ITCS — Surface Laptop, Pro, Hub, and accessories with Autopilot, Intune, and Microsoft 365 readiness in Pakistan.",
+  },
   notFound: {
     path: "",
     title: "Page Not Found | ITCS",

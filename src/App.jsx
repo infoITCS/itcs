@@ -42,6 +42,22 @@ const ApplyJob = lazyWithRetry(() => import('./Components/Careers/ApplyJob/Apply
 const JobDetail = lazyWithRetry(() => import('./Components/Careers/JobDetail/JobDetail'))
 const NotFound = lazyWithRetry(() => import('./Components/NotFound/NotFound'))
 const Privacy = lazyWithRetry(() => import('./Components/Privacy/Privacy'))
+const MicrosoftHub = lazyWithRetry(() => import('./Components/MicrosoftSolutions/MicrosoftHub'))
+const AIWorkforcePage = lazyWithRetry(() =>
+  import('./Components/MicrosoftSolutions/pages').then((m) => ({ default: m.AIWorkforcePage }))
+)
+const AIBusinessProcessPage = lazyWithRetry(() =>
+  import('./Components/MicrosoftSolutions/pages').then((m) => ({ default: m.AIBusinessProcessPage }))
+)
+const MSSecurityPage = lazyWithRetry(() =>
+  import('./Components/MicrosoftSolutions/pages').then((m) => ({ default: m.MSSecurityPage }))
+)
+const CloudAIPlatformsPage = lazyWithRetry(() =>
+  import('./Components/MicrosoftSolutions/pages').then((m) => ({ default: m.CloudAIPlatformsPage }))
+)
+const SurfacePage = lazyWithRetry(() =>
+  import('./Components/MicrosoftSolutions/pages').then((m) => ({ default: m.SurfacePage }))
+)
 
 const Loading = () => (
   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', paddingTop: '120px' }}>
@@ -65,7 +81,11 @@ const LegacyBlogSlugRedirect = () => {
 
 function App() {
   const location = useLocation()
-  const isHideLayout = ['/signup', '/login', '/forgot-password'].includes(location.pathname) || location.pathname.startsWith('/admin') || location.pathname.startsWith('/reset-password')
+  const isHideLayout =
+    ['/signup', '/login', '/forgot-password'].includes(location.pathname) ||
+    location.pathname.startsWith('/admin') ||
+    location.pathname.startsWith('/reset-password') ||
+    location.pathname.startsWith('/microsoft')
 
   return (
     <>
@@ -93,6 +113,14 @@ function App() {
             <Route path="/network-solutions/security" element={<NetworkSecurity />} />
             <Route path="/network-solutions/support" element={<NetworkSupport />} />
             <Route path="/web-development" element={<WebDevelopment />} />
+
+            {/* Microsoft Solution Area landings — separate chrome from main site */}
+            <Route path="/microsoft" element={<MicrosoftHub />} />
+            <Route path="/microsoft/ai-workforce" element={<AIWorkforcePage />} />
+            <Route path="/microsoft/ai-business-process" element={<AIBusinessProcessPage />} />
+            <Route path="/microsoft/security" element={<MSSecurityPage />} />
+            <Route path="/microsoft/cloud-ai-platforms" element={<CloudAIPlatformsPage />} />
+            <Route path="/microsoft/surface" element={<SurfacePage />} />
 
             {/* Old /services/* URLs redirect to short paths */}
             <Route path="/services/cloud" element={<Navigate to="/cloud" replace />} />
