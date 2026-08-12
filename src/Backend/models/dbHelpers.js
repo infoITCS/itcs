@@ -197,6 +197,19 @@ export const createJob = async (data) => {
   return { ...doc, _id: result.insertedId }
 }
 
+export const updateJobById = async (id, data) => {
+  const _id = ObjectId.createFromHexString(id)
+  const update = { ...data, updatedAt: new Date() }
+  delete update._id
+  delete update.createdAt
+  const result = await coll('jobs').findOneAndUpdate(
+    { _id },
+    { $set: update },
+    { returnDocument: 'after' }
+  )
+  return result?.value ?? result ?? null
+}
+
 export const deleteJobById = async (id) => {
   const result = await coll('jobs').deleteOne({ _id: ObjectId.createFromHexString(id) })
   return result.deletedCount > 0 ? { _id: id } : null

@@ -93,6 +93,32 @@
     flex-direction: column;
     gap: 30px;
 
+    .editing-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: rgba(74, 158, 255, 0.1);
+      border: 1px solid rgba(74, 158, 255, 0.25);
+      color: #9ecbff;
+      font-size: 14px;
+      font-weight: 600;
+
+      .cancel-edit-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: none;
+        background: transparent;
+        color: #ff8a80;
+        cursor: pointer;
+        font-weight: 600;
+      }
+    }
+
     .form-section {
       background: rgba(255, 255, 255, 0.02);
       padding: 30px;
@@ -217,6 +243,25 @@
     .form-actions {
       display: flex;
       justify-content: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      .cancel-portal-btn {
+        padding: 16px 28px;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-color: rgba(255, 255, 255, 0.45);
+          color: #fff;
+        }
+      }
 
       .submit-portal-btn {
         padding: 16px 40px;
@@ -302,18 +347,38 @@
           }
         }
 
+        .card-actions {
+          display: flex;
+          gap: 8px;
+        }
+
+        .card-edit-btn,
         .card-delete-btn {
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          border: 1px solid rgba(255, 82, 82, 0.2);
-          background: rgba(255, 82, 82, 0.05);
-          color: #ff8a80;
           cursor: pointer;
           transition: all 0.3s ease;
           display: flex;
           align-items: center;
           justify-content: center;
+        }
+
+        .card-edit-btn {
+          border: 1px solid rgba(74, 158, 255, 0.25);
+          background: rgba(74, 158, 255, 0.08);
+          color: #4a9eff;
+
+          &:hover {
+            background: #4a9eff;
+            color: #fff;
+          }
+        }
+
+        .card-delete-btn {
+          border: 1px solid rgba(255, 82, 82, 0.2);
+          background: rgba(255, 82, 82, 0.05);
+          color: #ff8a80;
 
           &:hover {
             background: #ff5252;
@@ -357,6 +422,24 @@
         border-top: 1px solid rgba(255, 255, 255, 0.05);
         font-size: 12px;
         color: rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+
+        .card-edit-link {
+          border: none;
+          background: transparent;
+          color: #4a9eff;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          padding: 0;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
       }
     }
   }
@@ -366,6 +449,120 @@
     padding: 100px 0;
     color: rgba(255, 255, 255, 0.5);
     font-size: 18px;
+  }
+}
+
+.job-delete-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(8, 10, 18, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.job-delete-popup {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 28px 24px 24px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #1a1f2e 0%, #141824 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  text-align: center;
+  animation: fadeIn 0.25s ease;
+}
+
+.job-delete-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.job-delete-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 82, 82, 0.12);
+  color: #ff8a80;
+  font-size: 20px;
+}
+
+.job-delete-popup h3 {
+  margin: 0 0 10px;
+  color: #fff;
+  font-size: 1.25rem;
+}
+
+.job-delete-popup p {
+  margin: 0 0 22px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.55;
+  font-size: 0.95rem;
+
+  strong {
+    color: #fff;
+  }
+}
+
+.job-delete-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.job-delete-cancel,
+.job-delete-confirm {
+  min-width: 120px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.job-delete-cancel {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+
+  &:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.job-delete-confirm {
+  border: none;
+  background: #ff5252;
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: #e53935;
   }
 }
 

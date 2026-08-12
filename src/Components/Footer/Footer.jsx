@@ -25,6 +25,7 @@ const Footer = () => {
     { name: 'Cloud Solutions', path: '/cloud' },
     { name: 'IT Consulting', path: '/consulting' },
     { name: 'Enterprise Solutions', path: '/enterprise-solutions' },
+    { name: 'Enterprise AI', path: '/ai' },
     { name: 'IT Services', path: '/it-services' },
     { name: 'Network Solutions', path: '/network-solutions' },
     { name: 'Cybersecurity', path: '/cybersecurity' },
@@ -34,6 +35,7 @@ const Footer = () => {
   const quickLinks = [
     { name: 'About Us', path: '/about-us' },
     { name: 'Microsoft Solutions', path: '/microsoft' },
+    { name: 'Enterprise AI Services', path: '/microsoft/enterprise-ai-services' },
     { name: 'Contact', path: '/contact' },
     { name: 'Careers', path: '/careers' },
     { name: 'Blog', path: '/blog' },

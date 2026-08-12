@@ -42,6 +42,7 @@ const ApplyJob = lazyWithRetry(() => import('./Components/Careers/ApplyJob/Apply
 const JobDetail = lazyWithRetry(() => import('./Components/Careers/JobDetail/JobDetail'))
 const NotFound = lazyWithRetry(() => import('./Components/NotFound/NotFound'))
 const Privacy = lazyWithRetry(() => import('./Components/Privacy/Privacy'))
+const AI = lazyWithRetry(() => import('./Components/Services-Dropdown/AI/AI'))
 const MicrosoftHub = lazyWithRetry(() => import('./Components/MicrosoftSolutions/MicrosoftHub'))
 const AIWorkforcePage = lazyWithRetry(() =>
   import('./Components/MicrosoftSolutions/pages').then((m) => ({ default: m.AIWorkforcePage }))
@@ -57,6 +58,9 @@ const CloudAIPlatformsPage = lazyWithRetry(() =>
 )
 const SurfacePage = lazyWithRetry(() =>
   import('./Components/MicrosoftSolutions/pages').then((m) => ({ default: m.SurfacePage }))
+)
+const EnterpriseAIServicesPage = lazyWithRetry(() =>
+  import('./Components/MicrosoftSolutions/pages').then((m) => ({ default: m.EnterpriseAIServicesPage }))
 )
 
 const Loading = () => (
@@ -113,6 +117,7 @@ function App() {
             <Route path="/network-solutions/security" element={<NetworkSecurity />} />
             <Route path="/network-solutions/support" element={<NetworkSupport />} />
             <Route path="/web-development" element={<WebDevelopment />} />
+            <Route path="/ai" element={<AI />} />
 
             {/* Microsoft Solution Area landings — separate chrome from main site */}
             <Route path="/microsoft" element={<MicrosoftHub />} />
@@ -121,6 +126,7 @@ function App() {
             <Route path="/microsoft/security" element={<MSSecurityPage />} />
             <Route path="/microsoft/cloud-ai-platforms" element={<CloudAIPlatformsPage />} />
             <Route path="/microsoft/surface" element={<SurfacePage />} />
+            <Route path="/microsoft/enterprise-ai-services" element={<EnterpriseAIServicesPage />} />
 
             {/* Old /services/* URLs redirect to short paths */}
             <Route path="/services/cloud" element={<Navigate to="/cloud" replace />} />
@@ -139,6 +145,7 @@ function App() {
             <Route path="/services/network-solutions/security" element={<Navigate to="/network-solutions/security" replace />} />
             <Route path="/services/network-solutions/support" element={<Navigate to="/network-solutions/support" replace />} />
             <Route path="/services/web-development" element={<Navigate to="/web-development" replace />} />
+            <Route path="/services/ai" element={<Navigate to="/ai" replace />} />
 
             <Route path="/mission-vision" element={<Vision />} />
             <Route path="/vision-mission" element={<Navigate to="/mission-vision" replace />} />

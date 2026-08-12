@@ -103,6 +103,12 @@ export const SEO_META = {
     description:
       "Custom websites, web apps, and e-commerce by ITCS. Modern, SEO-friendly, and mobile-responsive development for businesses that need to grow online.",
   },
+  ai: {
+    path: "/ai",
+    title: "Enterprise AI Services & Licensing | ITCS",
+    description:
+      "Enterprise AI licensing for Copilot, Claude, ChatGPT, Cursor, GitHub Copilot & more on requirement — plus Power BI, Power Automate, governance, and adoption training from ITCS.",
+  },
   missionVision: {
     path: "/mission-vision",
     title: "Our Vision & Mission | ITCS",
@@ -149,7 +155,7 @@ export const SEO_META = {
     path: "/microsoft",
     title: "Microsoft Solutions | ITCS Partner Landing Pages",
     description:
-      "Explore ITCS Microsoft solution areas: AI Workforce, AI Business Process, Security, Cloud & AI Platforms, and Surface — powered by Microsoft technologies.",
+      "Explore ITCS Microsoft and enterprise AI solutions: AI Workforce, AI Business Process, Security, Cloud & AI Platforms, Surface, and Enterprise AI Services & Licensing.",
   },
   microsoftAiWorkforce: {
     path: "/microsoft/ai-workforce",
@@ -180,6 +186,12 @@ export const SEO_META = {
     title: "Microsoft Surface for Business | ITCS",
     description:
       "Deploy Microsoft Surface devices with ITCS — Surface Laptop, Pro, Hub, and accessories with Autopilot, Intune, and Microsoft 365 readiness in Pakistan.",
+  },
+  enterpriseAiServices: {
+    path: "/microsoft/enterprise-ai-services",
+    title: "Enterprise AI Services & Licensing | ITCS",
+    description:
+      "Enterprise AI licensing for Microsoft Copilot, Claude, ChatGPT, Cursor, GitHub Copilot & more — plus Power BI, Power Automate, governance, automation, and training from ITCS Pakistan.",
   },
   notFound: {
     path: "",

@@ -63,10 +63,24 @@ export const SurfaceLogo = ({ className = '', title = 'Microsoft Surface' }) => 
   </svg>
 )
 
+export const EnterpriseAILogo = ({ className = '', title = 'Enterprise AI Services' }) => (
+  <svg className={className} viewBox="0 0 48 48" width="40" height="40" role="img" aria-label={title}>
+    <title>{title}</title>
+    <circle cx="24" cy="24" r="20" fill="#5B2C6F" />
+    <circle cx="24" cy="24" r="6" fill="#F4ECF7" />
+    <circle cx="12" cy="16" r="3.5" fill="#D2B4DE" />
+    <circle cx="36" cy="16" r="3.5" fill="#D2B4DE" />
+    <circle cx="12" cy="32" r="3.5" fill="#D2B4DE" />
+    <circle cx="36" cy="32" r="3.5" fill="#D2B4DE" />
+    <path stroke="#AF7AC5" strokeWidth="2" fill="none" d="M15 18l6 4M33 18l-6 4M15 30l6-4M33 30l-6-4" />
+  </svg>
+)
+
 export const SERVICE_LOGOS = {
   copilot: CopilotLogo,
   powerplatform: PowerPlatformLogo,
   security: SecurityLogo,
   azure: AzureLogo,
   surface: SurfaceLogo,
+  enterpriseai: EnterpriseAILogo,
 }

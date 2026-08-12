@@ -39,19 +39,20 @@ export const exchangeMicrosoftAccountForJwt = async (instance, account) => {
   return data
 }
 
+/**
+ * Signs out of ITCS only.
+ * Do NOT use logoutRedirect/logoutPopup — those hit Microsoft's logout endpoint
+ * and end the browser SSO session for Outlook, Teams, and other Microsoft apps.
+ */
 export const logoutMicrosoftSession = async (instance, navigate) => {
   clearAuthSession()
   sessionStorage.setItem('itcs_skip_msal_redirect', '1')
 
-  const accounts = instance.getAllAccounts()
-  if (accounts.length > 0) {
-    await instance.logoutRedirect({
-      account: accounts[0],
-      postLogoutRedirectUri: `${window.location.origin}/login`,
-    })
-    return
+  try {
+    instance.clearCache()
+  } catch (err) {
+    console.error('Failed to clear MSAL cache:', err)
   }
 
-  instance.clearCache()
   navigate('/login', { replace: true })
 }

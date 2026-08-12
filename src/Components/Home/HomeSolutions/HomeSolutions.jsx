@@ -59,7 +59,19 @@ const HomeSolutions = () => {
       title: "Web Development",
       description: "Build modern, responsive websites and web applications that drive business growth.",
       path: "/web-development",
-    }
+    },
+    {
+      isSvg: true,
+      svg: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2a4 4 0 0 1 4 4v1h1a3 3 0 0 1 0 6h-1v1a4 4 0 0 1-8 0v-1H7a3 3 0 0 1 0-6h1V6a4 4 0 0 1 4-4z" />
+          <circle cx="12" cy="12" r="2" />
+        </svg>
+      ),
+      title: "Enterprise AI",
+      description: "Licensing for Copilot, Claude, ChatGPT, Cursor, and other AI tools on requirement — plus governance and adoption.",
+      path: "/ai",
+    },
   ];
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);

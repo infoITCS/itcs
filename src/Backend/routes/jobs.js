@@ -11,14 +11,17 @@ const withJobSlug = (job) => {
   return { ...job, slug: job.slug || toUrlSlug(job.title) }
 }
 
-const resolveUniqueJobSlug = async (title) => {
+const resolveUniqueJobSlug = async (title, excludeId = null) => {
   const base = toUrlSlug(title) || 'job'
   let slug = base
   let n = 1
-  while (await db.findJobBySlug(slug)) {
+  while (true) {
+    const existing = await db.findJobBySlug(slug)
+    if (!existing || (excludeId && String(existing._id) === String(excludeId))) {
+      return slug
+    }
     slug = `${base}-${n++}`
   }
-  return slug
 }
 
 const findJobByParam = async (param) => {
@@ -141,6 +144,55 @@ router.get('/:id', async (req, res) => {
   } catch (err) {
     console.error('Error fetching job:', err)
     res.status(500).json({ message: 'Failed to fetch job' })
+  }
+})
+
+router.put('/:id', requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    const existing = await findJobByParam(id)
+    if (!existing) {
+      return res.status(404).json({ message: 'Job not found' })
+    }
+
+    const {
+      title,
+      department,
+      type,
+      location,
+      experience,
+      aboutRole,
+      responsibilities,
+      qualifications,
+    } = req.body
+
+    if (!title || !department || !location) {
+      return res.status(400).json({ message: 'Title, department, and location are required' })
+    }
+
+    const jobId = String(existing._id)
+    const titleChanged = title !== existing.title
+    const slug = titleChanged
+      ? await resolveUniqueJobSlug(title, jobId)
+      : existing.slug || (await resolveUniqueJobSlug(title, jobId))
+
+    const updatedJob = await db.updateJobById(jobId, {
+      title,
+      slug,
+      department,
+      type: type || 'Full-time',
+      location,
+      experience: experience || 'Not specified',
+      aboutRole: aboutRole || '',
+      responsibilities: responsibilities || '',
+      qualifications: qualifications || '',
+      description: aboutRole || '',
+    })
+
+    res.json({ message: 'Job updated successfully', job: withJobSlug(updatedJob) })
+  } catch (err) {
+    console.error('Error updating job:', err)
+    res.status(500).json({ message: 'Failed to update job' })
   }
 })
 

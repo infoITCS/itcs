@@ -7,7 +7,7 @@ export const MS_SOLUTIONS_HUB = {
   path: '/microsoft',
   title: 'Microsoft Solutions | ITCS Partner Landing Pages',
   description:
-    'Explore ITCS Microsoft solution areas: AI Workforce, AI Business Process, Security, Cloud & AI Platforms, and Surface — powered by Microsoft technologies.',
+    'Explore ITCS Microsoft and enterprise AI solutions: AI Workforce, AI Business Process, Security, Cloud & AI Platforms, Surface, and Enterprise AI Services & Licensing.',
 }
 
 export const MS_SOLUTIONS = {
@@ -384,6 +384,149 @@ export const MS_SOLUTIONS = {
       },
     ],
     related: ['ai-workforce', 'security', 'cloud-ai-platforms'],
+  },
+
+  'enterprise-ai-services': {
+    slug: 'enterprise-ai-services',
+    path: '/microsoft/enterprise-ai-services',
+    navLabel: 'Enterprise AI',
+    accent: '#5B2C6F',
+    serviceBrand: 'Enterprise AI Services',
+    serviceLogoKey: 'enterpriseai',
+    h1: 'Enterprise AI Services & Licensing for Secure Business Transformation',
+    eyebrow: 'ITCS · Enterprise AI Services & Licensing',
+    lead:
+      'Give your leadership team a clear path from AI ambition to governed execution. ITCS helps CTOs, IT Directors, and operations leaders procure enterprise AI licenses — Microsoft Copilot, Claude, ChatGPT, Cursor, and others on requirement — implement Microsoft AI solutions, automate workflows, and protect corporate data with measurable adoption.',
+    primaryCta: {
+      label: 'Book an AI Strategy Call',
+      href: '/contact?intent=enterprise-ai-services',
+    },
+    secondaryCta: {
+      label: 'Request Licensing Quote',
+      href: '/contact?intent=enterprise-ai-licensing',
+    },
+    intentBlock: {
+      title: 'Ready to adopt AI without the risk?',
+      body:
+        'Whether you need official Copilot, Claude, or ChatGPT seats, Cursor for developers, additional AI tools on requirement, a Power Automate automation program, or governance that keeps your data out of public model training — ITCS is your enterprise AI partner from procurement to production.',
+    },
+    primaryKeyword: 'enterprise AI services Pakistan',
+    secondaryKeywords: [
+      'enterprise AI licensing',
+      'Microsoft Copilot enterprise',
+      'Claude Enterprise licensing',
+      'ChatGPT Enterprise licensing',
+      'Cursor AI code editor enterprise',
+      'Power Automate AI Builder',
+      'AI governance and data security',
+      'AI readiness assessment',
+    ],
+    metaTitle: 'Enterprise AI Services & Licensing | ITCS',
+    metaDescription:
+      'Enterprise AI licensing for Microsoft Copilot, Claude, ChatGPT, Cursor, GitHub Copilot & more — plus Power BI, Power Automate, governance, automation, and training from ITCS Pakistan.',
+    headings: {
+      h2Products: 'Enterprise AI services & platforms we deliver',
+      h2Benefits: 'Why executives choose ITCS for enterprise AI',
+      h2How: 'How we take you from assessment to scaled adoption',
+      h2Faq: 'Enterprise AI Services FAQs',
+    },
+    benefits: [
+      {
+        title: 'Licensing without procurement chaos',
+        text: 'Centralized quoting, official seats, and consolidated billing for Microsoft Copilot, Claude Enterprise, ChatGPT Enterprise, Cursor, GitHub Copilot, and other approved AI tools on requirement — with one accountable partner.',
+      },
+      {
+        title: 'AI that respects your data boundaries',
+        text: 'We design zero-retention and isolation controls so corporate content is not used to train public LLMs, with governance your security and legal teams can defend.',
+      },
+      {
+        title: 'Adoption that protects your ROI',
+        text: 'Prompt workshops, Copilot onboarding, and Cursor enablement for developers ensure licenses are used — and business outcomes are visible to the C-suite.',
+      },
+    ],
+    steps: [
+      {
+        title: 'AI readiness & ROI mapping',
+        text: 'Audit infrastructure, identity, data quality, and use cases. Map expected value before you buy seats or build automations.',
+      },
+      {
+        title: 'Secure licensing & governance',
+        text: 'Procure the right SKUs, configure data isolation and retention policies, and align procurement, security, and IT ownership.',
+      },
+      {
+        title: 'Implement & automate',
+        text: 'Deploy Microsoft AI (Power BI, Power Automate, AI Builder), custom LLM wrappers, and agents for HR, finance, and IT support.',
+      },
+      {
+        title: 'Train, measure, scale',
+        text: 'Run adoption programs, track utilization, refine workflows, and expand licenses only where ROI is proven.',
+      },
+    ],
+    products: [
+      {
+        name: 'Enterprise AI Licensing & Procurement',
+        desc: 'Official seats for Microsoft Copilot (Microsoft 365, Sales, Security), Anthropic Claude Enterprise, OpenAI ChatGPT Enterprise / Team, Cursor, GitHub Copilot Business, Google Gemini for Workspace, Perplexity Enterprise, and other specialized AI tools on requirement — with centralized billing and ongoing support.',
+      },
+      {
+        name: 'Microsoft Copilot Licensing',
+        desc: 'Microsoft 365 Copilot, Copilot for Sales, and Copilot for Security — official enterprise seats with tenant readiness and rollout support.',
+      },
+      {
+        name: 'Claude & ChatGPT Enterprise',
+        desc: 'Anthropic Claude Enterprise and OpenAI ChatGPT Enterprise / Team procurement with governed workspace setup and data protection alignment.',
+      },
+      {
+        name: 'Developer AI Tools',
+        desc: 'Cursor and GitHub Copilot Business licensing with secure onboarding and developer adoption programs.',
+      },
+      {
+        name: 'Additional AI Tools on Requirement',
+        desc: 'Google Gemini for Workspace, Perplexity Enterprise, and other approved AI platforms sourced based on your security, compliance, and team requirements.',
+      },
+      {
+        name: 'Microsoft AI Solutions',
+        desc: 'Deep implementation of Power BI with AI-assisted predictive analytics and Power Automate with AI Builder for intelligent document processing and process automation.',
+      },
+      {
+        name: 'AI Strategy & Readiness Assessments',
+        desc: 'Infrastructure audits, ROI mapping, and data readiness evaluations so leadership invests in the right tools at the right time — before costly missteps.',
+      },
+      {
+        name: 'Enterprise Data Security & AI Governance',
+        desc: 'Data isolation, zero-retention policy setup, access controls, and contractual/technical safeguards so corporate data is never used to train public LLM models.',
+      },
+      {
+        name: 'Custom AI Workflow Automation',
+        desc: 'Intelligent workflows with Power Automate, custom LLM wrappers, and AI agents purpose-built for HR, finance, operations, and IT support.',
+      },
+      {
+        name: 'Employee Adoption & Training',
+        desc: 'Prompt engineering workshops, Copilot team onboarding, and developer enablement for Cursor — designed for high utilization and lasting behavior change.',
+      },
+      {
+        name: 'AI Web & App Development Platforms',
+        desc: 'Design and build AI-powered websites, portals, and mobile apps with LLM integrations, chat assistants, intelligent search, and data-grounded experiences.',
+      },
+    ],
+    faqs: [
+      {
+        q: 'Which enterprise AI licenses can ITCS help procure?',
+        a: 'We support enterprise procurement and centralized billing for Microsoft Copilot (Microsoft 365, Sales, and Security), Anthropic Claude Enterprise, OpenAI ChatGPT Enterprise / Team, Cursor, GitHub Copilot Business, Google Gemini for Workspace, Perplexity Enterprise, and other approved specialized AI tools on requirement based on your security and compliance needs.',
+      },
+      {
+        q: 'How do you keep our data from training public AI models?',
+        a: 'We configure enterprise plans and governance controls focused on data isolation and zero-retention where available, align tenant and vendor settings with your policies, and document the safeguards your security and legal stakeholders need for executive approval.',
+      },
+      {
+        q: 'Do we need an assessment before buying Copilot or Claude seats?',
+        a: 'Recommended. An AI readiness assessment clarifies identity, data quality, licensing fit, and high-ROI use cases — so you avoid shelfware and accelerate value after purchase.',
+      },
+      {
+        q: 'Can you automate finance, HR, and IT support processes?',
+        a: 'Yes. We build Power Automate and AI Builder solutions, plus custom LLM-assisted workflows and agents, for document-heavy and ticket-driven processes across HR, finance, and IT support.',
+      },
+    ],
+    related: ['ai-workforce', 'ai-business-process', 'security', 'cloud-ai-platforms'],
   },
 }
 

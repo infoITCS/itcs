@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, Link, NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCloud, faShieldHalved, faHandshake, faBuilding, faLaptopCode, faNetworkWired, faCode } from '@fortawesome/free-solid-svg-icons'
+import { faCloud, faShieldHalved, faHandshake, faBuilding, faLaptopCode, faNetworkWired, faCode, faRobot } from '@fortawesome/free-solid-svg-icons'
 import alignitLogo from '../../assets/logos/itcsLogo.webp'
 import './Header.scss'
 
@@ -58,6 +58,7 @@ const Header = () => {
                     <li><NavLink className="dropdown-item" to="/it-services" onClick={closeMenu}><FontAwesomeIcon icon={faLaptopCode} className="dropdown-icon" /> IT Services</NavLink></li>
                     <li><NavLink className="dropdown-item" to="/network-solutions" onClick={closeMenu}><FontAwesomeIcon icon={faNetworkWired} className="dropdown-icon" /> Network Solutions</NavLink></li>
                     <li><NavLink className="dropdown-item" to="/web-development" onClick={closeMenu}><FontAwesomeIcon icon={faCode} className="dropdown-icon" /> Web Development</NavLink></li>
+                    <li><NavLink className="dropdown-item" to="/ai" onClick={closeMenu}><FontAwesomeIcon icon={faRobot} className="dropdown-icon" /> Enterprise AI</NavLink></li>
                   </ul>
                 </li>
                 

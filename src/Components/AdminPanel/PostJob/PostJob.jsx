@@ -12,27 +12,34 @@ import {
   faBuilding, 
   faClock, 
   faTrashCan,
+  faPenToSquare,
   faCheckCircle,
   faCircleInfo,
-  faLayerGroup
+  faLayerGroup,
+  faXmark
 } from '@fortawesome/free-solid-svg-icons';
+
+const emptyForm = {
+  title: '',
+  department: '',
+  location: '',
+  type: 'Full-time',
+  experience: '',
+  aboutRole: '',
+  responsibilities: '',
+  qualifications: ''
+};
 
 const PostJob = () => {
   const [activeSubTab, setActiveSubTab] = useState('post');
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [editingId, setEditingId] = useState(null);
+  const [jobToDelete, setJobToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   
-  const [formData, setFormData] = useState({
-    title: '',
-    department: '',
-    location: '',
-    type: 'Full-time',
-    experience: '',
-    aboutRole: '',
-    responsibilities: '',
-    qualifications: ''
-  });
+  const [formData, setFormData] = useState(emptyForm);
 
   const departments = ['Engineering', 'Design', 'Security', 'Product', 'Sales', 'Marketing', 'HR', 'Support'];
 
@@ -54,6 +61,11 @@ const PostJob = () => {
     }
   };
 
+  const resetForm = () => {
+    setFormData(emptyForm);
+    setEditingId(null);
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setMessage({ type: '', text: '' });
@@ -63,49 +75,91 @@ const PostJob = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      console.log("SENDING DATA TO API:", formData);
-      const res = await axios.post(apiUrl('/api/jobsAdd'), formData, {
-        headers: getAuthHeaders(),
-      });
-      console.log("API RESPONSE:", res.data);
-      
-      setMessage({ 
-        type: 'success', 
-        text: `Job "${formData.title}" published! (About: ${formData.aboutRole.length} chars, Responsibilities: ${formData.responsibilities.length} chars, Qualifications: ${formData.qualifications.length} chars)` 
-      });
-      
-      // Clear form
-      setFormData({
-        title: '',
-        department: '',
-        location: '',
-        type: 'Full-time',
-        experience: '',
-        aboutRole: '',
-        responsibilities: '',
-        qualifications: ''
-      });
-      
-      setTimeout(() => setActiveSubTab('list'), 1500);
+      if (editingId) {
+        await axios.put(apiUrl(`/api/jobsAdd/${editingId}`), formData, {
+          headers: getAuthHeaders(),
+        });
+        setMessage({
+          type: 'success',
+          text: `Job "${formData.title}" updated successfully.`,
+        });
+      } else {
+        await axios.post(apiUrl('/api/jobsAdd'), formData, {
+          headers: getAuthHeaders(),
+        });
+        setMessage({
+          type: 'success',
+          text: `Job "${formData.title}" published successfully.`,
+        });
+      }
+
+      resetForm();
+      setTimeout(() => setActiveSubTab('list'), 1000);
     } catch (err) {
-      console.error("Submission error:", err);
-      setMessage({ type: 'error', text: 'Failed to publish job position. Please check your connection.' });
+      console.error('Submission error:', err);
+      const serverMsg = err.response?.data?.message;
+      setMessage({
+        type: 'error',
+        text: serverMsg || (editingId ? 'Failed to update job position.' : 'Failed to publish job position. Please check your connection.'),
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Permanently delete this position?')) return;
+  const handleEdit = (job) => {
+    setEditingId(job._id);
+    setFormData({
+      title: job.title || '',
+      department: job.department || '',
+      location: job.location || '',
+      type: job.type || 'Full-time',
+      experience: job.experience || '',
+      aboutRole: job.aboutRole || job.description || '',
+      responsibilities: job.responsibilities || '',
+      qualifications: job.qualifications || '',
+    });
+    setMessage({ type: '', text: '' });
+    setActiveSubTab('post');
+  };
+
+  const handleCancelEdit = () => {
+    resetForm();
+    setMessage({ type: '', text: '' });
+  };
+
+  const openDeletePopup = (job) => {
+    setJobToDelete(job);
+    setMessage({ type: '', text: '' });
+  };
+
+  const closeDeletePopup = () => {
+    if (deleting) return;
+    setJobToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!jobToDelete?._id) return;
+    setDeleting(true);
     try {
-      await axios.delete(apiUrl(`/api/jobsAdd/${id}`), {
+      await axios.delete(apiUrl(`/api/jobsAdd/${jobToDelete._id}`), {
         headers: getAuthHeaders(),
       });
-      setJobs(jobs.filter(job => job._id !== id));
-      setMessage({ type: 'success', text: 'Position deleted successfully.' });
+      setJobs((prev) => prev.filter((job) => job._id !== jobToDelete._id));
+      if (editingId === jobToDelete._id) resetForm();
+      setMessage({ type: 'success', text: `"${jobToDelete.title}" deleted successfully.` });
+      setJobToDelete(null);
     } catch (err) {
       setMessage({ type: 'error', text: 'Failed to delete position.' });
+    } finally {
+      setDeleting(false);
     }
+  };
+
+  const openNewPosition = () => {
+    resetForm();
+    setMessage({ type: '', text: '' });
+    setActiveSubTab('post');
   };
 
   return (
@@ -113,15 +167,16 @@ const PostJob = () => {
       <div className="portal-header">
         <div className="header-info">
           <h1>Job Management Portal</h1>
-          <p>Create and manage active positions within ITCS</p>
+          <p>Create, edit, and manage active positions within ITCS</p>
         </div>
         
         <div className="portal-tabs">
           <button 
             className={`tab-btn ${activeSubTab === 'post' ? 'active' : ''}`}
-            onClick={() => setActiveSubTab('post')}
+            onClick={openNewPosition}
           >
-            <FontAwesomeIcon icon={faPlus} /> New Position
+            <FontAwesomeIcon icon={editingId ? faPenToSquare : faPlus} />
+            {editingId ? 'Edit Position' : 'New Position'}
           </button>
           <button 
             className={`tab-btn ${activeSubTab === 'list' ? 'active' : ''}`}
@@ -142,7 +197,15 @@ const PostJob = () => {
       <div className="portal-content">
         {activeSubTab === 'post' ? (
           <form className="modern-job-form" onSubmit={handleSubmit}>
-            {/* Basic Info Section */}
+            {editingId && (
+              <div className="editing-banner">
+                <span>Editing existing position</span>
+                <button type="button" className="cancel-edit-btn" onClick={handleCancelEdit}>
+                  <FontAwesomeIcon icon={faXmark} /> Cancel edit
+                </button>
+              </div>
+            )}
+
             <div className="form-section">
               <h3 className="section-title"><FontAwesomeIcon icon={faBriefcase} /> Position Details</h3>
               <div className="input-grid">
@@ -160,6 +223,9 @@ const PostJob = () => {
                     <FontAwesomeIcon icon={faBuilding} className="field-icon" />
                     <select name="department" value={formData.department} onChange={handleChange} required>
                       <option value="">Select Department</option>
+                      {!departments.includes(formData.department) && formData.department && (
+                        <option value={formData.department}>{formData.department}</option>
+                      )}
                       {departments.map(d => <option key={d} value={d}>{d}</option>)}
                     </select>
                   </div>
@@ -197,7 +263,6 @@ const PostJob = () => {
               </div>
             </div>
 
-            {/* Rich Content Section */}
             <div className="form-section">
               <h3 className="section-title"><FontAwesomeIcon icon={faCircleInfo} /> Detailed Content</h3>
               
@@ -219,8 +284,15 @@ const PostJob = () => {
             </div>
 
             <div className="form-actions">
+              {editingId && (
+                <button type="button" className="cancel-portal-btn" onClick={handleCancelEdit}>
+                  Cancel
+                </button>
+              )}
               <button type="submit" className="submit-portal-btn" disabled={loading}>
-                {loading ? 'Publishing...' : 'Publish Position'}
+                {loading
+                  ? (editingId ? 'Saving...' : 'Publishing...')
+                  : (editingId ? 'Update Position' : 'Publish Position')}
               </button>
             </div>
           </form>
@@ -239,9 +311,24 @@ const PostJob = () => {
                         <span className="dept-tag">{job.department}</span>
                         <span className="type-tag">{job.type}</span>
                       </div>
-                      <button className="card-delete-btn" onClick={() => handleDelete(job._id)}>
-                        <FontAwesomeIcon icon={faTrashCan} />
-                      </button>
+                      <div className="card-actions">
+                        <button
+                          type="button"
+                          className="card-edit-btn"
+                          title="Edit position"
+                          onClick={() => handleEdit(job)}
+                        >
+                          <FontAwesomeIcon icon={faPenToSquare} />
+                        </button>
+                        <button
+                          type="button"
+                          className="card-delete-btn"
+                          title="Delete position"
+                          onClick={() => openDeletePopup(job)}
+                        >
+                          <FontAwesomeIcon icon={faTrashCan} />
+                        </button>
+                      </div>
                     </div>
                     
                     <h3>{job.title}</h3>
@@ -257,6 +344,9 @@ const PostJob = () => {
 
                     <div className="card-bottom">
                       <span className="post-date">Listed on {new Date(job.createdAt).toLocaleDateString()}</span>
+                      <button type="button" className="card-edit-link" onClick={() => handleEdit(job)}>
+                        Edit
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -265,6 +355,58 @@ const PostJob = () => {
           </div>
         )}
       </div>
+
+      {jobToDelete && (
+        <div
+          className="job-delete-overlay"
+          role="presentation"
+          onClick={closeDeletePopup}
+        >
+          <div
+            className="job-delete-popup"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="job-delete-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="job-delete-close"
+              onClick={closeDeletePopup}
+              disabled={deleting}
+              aria-label="Close"
+            >
+              <FontAwesomeIcon icon={faXmark} />
+            </button>
+            <div className="job-delete-icon">
+              <FontAwesomeIcon icon={faTrashCan} />
+            </div>
+            <h3 id="job-delete-title">Delete this position?</h3>
+            <p>
+              You are about to permanently delete{' '}
+              <strong>{jobToDelete.title}</strong>. This action cannot be undone.
+            </p>
+            <div className="job-delete-actions">
+              <button
+                type="button"
+                className="job-delete-cancel"
+                onClick={closeDeletePopup}
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="job-delete-confirm"
+                onClick={confirmDelete}
+                disabled={deleting}
+              >
+                {deleting ? 'Deleting...' : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

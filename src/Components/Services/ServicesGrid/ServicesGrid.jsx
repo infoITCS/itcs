@@ -62,6 +62,13 @@ const ServicesGrid = () => {
       path: "/web-development",
       features: ["Custom Websites", "E-Commerce", "Web Applications"]
     },
+    {
+      logo: enterpriseSol,
+      title: "Enterprise AI",
+      description: "Enterprise AI licensing for Copilot, Claude, ChatGPT, Cursor, GitHub Copilot, and more on requirement — plus governance, automation, and adoption.",
+      path: "/ai",
+      features: ["Copilot & ChatGPT", "Claude Enterprise", "Tools on Requirement"]
+    },
   ];
 
   return (
