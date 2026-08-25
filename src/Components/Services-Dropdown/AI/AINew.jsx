@@ -125,8 +125,8 @@ const AISection2 = () => {
               measure utilization so licensing spend converts into business outcomes.
             </p>
             <p>
-              Prefer a dedicated campaign landing page?{' '}
-              <Link to="/microsoft/enterprise-ai-services">View our Enterprise AI landing page</Link>.
+              Looking for tailored solutions and licensing?{' '}
+              <Link to="/microsoft/enterprise-ai-services">Explore our Enterprise AI Services</Link>.
             </p>
 
             <div className="services-list">
