@@ -125,7 +125,7 @@ const AISection2 = () => {
               measure utilization so licensing spend converts into business outcomes.
             </p>
             <p>
-              Looking for tailored solutions and licensing?{' '}
+              Looking for dedicated Microsoft AI solutions and licensing?{' '}
               <Link to="/microsoft/enterprise-ai-services">Explore our Enterprise AI Services</Link>.
             </p>
 

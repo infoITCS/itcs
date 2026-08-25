@@ -153,7 +153,7 @@ export const SEO_META = {
   },
   microsoftHub: {
     path: "/microsoft",
-    title: "Microsoft Solutions | ITCS Partner Landing Pages",
+    title: "Microsoft Solutions & Enterprise AI | ITCS Certified Partner",
     description:
       "Explore ITCS Microsoft and enterprise AI solutions: AI Workforce, AI Business Process, Security, Cloud & AI Platforms, Surface, and Enterprise AI Services & Licensing.",
   },

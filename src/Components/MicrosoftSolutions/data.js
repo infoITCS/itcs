@@ -1,11 +1,11 @@
 /**
- * Content + SEO for Microsoft Solution Area landing pages.
+ * Content + SEO for Microsoft Solution Areas.
  * These pages are intentionally separate from the main ITCS site chrome.
  */
 
 export const MS_SOLUTIONS_HUB = {
   path: '/microsoft',
-  title: 'Microsoft Solutions | ITCS Partner Landing Pages',
+  title: 'Microsoft Solutions & Enterprise AI | ITCS Certified Partner',
   description:
     'Explore ITCS Microsoft and enterprise AI solutions: AI Workforce, AI Business Process, Security, Cloud & AI Platforms, Surface, and Enterprise AI Services & Licensing.',
 }

@@ -30,7 +30,7 @@ const MicrosoftHub = () => {
             </div>
             <h1>Microsoft Solutions built for your business</h1>
             <p className="ms-lead">
-              Dedicated landing pages for five Microsoft solution areas — separate from the main
+              Dedicated solution showcases for five Microsoft solution areas — separate from the main
               ITCS site experience — with clear intent, product coverage, and next-step CTAs.
             </p>
             <div className="ms-cta-row">
