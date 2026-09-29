@@ -29,3 +29,6 @@ dist-ssr
 !.env.example
 !.env.production
 src/Backend/.env
+
+# one-time DB dump written by Backend/scripts/audit-inline-images.mjs
+src/Backend/.backup

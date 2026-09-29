@@ -43,7 +43,9 @@ const xmlEscape = (value) =>
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&apos;')
 
-export const getSiteOrigin = () => 'https://itcs.com.pk'
+// Must match SITE_URL in src/config/seoMeta.js. A sitemap listing the non-www
+// host while every page self-canonicals to www reads as conflicting signals.
+export const getSiteOrigin = () => 'https://www.itcs.com.pk'
 
 const toDateOnly = (value) => {
   if (!value) return null
@@ -65,7 +67,7 @@ const buildUrlEntry = ({ loc, lastmod, changefreq, priority }) => {
  * Blog canonical URLs are /:slug (see src/utils/blogUrls.js).
  */
 export const buildSitemapXml = async (origin) => {
-  const base = String(origin || 'https://itcs.com.pk').replace(/\/$/, '')
+  const base = String(origin || 'https://www.itcs.com.pk').replace(/\/$/, '')
   const today = new Date().toISOString().slice(0, 10)
 
   let dynamicEntries = []

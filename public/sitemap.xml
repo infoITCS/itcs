@@ -6,6 +6,7 @@
     all static pages plus every published blog automatically.
   -->
   <sitemap>
-    <loc>https://itcs.com.pk/api/sitemap.xml</loc>
+    <loc>https://www.itcs.com.pk/api/sitemap.xml</loc>
+    <lastmod>2026-09-29</lastmod>
   </sitemap>
 </sitemapindex>

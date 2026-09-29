@@ -25,7 +25,7 @@ const Csection4 = () => {
     {
       city: "Islamabad",
       address: "Office # 14, Ground Floor, Malik Plaza, F-8 Markaz, Islamabad",
-      phone: "+92 51 2744956",
+      phone: "+92 51 6145353",
       fax: "+92 21 34554818",
       uan: "+92 21 111-482-711",
       image: IslamabadImage,

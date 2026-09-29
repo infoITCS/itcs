@@ -7,6 +7,7 @@ import { getBlogPostUrl, getTagUrl, getAuthorUrl, isDevToBlogId } from "../../ut
 import { formatPublishedBlog, normalizeBlogHtml } from "../../utils/blogFormat";
 import PageSEO from "../Common/PageSEO";
 import { blogSeoFromArticle, SEO_META } from "../../config/seoMeta";
+import { blogPostingSchema } from "../../config/structuredData";
 import "./Blog.scss";
 import "./BlogDetail.scss";
 
@@ -206,12 +207,15 @@ const BlogDetail = () => {
 
   return (
     <div className="blog-detail">
-      <PageSEO
-        title={seo.title}
-        description={seo.description}
-        path={seo.path}
-        image={seo.image}
-      />
+        <PageSEO
+          title={seo.title}
+          description={seo.description}
+          path={seo.path}
+          image={seo.image}
+          type="article"
+          breadcrumbName={article.title}
+          schema={blogPostingSchema({ article, path: seo.path })}
+        />
       {article.cover_image && (
         <img src={article.cover_image} alt={article.title} className="detail-cover" />
       )}

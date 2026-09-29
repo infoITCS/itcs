@@ -6,6 +6,7 @@ import { getJobUrl } from "../../../utils/blogUrls";
 import { isMongoObjectId } from "../../../utils/slugify";
 import PageSEO from "../../Common/PageSEO";
 import { jobSeoFromJob, SEO_META } from "../../../config/seoMeta";
+import { jobPostingSchema } from "../../../config/structuredData";
 import "./JobDetail.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -90,7 +91,11 @@ const JobDetail = () => {
 
   return (
     <div className="job-detail-themed">
-      <PageSEO {...jobSeoFromJob(job)} />
+      <PageSEO
+        {...jobSeoFromJob(job)}
+        breadcrumbName={job?.title}
+        schema={jobPostingSchema({ job, path: `/careers/${job?.slug || job?._id}` })}
+      />
       <div className="theme-radial-top"></div>
       <div className="theme-radial-bottom"></div>
 

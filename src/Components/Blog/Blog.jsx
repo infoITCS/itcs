@@ -4,22 +4,60 @@ import axios from "axios";
 import { apiUrl } from "../../config/api";
 import { getAuthorUrl, getBlogPostUrl, getTagUrl, toUrlSlug } from "../../utils/blogUrls";
 import { formatPublishedBlog, sortBlogsByDate } from "../../utils/blogFormat";
+import BlogFilter from "./BlogFilter";
 import PageSEO from "../Common/PageSEO";
 import { SEO_META, blogFilterSeo } from "../../config/seoMeta";
 import "./Blog.scss";
+
+const SORTS = {
+  newest: (a, b) => new Date(b.updatedAt || b.published_at) - new Date(a.updatedAt || a.published_at),
+  oldest: (a, b) => new Date(a.updatedAt || a.published_at) - new Date(b.updatedAt || b.published_at),
+  az: (a, b) => String(a.title).localeCompare(String(b.title)),
+  za: (a, b) => String(b.title).localeCompare(String(a.title)),
+  quickest: (a, b) => (a.reading_time_minutes || 0) - (b.reading_time_minutes || 0),
+};
+
+const RANGES = { week: 7, month: 30, quarter: 90, year: 365 };
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const { tagSlug: tagSlugParam, authorSlug: authorSlugParam } = useParams();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const postsPerPage = 9;
 
   const legacyTag = searchParams.get("tag")?.trim() || "";
   const activeTagSlug = tagSlugParam || (legacyTag ? toUrlSlug(legacyTag) : "");
   const activeAuthorSlug = authorSlugParam || "";
+
+  // Panel-level filters live in the query string so a filtered view is
+  // shareable and survives a refresh / back button.
+  const filters = {
+    q: searchParams.get("q") || "",
+    range: searchParams.get("range") || "",
+    sort: searchParams.get("sort") || "newest",
+  };
+
+  const applyFilters = (patch) => {
+    const next = { ...filters, ...patch };
+    const params = new URLSearchParams(searchParams);
+    params.delete("tag"); // legacy param, superseded by /tag/:slug
+    const set = (key, value) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    };
+    set("q", next.q);
+    set("range", next.range);
+    set("sort", next.sort === "newest" ? "" : next.sort);
+    setSearchParams(params, { replace: true });
+  };
+
+  const resetFilters = () => {
+    const params = new URLSearchParams();
+    setSearchParams(params, { replace: true });
+  };
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -42,7 +80,7 @@ export default function Blog() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeTagSlug, activeAuthorSlug]);
+  }, [activeTagSlug, activeAuthorSlug, filters.q, filters.range, filters.sort]);
 
   if (!tagSlugParam && legacyTag) {
     return <Navigate to={`/tag/${toUrlSlug(legacyTag)}`} replace />;
@@ -62,19 +100,40 @@ export default function Blog() {
     activeAuthorSlug.replace(/-/g, " ");
 
   const filteredPosts = posts.filter((post) => {
-    if (activeTagSlug) {
-      return post.tag_list?.some((tag) => toUrlSlug(tag) === activeTagSlug);
+    if (activeTagSlug && !post.tag_list?.some((tag) => toUrlSlug(tag) === activeTagSlug)) return false;
+    if (activeAuthorSlug && toUrlSlug(post.displayAuthor) !== activeAuthorSlug) return false;
+
+    if (filters.range) {
+      const days = RANGES[filters.range];
+      const stamp = new Date(post.updatedAt || post.published_at).getTime();
+      if (Number.isNaN(stamp) || stamp < Date.now() - days * 24 * 60 * 60 * 1000) return false;
     }
-    if (activeAuthorSlug) {
-      return toUrlSlug(post.displayAuthor) === activeAuthorSlug;
+
+    const words = filters.q.toLowerCase().split(/\s+/).filter(Boolean);
+    if (words.length) {
+      const haystack = [post.title, post.description, post.displayAuthor, ...(post.tag_list || [])]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      if (!words.every((word) => haystack.includes(word))) return false;
     }
+
     return true;
   });
 
+  const sortedPosts = [...filteredPosts].sort(SORTS[filters.sort] || SORTS.newest);
+
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const currentPosts = sortedPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(sortedPosts.length / postsPerPage);
+
+  // A shrink in results can leave the viewer stranded on a dead page.
+  useEffect(() => {
+    if (!loading && totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [loading, totalPages, currentPage]);
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -135,7 +194,15 @@ export default function Blog() {
         path={seo.path}
         noindex={seo.noindex}
       />
-      <h2 className="blog-public-title">{pageTitle}</h2>
+      <h1 className="blog-public-title">{pageTitle}</h1>
+
+      <BlogFilter
+        posts={posts}
+        filters={{ ...filters, total: sortedPosts.length }}
+        onChange={applyFilters}
+        onReset={resetFilters}
+        loading={loading}
+      />
 
       {(activeTagSlug || activeAuthorSlug) && (
         <div className="tag-filter-banner">
@@ -155,7 +222,7 @@ export default function Blog() {
         <>
           <div className="blog-grid">
             {currentPosts.length > 0 ? (
-              currentPosts.map((post) => (
+              currentPosts.map((post, idx) => (
                 <Link key={post.id} to={getBlogPostUrl(post)} className="blog-card">
                   {(post.cover_image || post.social_image) && (
                     <div className="blog-cover-wrap">
@@ -163,7 +230,11 @@ export default function Blog() {
                         src={post.cover_image || post.social_image}
                         alt={post.title}
                         className="blog-cover"
-                        loading="lazy"
+                        // The first card is the LCP element; lazy-loading it
+                        // was actively delaying the largest paint.
+                        loading={idx === 0 ? 'eager' : 'lazy'}
+                        fetchPriority={idx === 0 ? 'high' : 'auto'}
+                        decoding="async"
                       />
                     </div>
                   )}
@@ -217,8 +288,7 @@ export default function Blog() {
                   : activeAuthorSlug
                     ? `No blogs found for author “${displayAuthor}”.`
                     : "No blogs found."}
-              </p>
-            )}
+              </p>            )}
           </div>
 
           {totalPages > 1 && (

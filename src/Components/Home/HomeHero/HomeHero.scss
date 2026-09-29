@@ -64,14 +64,17 @@
     .hero-orb {
       position: absolute;
       border-radius: 50%;
-      filter: blur(60px);
+      // Softness comes from the gradient stops, not filter: blur(). A blur on
+      // these large elements forced a re-raster on every animation frame and
+      // was a major cost in Style & Layout / paint on throttled mobile.
       opacity: 0.3;
+      will-change: transform;
       animation: float 8s ease-in-out infinite;
 
       &-1 {
         width: 400px;
         height: 400px;
-        background: radial-gradient(circle, rgba(168, 85, 247, 0.4), transparent);
+        background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0.16) 45%, transparent 78%);
         top: -100px;
         left: -100px;
         animation-delay: 0s;
@@ -80,7 +83,7 @@
       &-2 {
         width: 500px;
         height: 500px;
-        background: radial-gradient(circle, rgba(124, 58, 237, 0.4), transparent);
+        background: radial-gradient(circle, rgba(124, 58, 237, 0.4) 0%, rgba(124, 58, 237, 0.16) 45%, transparent 78%);
         top: 50%;
         right: -150px;
         animation-delay: 2s;
@@ -89,7 +92,7 @@
       &-3 {
         width: 350px;
         height: 350px;
-        background: radial-gradient(circle, rgba(102, 126, 234, 0.3), transparent);
+        background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, rgba(102, 126, 234, 0.12) 45%, transparent 78%);
         bottom: -100px;
         left: 50%;
         animation-delay: 4s;
@@ -363,7 +366,6 @@
       }
 
       .hero-orb {
-        filter: blur(50px);
 
         &-1 {
           width: 250px;
@@ -449,7 +451,6 @@
       }
 
       .hero-orb {
-        filter: blur(40px);
 
         &-1 {
           width: 200px;
@@ -535,7 +536,6 @@
       }
 
       .hero-orb {
-        filter: blur(35px);
         opacity: 0.25;
       }
     }

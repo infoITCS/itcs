@@ -222,7 +222,11 @@ router.get('/all', requireAuthorOrAdmin, async (req, res) => {
 
 router.get('/published', async (req, res) => {
   try {
-    const blogs = await db.findBlogPublishedSummaries()
+    // Callers that only render a handful of cards (e.g. the home page) pass
+    // ?limit= so the whole catalogue isn't shipped just to slice it client-side.
+    const requested = Number.parseInt(req.query.limit, 10)
+    const limit = Number.isFinite(requested) && requested > 0 ? Math.min(requested, 50) : 0
+    const blogs = await db.findBlogPublishedSummaries(limit)
     res.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
     res.status(200).json(blogs)
   } catch (error) {

@@ -1,2 +1,9 @@
 /*    /index.html   200
 
+# Legacy / duplicate paths must 301 to the canonical URL, not render a 200.
+# Netlify / Cloudflare Pages format. On Apache/Plesk add the equivalent
+# Redirect 301 rules in .htaccess instead.
+/home            /                      301
+/about           /about-us              301
+/vision-mission   /mission-vision        301
+/contact-us      /contact               301

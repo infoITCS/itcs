@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import ScrollToTop from './Components/ScrollToTop'
+import NoIndexSeo from './Components/Common/NoIndexSeo'
 import RouteErrorBoundary from './Components/RouteErrorBoundary'
 import { lazyWithRetry } from './utils/lazyWithRetry'
 
@@ -63,8 +64,13 @@ const EnterpriseAIServicesPage = lazyWithRetry(() =>
   import('./Components/MicrosoftSolutions/pages').then((m) => ({ default: m.EnterpriseAIServicesPage }))
 )
 
+// Must fill the viewport, not just part of it. Anything rendered below the
+// fallback (the footer) would otherwise paint inside the viewport and then get
+// pushed down when the route chunk resolves, which is a full-value layout
+// shift. Keeping the fallback a full viewport tall means the footer is never
+// visible before the real content lands.
 const Loading = () => (
-  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', paddingTop: '120px' }}>
+  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', paddingTop: '120px' }}>
     <div style={{ width: 40, height: 40, border: '3px solid rgba(124,58,237,0.2)', borderTopColor: '#7c3aed', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
   </div>
@@ -89,17 +95,22 @@ function App() {
     ['/signup', '/login', '/forgot-password'].includes(location.pathname) ||
     location.pathname.startsWith('/admin') ||
     location.pathname.startsWith('/reset-password') ||
-    location.pathname.startsWith('/microsoft')
+    // Must be an exact segment match — otherwise blog slugs that merely
+    // start with "microsoft" (e.g. /microsoft-365-e5-update-2026) lose the
+    // site header and footer.
+    location.pathname === '/microsoft' ||
+    location.pathname.startsWith('/microsoft/')
 
   return (
     <>
+      <NoIndexSeo pathname={location.pathname} />
       {!isHideLayout && <Header />}
       <ScrollToTop />
       <RouteErrorBoundary key={location.pathname}>
         <Suspense fallback={<Loading />}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/home" element={<Home />} />
+            <Route path="/home" element={<Navigate to="/" replace />} />
             <Route path="/services" element={<Services />} />
 
             {/* Canonical short SEO paths */}
@@ -150,9 +161,9 @@ function App() {
             <Route path="/mission-vision" element={<Vision />} />
             <Route path="/vision-mission" element={<Navigate to="/mission-vision" replace />} />
             <Route path="/about-us" element={<AboutUs />} />
-            <Route path="/about" element={<AboutUs />} />
+            <Route path="/about" element={<Navigate to="/about-us" replace />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/contact-us" element={<Contact />} />
+            <Route path="/contact-us" element={<Navigate to="/contact" replace />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/careers/:id" element={<JobDetail />} />
             <Route path="/apply" element={<ApplyJob />} />

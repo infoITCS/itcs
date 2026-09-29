@@ -46,6 +46,30 @@ app.use((req, res, next) => {
   next()
 })
 
+// Blog listing payloads are large JSON (hundreds of KB). Without this they go
+// out uncompressed, which dominated the home page's transfer size.
+//
+// `compression` is loaded defensively: if the backend dependencies have not
+// been installed yet (for example on a fresh deploy) the API must still start
+// and simply serve uncompressed responses, rather than crash on boot.
+try {
+  const { default: compression } = await import('compression')
+  app.use(
+    compression({
+      threshold: 1024,
+      filter: (req, res) => {
+        const type = res.getHeader('Content-Type') || ''
+        if (/^text\/|application\/(json|javascript|xml|rss\+xml)/.test(type)) return true
+        return compression.filter(req, res)
+      },
+    })
+  )
+} catch (err) {
+  console.warn(
+    '[server] "compression" package unavailable - responses will not be gzipped. Run: npm install --prefix src/Backend'
+  )
+}
+
 app.use(cors({
   origin(origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -236,8 +260,21 @@ const isDirectRun = () => {
 
 if (isDirectRun()) {
   const PORT = process.env.PORT || 5000
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`ITCS server listening on http://0.0.0.0:${PORT}`)
+  })
+
+  // A raw EADDRINUSE stack trace is confusing when the server is already up.
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(
+        `\n  Port ${PORT} is already in use — the ITCS backend is probably still running.\n` +
+          `  Find it with:  netstat -ano | findstr :${PORT}\n` +
+          `  Stop it with:  taskkill /PID <pid> /F\n`
+      )
+      process.exit(1)
+    }
+    throw err
   })
 }
 

@@ -22,7 +22,7 @@ const ContactMap = () => {
     {
       city: "Islamabad",
       address: "Office # 14, Ground Floor, Malik Plaza F-8 Markaz, Islamabad",
-      phone: "+92 51 2744956",
+      phone: "+92 51 6145353",
       email: "info@itcs.com.pk",
       mapUrl: "https://www.google.com/maps/dir//Malik+Plaza+F-8+Markaz+Islamabad+Pakistan"
     }

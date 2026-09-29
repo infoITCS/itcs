@@ -9,6 +9,33 @@ export default defineConfig({
       assets: path.resolve(__dirname, 'src/assets'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Keep long-lived vendor code in its own chunks. The icon set alone is
+        // ~140 kB of the bundle; isolating it means an app-code deploy does not
+        // invalidate it in returning visitors' caches.
+        //
+        // MSAL is deliberately NOT bucketed: it is reached only through lazy
+        // route chunks, and naming it here drags the 284 kB msal-browser into
+        // a statically imported chunk, so it would ship to every visitor.
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+          if (id.includes('@fortawesome')) return 'vendor-icons';
+          if (
+            id.includes('/react/') ||
+            id.includes('/react-dom/') ||
+            id.includes('/react-router') ||
+            id.includes('/scheduler/') ||
+            id.includes('react-helmet')
+          ) {
+            return 'vendor-react';
+          }
+          return undefined;
+        },
+      },
+    },
+  },
   server: {
     proxy: {
       '/api': {

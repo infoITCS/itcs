@@ -2,6 +2,18 @@
 export const SITE_URL = "https://www.itcs.com.pk";
 
 /**
+ * Social-preview images must be absolute URLs — Facebook, X and LinkedIn all
+ * ignore relative paths and data: URIs. CMS image fields come back as
+ * "/uploads/..." (or a legacy data: URI), so normalise them here.
+ */
+export const toAbsoluteUrl = (value) => {
+  if (!value || typeof value !== "string") return null;
+  if (/^https?:\/\//i.test(value)) return value;
+  if (value.startsWith("data:")) return null; // not usable as an og:image
+  return `${SITE_URL}${value.startsWith("/") ? value : `/${value}`}`;
+};
+
+/**
  * Unique Meta Title + Meta Description for every public page.
  * Titles stay under ~60 chars where practical; descriptions ~120–160 chars.
  * PageSEO appends " | ITCS" only when the title does not already contain "ITCS".
@@ -105,9 +117,9 @@ export const SEO_META = {
   },
   ai: {
     path: "/ai",
-    title: "Enterprise AI Services & Licensing | ITCS",
+    title: "AI Services for Business | ITCS",
     description:
-      "Enterprise AI licensing for Copilot, Claude, ChatGPT, Cursor, GitHub Copilot & more on requirement — plus Power BI, Power Automate, governance, and adoption training from ITCS.",
+      "Enterprise AI services from ITCS — AI readiness consulting, Copilot and GenAI platform deployment, governance, and staff training for organisations in Pakistan.",
   },
   missionVision: {
     path: "/mission-vision",
@@ -191,7 +203,7 @@ export const SEO_META = {
     path: "/microsoft/enterprise-ai-services",
     title: "Enterprise AI Services & Licensing | ITCS",
     description:
-      "Enterprise AI licensing for Microsoft Copilot, Claude, ChatGPT, Cursor, GitHub Copilot & more — plus Power BI, Power Automate, governance, automation, and training from ITCS Pakistan.",
+      "Enterprise AI licensing for Microsoft Copilot, Claude, ChatGPT and Cursor, plus Power BI, governance, automation and training from ITCS Pakistan.",
   },
   notFound: {
     path: "",
@@ -218,7 +230,7 @@ export const blogSeoFromArticle = (article, path = "") => {
     title,
     description: String(description).slice(0, 160),
     path,
-    image: article?.cover_image || article?.social_image || article?.ogImage,
+    image: toAbsoluteUrl(article?.cover_image || article?.social_image || article?.ogImage),
   };
 };
 

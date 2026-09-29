@@ -15,7 +15,11 @@ export default function Blog() {
     const fetchBlogs = async () => {
       setLoading(true);
       try {
-        const customRes = await axios.get(apiUrl("/api/custom-blogs/published")).catch(() => ({ data: [] }));
+        // Only 3 cards are rendered below, so don't pull the whole catalogue
+        // (100+ posts with inline cover images) over the network.
+        const customRes = await axios
+          .get(apiUrl("/api/custom-blogs/published?limit=3"))
+          .catch(() => ({ data: [] }));
         setPosts(sortBlogsByDate((customRes.data || []).map(formatPublishedBlog)));
       } catch (err) {
         console.error("Failed to load blogs:", err);

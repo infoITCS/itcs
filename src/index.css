@@ -1,7 +1,42 @@
+/* Real weight files, not just 400. Without these the browser fakes bold for the
+   600/700 weights the whole design relies on, and synthesising bold at paint
+   time costs frame time on every heading. */
 @font-face {
   font-family: "Poppins";
   src: url("./assets/fonts/Poppins-Regular.woff2") format("woff2");
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("./assets/fonts/Poppins-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("./assets/fonts/Poppins-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("./assets/fonts/Poppins-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("./assets/fonts/Poppins-800.woff2") format("woff2");
+  font-weight: 800;
   font-style: normal;
   font-display: swap;
 }
@@ -229,6 +264,21 @@ html {
 
 input, textarea {
   caret-color: auto !important;
+}
+
+/* The caret lives inside the child nodes (e.g. Quill's <p>), not on the
+   editor root, so the descendants need the override too - a direct
+   declaration always beats an inherited one. */
+[contenteditable="true"],
+[contenteditable="true"] *,
+.ql-editor,
+.ql-editor * {
+  caret-color: currentColor !important;
+}
+
+[contenteditable="true"],
+.ql-editor {
+  cursor: text !important;
 }
 
 /* Global Word-Wrapping Fix for Blog Cards */

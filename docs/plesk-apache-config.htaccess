@@ -1,0 +1,104 @@
+# ============================================================================
+# ITCS - Apache / Plesk configuration
+#
+# HOW TO USE
+#   1. Review every line before applying.
+#   2. Place this file as ".htaccess" in the web root that serves the built
+#      frontend (the folder containing index.html, assets/ and robots.txt).
+#   3. If a .htaccess already exists there, MERGE these rules into it rather
+#      than replacing it.
+#   4. Test:  https://www.itcs.com.pk/blog        -> 200
+#             http://itcs.com.pk/blog             -> 301 to https (www)
+#             https://www.itcs.com.pk/nonexistent -> 404, not the home page
+#
+# NOT auto-deployed on purpose: whether /api is reverse-proxied to the Node
+# backend (port 5000) by this same Apache instance is not verifiable from the
+# repo, and an SPA fallback that swallows /api would break the entire site.
+# The RewriteCond below keeps /api safe either way.
+# ============================================================================
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # --- 1. Force the canonical host (https + www) ---------------------------
+  # The canonical origin used in robots.txt, sitemap.xml and every <link
+  # rel="canonical"> is https://www.itcs.com.pk, so the bare domain must 301.
+
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP_HOST} !^www\. [NC]
+  RewriteRule ^(.*)$ https://www.itcs.com.pk/$1 [R=301,L]
+
+  RewriteCond %{HTTPS} =on
+  RewriteCond %{HTTP_HOST} !^www\. [NC]
+  RewriteRule ^(.*)$ https://www.itcs.com.pk/$1 [R=301,L]
+
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP_HOST} ^www\. [NC]
+  RewriteRule ^(.*)$ https://www.itcs.com.pk/$1 [R=301,L]
+
+  # --- 2. Legacy / duplicate paths -> canonical path (301) ----------------
+  # The React app also redirects these client-side, but only Apache can send a
+  # real 301. Both layers are intentional.
+
+  RewriteRule ^home/?$          /      [R=301,L]
+  RewriteRule ^about/?$         /about-us      [R=301,L]
+  RewriteRule ^contact-us/?$    /contact       [R=301,L]
+  RewriteRule ^vision-mission/?$ /mission-vision [R=301,L]
+
+  # --- 3. SPA fallback -----------------------------------------------------
+  # Real static files are served directly; everything else falls back to
+  # index.html so client-side routes work on a hard refresh / deep link.
+  # /api is excluded so an existing reverse proxy is never intercepted.
+
+  RewriteCond %{REQUEST_URI} !^/api/
+  RewriteCond %{REQUEST_URI} !^/uploads/
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# --- 4. MIME types the migrated blog media depend on ------------------------
+# The database now serves every in-article image as .webp from /uploads.
+# Without these, Apache can serve them as application/octet-stream and the
+# browser will refuse to render them.
+<IfModule mod_mime.c>
+  AddType image/webp                 .webp
+  AddType image/svg+xml              .svg
+  AddType font/woff2                 .woff2
+  AddType application/json           .json
+</IfModule>
+
+# --- 5. Compression -------------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE application/xml image/svg+xml
+</IfModule>
+
+# --- 6. Caching -----------------------------------------------------------
+# Hashed build assets can be cached forever. index.html, robots.txt and
+# sitemap.xml must never be cached or a deploy will not go live.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css                "access plus 1 year"
+  ExpiresByType application/javascript  "access plus 1 year"
+  ExpiresByType image/webp              "access plus 1 year"
+  ExpiresByType image/svg+xml           "access plus 1 year"
+  ExpiresByType font/woff2              "access plus 1 year"
+  ExpiresByType text/html               "access plus 0 seconds"
+  ExpiresDefault                        "access plus 1 week"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|xml|txt)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# --- 7. Uploaded blog media must never be executed -------------------------
+<IfModule mod_headers.c>
+  <DirectoryMatch "^.*/uploads/">
+    Header set X-Content-Type-Options "nosniff"
+  </DirectoryMatch>
+</IfModule>
