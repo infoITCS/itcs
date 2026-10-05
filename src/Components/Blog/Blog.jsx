@@ -184,7 +184,7 @@ export default function Blog() {
     ? `Blogs tagged “${displayTag}”`
     : activeAuthorSlug
       ? `Posts by ${displayAuthor}`
-      : "Our Blogs";
+      : null;
 
   return (
     <div className="blog-public-container">
@@ -194,7 +194,17 @@ export default function Blog() {
         path={seo.path}
         noindex={seo.noindex}
       />
-      <h1 className="blog-public-title">{pageTitle}</h1>
+      <div className="blog-page-heading">
+        <span className="blog-title-badge">ITCS INSIGHTS</span>
+        <h1 className="blog-public-title">
+          {pageTitle || (
+            <>
+              Cloud, Security &amp; IT<br />
+              <span className="blog-title-accent">Insights for Business</span>
+            </>
+          )}
+        </h1>
+      </div>
 
       <BlogFilter
         posts={posts}
@@ -242,21 +252,30 @@ export default function Blog() {
                   <div className="blog-card__content">
                     <h3>{post.title}</h3>
 
-                    <p className="meta">
-                      <span
-                        className="meta-author"
-                        onClick={(e) => handleAuthorClick(e, post.displayAuthor)}
-                        role="link"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") handleAuthorClick(e, post.displayAuthor);
-                        }}
-                      >
-                        {post.displayAuthor}
-                      </span>
-                      {" • "}
-                      {formatDate(post.displayDate, post.isCustom)} • {post.reading_time_minutes} min read
-                    </p>
+                    <div className="blog-card__meta">
+                      <div className="meta-author-wrap">
+                        <span className="meta-avatar">
+                          {String(post.displayAuthor || "A").trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "A"}
+                        </span>
+                        <span
+                          className="meta-author"
+                          onClick={(e) => handleAuthorClick(e, post.displayAuthor)}
+                          role="link"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") handleAuthorClick(e, post.displayAuthor);
+                          }}
+                        >
+                          {post.displayAuthor}
+                        </span>
+                      </div>
+
+                      <div className="meta-details">
+                        <time>{formatDate(post.displayDate, post.isCustom)}</time>
+                        <span className="meta-separator">•</span>
+                        <span>{post.reading_time_minutes} min read</span>
+                      </div>
+                    </div>
 
                     <p className="description">{post.description}</p>
 

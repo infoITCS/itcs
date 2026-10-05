@@ -55,20 +55,29 @@ export default function Blog() {
               <div className="blog-card__content">
                 <h3>{post.title}</h3>
 
-                <p className="meta">
-                  <span
-                    className="meta-author"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      navigate(getAuthorUrl(post.displayAuthor));
-                    }}
-                  >
-                    {post.displayAuthor}
-                  </span>
-                  {" • "}
-                  {post.readable_publish_date} • {post.reading_time_minutes} min read
-                </p>
+                <div className="blog-card__meta">
+                  <div className="meta-author-wrap">
+                    <span className="meta-avatar">
+                      {String(post.displayAuthor || "A").trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "A"}
+                    </span>
+                    <span
+                      className="meta-author"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navigate(getAuthorUrl(post.displayAuthor));
+                      }}
+                    >
+                      {post.displayAuthor}
+                    </span>
+                  </div>
+
+                  <div className="meta-details">
+                    <time>{post.readable_publish_date}</time>
+                    <span className="meta-separator">•</span>
+                    <span>{post.reading_time_minutes} min read</span>
+                  </div>
+                </div>
 
                 <p className="description">{post.description}</p>
 
@@ -80,6 +89,10 @@ export default function Blog() {
           <p className="no-posts">{loading ? "Loading..." : "No blogs found."}</p>
         )}
       </div>
+
+      <Link to="/blog" className="blog-view-all">
+        Explore all blogs
+      </Link>
     </div>
   );
 }
