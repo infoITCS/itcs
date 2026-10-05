@@ -143,7 +143,9 @@ const sendSitemap = async (req, res) => {
   }
 }
 app.get('/sitemap.xml', sendSitemap)
-app.get('/api/sitemap.xml', sendSitemap)
+app.get('/api/sitemap.xml', (req, res) => {
+  res.redirect(301, 'https://www.itcs.com.pk/sitemap.xml')
+})
 
 const distPath = path.join(__dirname, '../../dist')
 const indexHtmlPath = path.join(distPath, 'index.html')

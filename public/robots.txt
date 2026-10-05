@@ -6,6 +6,7 @@
 User-agent: *
 Allow: /
 Allow: /assets/
+Allow: /api/sitemap.xml
 
 # Private / utility areas. These also carry a noindex meta tag as a second
 # layer of protection, so a crawler that reaches them still will not index them.
@@ -27,4 +28,3 @@ Disallow: /*?sort=
 Disallow: /*?page=
 
 Sitemap: https://www.itcs.com.pk/sitemap.xml
-Sitemap: https://itcs.com.pk/api/sitemap.xml
