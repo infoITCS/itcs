@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- data-rh="true" hands ownership of these tags to react-helmet-async.
+         Without it Helmet appends its own copy and the crawler-facing tag stays
+         stuck on the homepage description on every route. -->
+    <title data-rh="true">ITCS | IT Solutions, Cloud & Cybersecurity in Pakistan</title>
+    <meta data-rh="true" name="description" content="ITCS delivers enterprise IT solutions across Pakistan — cloud, cybersecurity, networking, consulting, and managed services that help businesses modernize and grow." />
+    <meta data-rh="true" name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link data-rh="true" rel="canonical" href="https://www.itcs.com.pk/" />
+    <link rel="dns-prefetch" href="https://code.tidio.co" />
+    <!-- Poppins is the body + heading font. Preloading it keeps first paint from
+         swapping in a fallback and shifting the page (CLS). -->
+    <link rel="preload" href="/src/assets/fonts/Poppins-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/Poppins-600.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/Poppins-700.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body style="background-color: #0f192e; background-image: radial-gradient(ellipse 70% 60% at 85% 20%, rgba(0,138,189,0.4) 0%, transparent 65%), radial-gradient(ellipse 50% 50% at 15% 85%, rgba(0,91,169,0.35) 0%, transparent 60%);">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <!-- Bootstrap JS not required: nav toggle is React-controlled -->
+    <script>
+      // Load the Tidio chat widget only on real user interaction.
+      // A requestIdleCallback timeout previously forced ~377 KB of third-party
+      // JS to load mid-critical-window, which pushed LCP to ~6.8s and blocked
+      // the main thread for ~1s. The bubble is not needed until the user acts.
+      (function () {
+        var loaded = false;
+        function loadTidio() {
+          if (loaded) return;
+          loaded = true;
+          var s = document.createElement('script');
+          s.src = '//code.tidio.co/6upntau7pxerriyh8lkytwftzqhjr3zo.js';
+          s.async = true;
+          document.body.appendChild(s);
+        }
+        ;['pointerdown', 'keydown', 'touchstart', 'scroll', 'mousemove'].forEach(function (evt) {
+          window.addEventListener(evt, loadTidio, { once: true, passive: true });
+        });
+        // Conservative fallback: only after load AND a long settle, and only if
+        // the main thread is actually idle.
+        window.addEventListener('load', function () {
+          setTimeout(function () {
+            if ('requestIdleCallback' in window) requestIdleCallback(loadTidio, { timeout: 10000 });
+            else setTimeout(loadTidio, 10000);
+          }, 8000);
+        });
+      })();
+    </script>
+  </body>
+</html>

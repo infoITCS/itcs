@@ -1,0 +1,194 @@
+.home-feature {
+  padding: 50px 20px;
+  background: var(--bg-primary);
+  background-image: radial-gradient(ellipse 80% 70% at 50% -20%, rgba(109, 40, 217, 0.25) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 50% 120%, rgba(76, 29, 149, 0.2) 0%, transparent 55%);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.08), transparent 70%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .feature-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .feature-header {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+
+    .feature-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 50px;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+
+    .feature-title {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+
+    .feature-description {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin: 0;
+    }
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .feature-item {
+    display: flex;
+    gap: 20px;
+    padding: 28px;
+    background: var(--bg-card);
+    background-image: radial-gradient(ellipse 80% 100% at 30% 50%, rgba(124, 58, 237, 0.08) 0%, transparent 70%);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    transition: all var(--transition-normal);
+
+    .item-icon {
+      flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 12px;
+      color: #a855f7;
+      transition: all var(--transition-normal);
+    }
+
+    .item-content {
+      flex: 1;
+
+      .item-title {
+        font-size: 19px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+      }
+
+      .item-description {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+    }
+
+    &:hover {
+      border-color: #7c3aed;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(124, 58, 237, 0.1);
+
+      .item-icon {
+        background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+        color: white;
+        transform: scale(1.05);
+      }
+    }
+  }
+
+  .feature-footer-highlights {
+    padding: 20px 30px;
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
+    border-left: 4px solid #7c3aed;
+    border-radius: 4px 16px 16px 4px;
+    max-width: 900px;
+    margin: 10px auto 0;
+    text-align: center;
+
+    .highlight-text {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 0;
+
+      strong {
+        color: #a855f7;
+      }
+    }
+  }
+}
+
+// Tablet landscape & portrait
+@media (max-width: 992px) {
+  .home-feature {
+    padding: 80px 20px;
+
+    .feature-container {
+      gap: 40px;
+    }
+
+    .feature-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .feature-item {
+      padding: 24px;
+    }
+  }
+}
+
+// Mobile
+@media (max-width: 576px) {
+  .home-feature {
+    padding: 60px 15px;
+
+    .feature-container {
+      gap: 30px;
+    }
+
+    .feature-item {
+      flex-direction: column;
+      gap: 16px;
+      padding: 20px;
+
+      .item-icon {
+        width: 48px;
+        height: 48px;
+      }
+    }
+
+    .feature-footer-highlights {
+      padding: 16px;
+      border-left: none;
+      border-top: 3px solid #7c3aed;
+      border-radius: 12px;
+    }
+  }
+}

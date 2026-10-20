@@ -1,0 +1,388 @@
+.home-services {
+  padding: 100px 20px;
+  background: transparent;
+  background-image: none;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+  }
+
+  .services-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .services-header {
+    text-align: center;
+    margin-bottom: 60px;
+
+    .section-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 50px;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+
+    .section-description {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+  }
+
+    .service-card {
+      position: relative;
+      padding: 40px 30px;
+      background: transparent;
+      background-image: none;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      transition: all var(--transition-normal);
+      overflow: hidden;
+
+    .card-glow {
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, var(--card-color), transparent 70%);
+      opacity: 0;
+      transition: opacity var(--transition-normal);
+      pointer-events: none;
+    }
+
+      .card-icon {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 24px;
+        padding: 16px;
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+        border: 1px solid rgba(124, 58, 237, 0.3);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all var(--transition-normal);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+        transition: all var(--transition-normal);
+      }
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    .card-description {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+        color: #a855f7;
+      font-size: 14px;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+
+      .link-arrow {
+        transition: transform var(--transition-normal);
+      }
+
+      &:hover {
+        gap: 12px;
+
+        .link-arrow {
+          transform: translateX(5px);
+        }
+      }
+    }
+
+    &:hover {
+      transform: translateY(-8px);
+      border-color: var(--card-color);
+        box-shadow: 0 8px 30px rgba(124, 58, 237, 0.3);
+
+      .card-glow {
+        opacity: 0.1;
+      }
+
+      .card-icon {
+        background: var(--card-color);
+        transform: scale(1.1);
+
+        img {
+          filter: brightness(0) invert(1);
+        }
+      }
+    }
+  }
+}
+
+// Tablet landscape
+@media (max-width: 1024px) {
+  .home-services {
+    padding: 80px 20px;
+
+    .services-header {
+      margin-bottom: 50px;
+
+      .section-badge {
+        font-size: 12px;
+        padding: 7px 15px;
+      }
+
+      .section-description {
+        font-size: 17px;
+      }
+    }
+
+    .services-grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+
+    .service-card {
+      padding: 35px 28px;
+
+      .card-icon {
+        width: 70px;
+        height: 70px;
+      }
+
+      .card-title {
+        font-size: 19px;
+      }
+    }
+  }
+}
+
+// Tablet portrait
+@media (max-width: 768px) {
+  .home-services {
+    padding: 60px 20px;
+
+    .services-header {
+      margin-bottom: 40px;
+
+      .section-badge {
+        font-size: 11px;
+        padding: 6px 14px;
+      }
+
+      .section-description {
+        font-size: 16px;
+      }
+    }
+
+    .services-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .service-card {
+      padding: 30px 24px;
+
+      .card-icon {
+        width: 65px;
+        height: 65px;
+      }
+    }
+  }
+}
+
+// Mobile landscape & large phones
+@media (max-width: 600px) {
+  .home-services {
+    padding: 50px 18px;
+
+    .services-header {
+      margin-bottom: 35px;
+
+      .section-badge {
+        font-size: 10px;
+        padding: 6px 13px;
+        margin-bottom: 18px;
+      }
+
+      .section-description {
+        font-size: 15px;
+      }
+    }
+
+    .services-grid {
+      gap: 18px;
+    }
+
+    .service-card {
+      padding: 28px 22px;
+
+      .card-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 20px;
+      }
+
+      .card-title {
+        font-size: 18px;
+        margin-bottom: 14px;
+      }
+
+      .card-description {
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      .card-link {
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+// Small mobile phones
+@media (max-width: 480px) {
+  .home-services {
+    padding: 45px 15px;
+
+    .services-header {
+      margin-bottom: 30px;
+
+      .section-badge {
+        font-size: 9px;
+        padding: 5px 12px;
+        margin-bottom: 16px;
+      }
+
+      .section-description {
+        font-size: 14px;
+      }
+    }
+
+    .services-grid {
+      gap: 16px;
+    }
+
+    .service-card {
+      padding: 25px 20px;
+
+      .card-icon {
+        width: 55px;
+        height: 55px;
+        margin-bottom: 18px;
+      }
+
+      .card-title {
+        font-size: 17px;
+        margin-bottom: 12px;
+      }
+
+      .card-description {
+        font-size: 13px;
+        margin-bottom: 18px;
+      }
+
+      .card-link {
+        font-size: 12px;
+      }
+
+      &:hover {
+        transform: translateY(-4px);
+      }
+    }
+  }
+}
+
+// Extra small mobile phones
+@media (max-width: 360px) {
+  .home-services {
+    padding: 40px 12px;
+
+    .services-header {
+      margin-bottom: 25px;
+
+      .section-badge {
+        font-size: 9px;
+        padding: 5px 11px;
+      }
+
+      .section-description {
+        font-size: 13px;
+      }
+    }
+
+    .services-grid {
+      gap: 14px;
+    }
+
+    .service-card {
+      padding: 22px 18px;
+
+      .card-icon {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 16px;
+        padding: 12px;
+      }
+
+      .card-title {
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      .card-description {
+        font-size: 12px;
+        margin-bottom: 16px;
+      }
+
+      .card-link {
+        font-size: 11px;
+      }
+    }
+  }
+}
+

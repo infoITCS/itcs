@@ -1,0 +1,221 @@
+import mongoose from 'mongoose'
+const ObjectId = mongoose.Types.ObjectId
+
+let _ready = false
+let _db = null
+
+export const setDb = (db) => {
+  _db = db
+  _ready = true
+}
+
+export const isReady = () => _ready
+
+const coll = (name) => {
+  if (!_ready || !_db) throw new Error('Database not connected')
+  return _db.collection(name)
+}
+
+const blogIdFilter = (id) => {
+  const str = String(id)
+  if (ObjectId.isValid(str)) {
+    return { _id: ObjectId.createFromHexString(str) }
+  }
+  return { _id: str }
+}
+
+// Users
+export const findUserByEmail = (email) => coll('users').findOne({ email })
+export const findUserById = (id) => coll('users').findOne({ _id: ObjectId.createFromHexString(id) })
+export const createUser = (data) => coll('users').insertOne(data)
+export const updateUserById = (id, update) => coll('users').updateOne(
+  { _id: ObjectId.createFromHexString(id) },
+  { $set: update }
+)
+export const setUserResetToken = (email, token, expires) => coll('users').updateOne(
+  { email },
+  { $set: { resetPasswordToken: token, resetPasswordExpires: expires } }
+)
+export const findUserByResetToken = (token) => coll('users').findOne({
+  resetPasswordToken: token,
+  resetPasswordExpires: { $gt: new Date().toISOString() }
+})
+
+// CustomBlogs
+export const findBlogPublished = () =>
+  coll('customblogs').find({ status: 'published' }).sort({ createdAt: -1 }).toArray()
+
+export const findBlogPublishedSummaries = (limit = 0) => {
+  const cursor = coll('customblogs')
+    .find({ status: 'published' })
+    .project({
+      _id: 1,
+      title: 1,
+      slug: 1,
+      author: 1,
+      excerpt: 1,
+      metaDescription: 1,
+      tags: 1,
+      featuredImage: 1,
+      ogImage: 1,
+      publishDate: 1,
+      createdAt: 1,
+      updatedAt: 1,
+    })
+    .sort({ createdAt: -1 })
+  return (limit > 0 ? cursor.limit(limit) : cursor).toArray()
+}
+
+export const findBlogOneBySlug = (slug) =>
+  coll('customblogs').findOne({ slug })
+
+export const findBlogWhere = (query = {}) =>
+  coll('customblogs').find(query).sort({ createdAt: -1 }).toArray()
+
+export const findBlogSummaries = (query = {}) =>
+  coll('customblogs').find(query).project({
+    _id: 1,
+    title: 1,
+    slug: 1,
+    author: 1,
+    excerpt: 1,
+    metaDescription: 1,
+    tags: 1,
+    featuredImage: 1,
+    status: 1,
+    publishDate: 1,
+    createdAt: 1,
+    updatedAt: 1,
+    ownerId: 1,
+  }).sort({ createdAt: -1 }).toArray()
+
+/** Lightweight list — omits content; URL covers inline, base64 loaded lazily */
+export const findBlogListItems = (query = {}) =>
+  coll('customblogs').aggregate([
+    { $match: query },
+    { $sort: { createdAt: -1 } },
+    {
+      $project: {
+        _id: 1,
+        title: 1,
+        slug: 1,
+        author: 1,
+        excerpt: 1,
+        metaDescription: 1,
+        tags: 1,
+        status: 1,
+        publishDate: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        ownerId: 1,
+        featuredImage: {
+          $cond: [
+            { $regexMatch: { input: { $ifNull: ['$featuredImage', ''] }, regex: /^https?:\/\//i } },
+            '$featuredImage',
+            null,
+          ],
+        },
+        hasCover: {
+          $gt: [{ $strLenCP: { $ifNull: ['$featuredImage', ''] } }, 0],
+        },
+      },
+    },
+  ]).toArray()
+
+export const findBlogById = (id) =>
+  coll('customblogs').findOne(blogIdFilter(id))
+
+export const findBlogForEdit = (id) =>
+  coll('customblogs').findOne(blogIdFilter(id), {
+    projection: { featuredImage: 0 },
+  })
+
+export const findBlogCoverById = (id) =>
+  coll('customblogs').findOne(blogIdFilter(id), {
+    projection: { featuredImage: 1, ownerId: 1 },
+  })
+
+export const findBlogCoversByIds = (ids = []) => {
+  const objectIds = ids
+    .filter((id) => ObjectId.isValid(id))
+    .map((id) => ObjectId.createFromHexString(id))
+  if (!objectIds.length) return Promise.resolve([])
+
+  return coll('customblogs')
+    .find({
+      _id: { $in: objectIds },
+      featuredImage: { $exists: true, $nin: [null, ''] },
+    })
+    .project({ _id: 1, featuredImage: 1, ownerId: 1 })
+    .toArray()
+}
+
+export const createBlog = async (data) => {
+  const doc = { ...data, createdAt: new Date(), updatedAt: new Date() }
+  const result = await coll('customblogs').insertOne(doc)
+  return { ...doc, _id: result.insertedId }
+}
+
+export const updateBlogById = async (id, update) => {
+  const result = await coll('customblogs').findOneAndUpdate(
+    blogIdFilter(id),
+    { $set: { ...update, updatedAt: new Date() } },
+    { returnDocument: 'after' }
+  )
+  return result?.value ?? result ?? null
+}
+
+export const deleteBlogById = async (id) => {
+  const result = await coll('customblogs').deleteOne(blogIdFilter(id))
+  return result.deletedCount > 0 ? { _id: id } : null
+}
+
+// BlogStatuses (Dev.to)
+export const findBlogStatuses = () =>
+  coll('blogstatuses').find({}).toArray()
+
+export const findApprovedIds = () =>
+  coll('blogstatuses').find({ status: 'approved' }).project({
+    devId: 1, customAuthor: 1, customDate: 1, createdAt: 1
+  }).toArray()
+
+export const upsertBlogStatus = (devId, update) =>
+  coll('blogstatuses').findOneAndUpdate(
+    { devId },
+    { $set: update },
+    { upsert: true, returnDocument: 'after' }
+  )
+
+// Jobs
+export const findAllJobs = () =>
+  coll('jobs').find({}).sort({ createdAt: -1 }).toArray()
+
+export const findJobById = (id) =>
+  coll('jobs').findOne({ _id: ObjectId.createFromHexString(id) })
+
+export const findJobBySlug = (slug) =>
+  coll('jobs').findOne({ slug })
+
+export const createJob = async (data) => {
+  const doc = { ...data, createdAt: new Date() }
+  const result = await coll('jobs').insertOne(doc)
+  return { ...doc, _id: result.insertedId }
+}
+
+export const updateJobById = async (id, data) => {
+  const _id = ObjectId.createFromHexString(id)
+  const update = { ...data, updatedAt: new Date() }
+  delete update._id
+  delete update.createdAt
+  const result = await coll('jobs').findOneAndUpdate(
+    { _id },
+    { $set: update },
+    { returnDocument: 'after' }
+  )
+  return result?.value ?? result ?? null
+}
+
+export const deleteJobById = async (id) => {
+  const result = await coll('jobs').deleteOne({ _id: ObjectId.createFromHexString(id) })
+  return result.deletedCount > 0 ? { _id: id } : null
+}

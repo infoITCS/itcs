@@ -1,0 +1,16 @@
+.contact-map-embed {
+  width: 100%;
+  padding: 0;
+  
+  iframe {
+    width: 100%;
+    filter: grayscale(100%);
+    opacity: 0.9;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      filter: grayscale(0%);
+      opacity: 1;
+    }
+  }
+}

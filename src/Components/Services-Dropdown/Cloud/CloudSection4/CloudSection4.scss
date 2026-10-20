@@ -1,0 +1,117 @@
+.cloudSection4 {
+  padding: 40px 24px;
+  background: var(--bg-secondary);
+
+  .cloudSection4-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .cloudSection4-content {
+    h2 {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+      text-align: center;
+
+      @media (max-width: 768px) {
+        font-size: 26px;
+      }
+    }
+
+    > p {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      max-width: 900px;
+      margin: 0 auto 40px;
+      text-align: center;
+    }
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+
+    @media (max-width: 968px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+
+    .benefit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: #7c3aed;
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(124, 58, 237, 0.15);
+      }
+
+      .benefit-icon {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+        border: 1px solid rgba(124, 58, 237, 0.3);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+          font-size: 22px;
+          color: #a855f7;
+        }
+      }
+
+      .benefit-text {
+        strong {
+          display: block;
+          font-size: 16px;
+          color: var(--text-primary);
+          margin-bottom: 6px;
+        }
+
+        span {
+          font-size: 13px;
+          color: var(--text-secondary);
+          line-height: 1.5;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 30px 20px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 24px 16px;
+
+    .cloudSection4-content {
+      h2 {
+        font-size: 22px;
+      }
+
+      > p {
+        font-size: 14px;
+      }
+    }
+
+    .benefit-item {
+      padding: 16px;
+    }
+  }
+}

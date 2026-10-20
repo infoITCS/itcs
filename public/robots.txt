@@ -1,0 +1,30 @@
+# ITCS — https://www.itcs.com.pk
+# The www host is canonical (see SITE_URL in src/config/seoMeta.js). The
+# non-www host is redirected at the server/host level; do not list it here or
+# you advertise two origins for the same content.
+
+User-agent: *
+Allow: /
+Allow: /assets/
+Allow: /api/sitemap.xml
+
+# Private / utility areas. These also carry a noindex meta tag as a second
+# layer of protection, so a crawler that reaches them still will not index them.
+Disallow: /admin
+Disallow: /admin/
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /apply
+Disallow: /api/
+Disallow: /uploads/
+Disallow: /tag/
+Disallow: /author/
+
+# Faceted / duplicate blog views resolve to the canonical article URL.
+Disallow: /*?filter=
+Disallow: /*?sort=
+Disallow: /*?page=
+
+Sitemap: https://www.itcs.com.pk/sitemap.xml
