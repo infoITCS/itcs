@@ -6,6 +6,7 @@ import { apiUrl } from "../../config/api";
 import { getBlogPostUrl, getTagUrl, getAuthorUrl, isDevToBlogId } from "../../utils/blogUrls";
 import { formatPublishedBlog, normalizeBlogHtml } from "../../utils/blogFormat";
 import PageSEO from "../Common/PageSEO";
+import RelatedServicesAndInsights from "../Common/RelatedServicesAndInsights";
 import { blogSeoFromArticle, SEO_META } from "../../config/seoMeta";
 import { blogPostingSchema } from "../../config/structuredData";
 import "./Blog.scss";
@@ -168,9 +169,14 @@ const BlogDetail = () => {
   };
 
   if (loading) {
+    const currentPath = postKey ? `/${postKey}` : "/blog";
     return (
       <div className="blog-detail skeleton-wrapper">
-        <PageSEO title={SEO_META.blog.title} description={SEO_META.blog.description} path={SEO_META.blog.path} />
+        <PageSEO
+          title="Loading Article | ITCS Blog"
+          description="Read technology insights on cloud, cybersecurity, and enterprise IT from ITCS."
+          path={currentPath}
+        />
         <div className="skeleton-cover"></div>
         <div className="skeleton-title"></div>
         <div className="skeleton-meta"></div>
@@ -339,6 +345,12 @@ const BlogDetail = () => {
           </div>
         )}
       </div>
+      <RelatedServicesAndInsights
+        currentPath={`/${postKey}`}
+        heading="Enterprise Services & Solutions Related to this Topic"
+        subheading="Consult with ITCS certified architects to implement and scale these solutions for your organization."
+        showArticles={false}
+      />
     </div>
   );
 };

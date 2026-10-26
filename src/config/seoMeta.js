@@ -23,129 +23,129 @@ export const toAbsoluteUrl = (value) => {
 export const SEO_META = {
   home: {
     path: "/",
-    title: "ITCS | IT Solutions, Cloud & Cybersecurity in Pakistan",
+    title: "ITCS | Leading Enterprise IT Solutions, Cloud & Cybersecurity in Pakistan",
     description:
-      "ITCS delivers enterprise IT solutions across Pakistan — cloud, cybersecurity, networking, consulting, and managed services that help businesses modernize and grow.",
+      "Accelerate business growth with ITCS. Enterprise cloud migration, 24/7 cybersecurity defense, managed IT & high-speed network infrastructure across Pakistan. Consult our experts today!",
   },
   services: {
     path: "/services",
-    title: "IT Services & Technology Solutions | ITCS",
+    title: "Enterprise IT Services & Technology Solutions in Pakistan | ITCS",
     description:
-      "Explore ITCS end-to-end IT services: cloud, cybersecurity, network solutions, IT consulting, enterprise systems, web development, and managed support.",
+      "Explore ITCS end-to-end technology solutions: AWS/Azure Cloud, 24/7 Managed Cybersecurity, Network Architecture, IT Consulting & Enterprise AI in Pakistan. Discover our services.",
   },
   cloud: {
     path: "/cloud",
-    title: "Cloud Solutions & Managed Cloud Services | ITCS",
+    title: "Managed Cloud Solutions & Cloud Architecture in Pakistan | ITCS",
     description:
-      "Design, migrate, and secure your cloud with ITCS. Azure, AWS, and GCP expertise for scalable infrastructure and reliable managed cloud services in Pakistan.",
+      "Scale faster with certified Azure, AWS & GCP cloud architects in Pakistan. Enterprise cloud design, zero-downtime migration & 24/7 managed support. Request a free consultation!",
   },
   cloudDesign: {
     path: "/cloud/design",
-    title: "Cloud Architecture & Design Services | ITCS",
+    title: "Enterprise Cloud Architecture & Hybrid Design Services | ITCS",
     description:
-      "Cloud architecture and design built for performance, cost efficiency, and security. ITCS designs scalable multi-cloud and hybrid environments for enterprises.",
+      "Cost-efficient, high-availability multi-cloud architecture by certified engineers. Scalable hybrid & public cloud design for Pakistani enterprises. Get an architecture review.",
   },
   cloudMigration: {
     path: "/cloud/migration",
-    title: "Cloud Migration Services | ITCS Pakistan",
+    title: "Zero-Downtime Cloud Migration Services in Pakistan | ITCS",
     description:
-      "Move workloads to the cloud with minimal downtime. ITCS cloud migration experts plan, execute, and optimize enterprise migrations to Azure, AWS, and GCP.",
+      "Seamless workload migration to AWS, Azure, & GCP with guaranteed zero data loss. Proven migration roadmaps & post-migration optimization. Talk to our migration specialists.",
   },
   cloudSecurity: {
     path: "/cloud/security",
-    title: "Cloud Security Solutions | ITCS",
+    title: "Advanced Cloud Security Solutions & Threat Defense | ITCS",
     description:
-      "Protect cloud workloads with ITCS cloud security services — identity, encryption, monitoring, compliance, and continuous threat defense for Azure, AWS, and GCP.",
+      "Safeguard cloud workloads with multi-layer IAM, encryption, continuous compliance & real-time threat monitoring for Azure, AWS, and GCP. Secure your cloud today.",
   },
   cybersecurity: {
     path: "/cybersecurity",
-    title: "Cybersecurity Services & Threat Protection | ITCS",
+    title: "Top Cybersecurity Services & 24/7 SOC Threat Defense in Pakistan | ITCS",
     description:
-      "Defend your business with ITCS cybersecurity: assessments, monitoring, endpoint protection, and incident response tailored for Pakistani enterprises.",
+      "Protect critical business assets from ransomware and cyber threats. 24/7 SOC monitoring, endpoint defense, vulnerability assessments & incident response. Get protected now!",
   },
   securityAssessment: {
     path: "/cybersecurity/assessment",
-    title: "Security Assessment & Vulnerability Testing | ITCS",
+    title: "Cybersecurity Vulnerability Assessment & Penetration Testing | ITCS",
     description:
-      "Identify gaps before attackers do. ITCS security assessments cover vulnerability analysis, risk reviews, and actionable remediation roadmaps.",
+      "Identify vulnerabilities before hackers do. Deep penetration testing, risk audits & actionable compliance roadmaps for businesses in Pakistan. Book an assessment.",
   },
   consulting: {
     path: "/consulting",
-    title: "IT Consulting Services | ITCS Pakistan",
+    title: "Strategic IT Consulting & Digital Transformation in Pakistan | ITCS",
     description:
-      "Strategic IT consulting from ITCS — technology roadmaps, digital transformation, infrastructure planning, and advisory for growing organizations in Pakistan.",
+      "Align technology with business growth. IT roadmap planning, digital transformation advisory & infrastructure modernization for enterprise leaders. Speak with a consultant.",
   },
   enterprise: {
     path: "/enterprise-solutions",
-    title: "Enterprise IT Solutions | ITCS",
+    title: "Enterprise IT Solutions & Systems Integration in Pakistan | ITCS",
     description:
-      "Enterprise-grade IT solutions from ITCS: systems integration, modernization, collaboration platforms, and scalable technology for large organizations.",
+      "Enterprise-grade IT systems integration, ERP/CRM modernization, unified communications & scalable infrastructure designed for mission-critical operations. Learn more.",
   },
   itServices: {
     path: "/it-services",
-    title: "Managed IT Services & Support | ITCS",
+    title: "24/7 Managed IT Services & Proactive Enterprise Support | ITCS",
     description:
-      "Reliable managed IT services from ITCS — help desk, infrastructure support, monitoring, and proactive maintenance so your teams stay productive.",
+      "Minimize downtime with reliable managed IT services in Pakistan. Proactive monitoring, 24/7 IT helpdesk, workstation support & SLA guarantees. Contact us today.",
   },
   network: {
     path: "/network-solutions",
-    title: "Network Solutions & Infrastructure | ITCS",
+    title: "Enterprise Network Solutions & High-Speed SD-WAN in Pakistan | ITCS",
     description:
-      "Design, secure, and support enterprise networks with ITCS. LAN/WAN, wireless, SD-WAN, and resilient connectivity built for modern workplaces.",
+      "Build resilient, secure corporate networks. Enterprise SD-WAN, LAN/WAN infrastructure, campus wireless & 99.9% uptime connectivity. Upgrade your network today.",
   },
   networkDesign: {
     path: "/network-solutions/design",
-    title: "Network Design & Architecture | ITCS",
+    title: "High-Availability Network Design & Architecture Services | ITCS",
     description:
-      "ITCS network design services deliver high-availability, scalable architectures for offices, campuses, and multi-site enterprises across Pakistan.",
+      "Custom network architecture designed for campuses, data centers & multi-branch enterprises across Pakistan. Low-latency, scalable routing & switching by ITCS experts.",
   },
   networkSecurity: {
     path: "/network-solutions/security",
-    title: "Network Security Solutions | ITCS",
+    title: "Next-Gen Network Security & Firewall Solutions in Pakistan | ITCS",
     description:
-      "Secure your network perimeter and internal traffic with ITCS — firewalls, segmentation, VPNs, intrusion prevention, and continuous monitoring.",
+      "Fortify internal and perimeter networks. Next-gen firewalls (Fortinet, Sophos), micro-segmentation, zero-trust VPNs & real-time intrusion prevention. Secure your network.",
   },
   networkSupport: {
     path: "/network-solutions/support",
-    title: "Network Support & Managed Services | ITCS",
+    title: "Proactive Network Support & 24/7 Managed Infrastructure | ITCS",
     description:
-      "Keep networks running with ITCS managed network support — monitoring, troubleshooting, upgrades, and SLAs tailored to your infrastructure.",
+      "Keep mission-critical networks running smoothly. 24/7 proactive monitoring, rapid incident troubleshooting, firmware lifecycle management & strict SLAs from ITCS.",
   },
   webDevelopment: {
     path: "/web-development",
-    title: "Web Development & Digital Solutions | ITCS",
+    title: "Custom Web Development & Modern Enterprise Web Apps | ITCS",
     description:
-      "Custom websites, web apps, and e-commerce by ITCS. Modern, SEO-friendly, and mobile-responsive development for businesses that need to grow online.",
+      "High-performance custom web applications, enterprise portals & e-commerce solutions built with modern React, Node, and secure cloud backends. Build your web app with ITCS.",
   },
   ai: {
     path: "/ai",
-    title: "AI Services for Business | ITCS",
+    title: "Enterprise AI Solutions, Copilot & Generative AI in Pakistan | ITCS",
     description:
-      "Enterprise AI services from ITCS — AI readiness consulting, Copilot and GenAI platform deployment, governance, and staff training for organisations in Pakistan.",
+      "Deploy secure enterprise AI, Microsoft 365 Copilot, and custom GenAI automation. Strategy, governance, deployment & hands-on team enablement. Start your AI journey.",
   },
   missionVision: {
     path: "/mission-vision",
-    title: "Our Vision & Mission | ITCS",
+    title: "Our Vision & Mission | Empowering Digital Excellence | ITCS",
     description:
-      "Discover ITCS vision and mission — empowering businesses through innovative technology, trusted partnerships, and excellence in IT services across Pakistan.",
+      "Discover the ITCS mission: empowering organizations across Pakistan and globally through innovative technology, trusted partnerships, and world-class IT execution.",
   },
   about: {
     path: "/about-us",
-    title: "About ITCS | Technology Partner in Pakistan",
+    title: "About ITCS | Trusted Enterprise Technology Partner in Pakistan",
     description:
-      "Learn about ITCS — a Pakistan-based technology company delivering cloud, cybersecurity, networking, and consulting with a focus on people and results.",
+      "Meet ITCS — Pakistan's premier IT solutions provider delivering enterprise cloud, cybersecurity, networking, and digital transformation for over two decades.",
   },
   contact: {
     path: "/contact",
-    title: "Contact ITCS | Get in Touch",
+    title: "Contact ITCS | Schedule a Free IT & Cloud Consultation",
     description:
-      "Contact ITCS for IT solutions, demos, and support. Reach our Karachi team by phone, email, or the online form — we respond quickly to business inquiries.",
+      "Get in touch with ITCS experts in Karachi, Lahore, and Islamabad for IT solutions, security audits, cloud consulting, or enterprise support. Quick response guaranteed.",
   },
   careers: {
     path: "/careers",
-    title: "Careers at ITCS | Jobs & Openings",
+    title: "Careers at ITCS | Join Our High-Impact Technology Team in Pakistan",
     description:
-      "Join ITCS. Explore open roles in technology, sales, and operations. Build your career with a growing IT solutions company in Pakistan.",
+      "Explore exciting career opportunities in cloud engineering, cybersecurity, sales, and software development at ITCS. Shape the future of technology with us.",
   },
   apply: {
     path: "/apply",
@@ -216,21 +216,37 @@ export const SEO_META = {
   },
 };
 
-/** Build meta for a published blog post (CMS fields preferred). */
+const stripHtml = (html) =>
+  String(html || "")
+    .replace(/<[^>]*>?/gm, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+/** Build meta for a published blog post (CMS fields preferred with high-CTR fallback). */
 export const blogSeoFromArticle = (article, path = "") => {
-  const title =
-    article?.metaTitle ||
-    (article?.title ? `${article.title} | ITCS Blog` : "Blog Post | ITCS");
-  const description =
+  const rawTitle = article?.metaTitle || article?.title;
+  const title = rawTitle
+    ? rawTitle.includes("ITCS") ? rawTitle : `${rawTitle} | ITCS Insights`
+    : "Technology Insights & Engineering Articles | ITCS";
+
+  const rawDesc =
     article?.metaDescription ||
     article?.description ||
     article?.excerpt ||
     (article?.title
-      ? `Read “${article.title}” on the ITCS blog — practical technology insights for businesses.`
+      ? `Discover actionable strategies, technical architecture, and best practices in “${article.title}” from enterprise specialists at ITCS.`
       : SEO_META.blog.description);
+
+  const cleanDesc = stripHtml(rawDesc);
+  const truncatedDesc =
+    cleanDesc.length > 158
+      ? `${cleanDesc.slice(0, 155).trim()}...`
+      : cleanDesc;
+
   return {
     title,
-    description: String(description).slice(0, 160),
+    description: truncatedDesc,
     path,
     image: toAbsoluteUrl(article?.cover_image || article?.social_image || article?.ogImage),
   };
@@ -259,19 +275,19 @@ export const blogFilterSeo = ({ tag, tagLabel, authorSlug, authorLabel }) => {
     const label = tagLabel || tag.replace(/-/g, " ");
     const pretty = label.charAt(0).toUpperCase() + label.slice(1);
     return {
-      title: `${pretty} Articles | ITCS Blog`,
-      description: `Browse ITCS blog posts tagged “${pretty}” — cloud, security, networking, and technology insights for businesses.`,
+      title: `${pretty} Articles & Insights | ITCS Blog`,
+      description: `Explore in-depth articles, tutorials, and practical insights on ${pretty} from enterprise technology specialists at ITCS.`,
       path: `/tag/${tag}`,
-      noindex: true,
+      noindex: false,
     };
   }
   if (authorSlug) {
     const label = authorLabel || authorSlug.replace(/-/g, " ");
     return {
-      title: `Posts by ${label} | ITCS Blog`,
-      description: `Read articles by ${label} on the ITCS blog — insights on IT services, cloud, cybersecurity, and digital transformation.`,
+      title: `Articles by ${label} | ITCS Expert Authors`,
+      description: `Read technical articles and strategic IT commentary by ${label} on cloud architecture, cybersecurity, and digital infrastructure at ITCS.`,
       path: `/author/${authorSlug}`,
-      noindex: true,
+      noindex: false,
     };
   }
   return SEO_META.blog;

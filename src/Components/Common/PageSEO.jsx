@@ -1,7 +1,26 @@
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "../../config/seoMeta";
-import { siteSchema, breadcrumbSchema } from "../../config/structuredData";
+import { siteSchema, breadcrumbSchema, serviceSchema } from "../../config/structuredData";
 import { buildCrumbs } from "../../config/breadcrumbs";
+
+const SERVICE_PATHS = [
+  "/services",
+  "/cloud",
+  "/cloud/design",
+  "/cloud/migration",
+  "/cloud/security",
+  "/cybersecurity",
+  "/cybersecurity/assessment",
+  "/consulting",
+  "/enterprise-solutions",
+  "/it-services",
+  "/network-solutions",
+  "/network-solutions/design",
+  "/network-solutions/security",
+  "/network-solutions/support",
+  "/web-development",
+  "/ai",
+];
 
 /**
  * Sets unique document title + meta description (and social tags) per page.
@@ -28,6 +47,13 @@ const PageSEO = ({
   const ogImage = image || `${SITE_URL}/apple-touch-icon.png`;
   const crumbs = withBreadcrumbs && path && path !== "/" ? buildCrumbs(path, { lastName: breadcrumbName }) : null;
 
+  // Auto-generate service schema for service routes if not explicitly provided
+  const activeSchema =
+    schema ||
+    (SERVICE_PATHS.some((sp) => path === sp || path.startsWith(`${sp}/`))
+      ? serviceSchema({ name: fullTitle, description: description || fullTitle, path })
+      : null);
+
   return (
     <Helmet>
       <title data-rh="true">{fullTitle}</title>
@@ -36,6 +62,15 @@ const PageSEO = ({
       <meta
         data-rh="true"
         name="robots"
+        content={
+          noindex
+            ? "noindex, follow"
+            : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+        }
+      />
+      <meta
+        data-rh="true"
+        name="googlebot"
         content={
           noindex
             ? "noindex, follow"
@@ -55,7 +90,7 @@ const PageSEO = ({
       {description && <meta data-rh="true" name="twitter:description" content={description} />}
       <meta data-rh="true" name="twitter:image" content={ogImage} />
       <script type="application/ld+json">{JSON.stringify(siteSchema())}</script>
-      {schema && <script type="application/ld+json">{JSON.stringify(schema)}</script>}
+      {activeSchema && <script type="application/ld+json">{JSON.stringify(activeSchema)}</script>}
       {crumbs && <script type="application/ld+json">{JSON.stringify(breadcrumbSchema(crumbs))}</script>}
     </Helmet>
   );

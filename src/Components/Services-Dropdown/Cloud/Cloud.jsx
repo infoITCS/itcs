@@ -7,6 +7,7 @@ import CloudSection4 from './CloudSection4/CloudSection4';
 import PartnerLogos from '../_shared/PartnerLogos/PartnerLogos';
 import { faMicrosoft, faAws, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import PageSEO from '../../Common/PageSEO';
+import RelatedServicesAndInsights from '../../Common/RelatedServicesAndInsights';
 import { SEO_META } from '../../../config/seoMeta';
 
 const cloudPartners = [
@@ -30,6 +31,7 @@ const Cloud = () => {
       <PartnerLogos partners={cloudPartners} />
       <CloudSection4 />
       <CloudCTA />
+      <RelatedServicesAndInsights currentPath="/cloud" />
     </>
   );
 };

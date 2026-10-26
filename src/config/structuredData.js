@@ -195,3 +195,24 @@ export const faqSchema = (faqs) => ({
     acceptedAnswer: { "@type": "Answer", text: f.a },
   })),
 });
+
+/** Service schema for enterprise service pages. Unlocks Google Rich Snippets. */
+export const serviceSchema = ({ name, description, path, serviceType = "IT Services" }) => ({
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name,
+  description,
+  serviceType,
+  url: abs(path),
+  provider: {
+    "@id": `${SITE_URL}/#organization`,
+  },
+  areaServed: {
+    "@type": "Country",
+    name: "Pakistan",
+  },
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "ITCS Enterprise Technology Solutions",
+  },
+});

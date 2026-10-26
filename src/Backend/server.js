@@ -38,6 +38,24 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 const app = express()
 app.set('trust proxy', 1)
 
+// Canonical Host & HTTPS Enforcer (301)
+app.use((req, res, next) => {
+  const host = (req.headers.host || '').toLowerCase()
+  const proto = (req.headers['x-forwarded-proto'] || req.protocol || '').toLowerCase()
+  const isLocal = host.includes('localhost') || host.includes('127.0.0.1')
+
+  if (!isLocal && process.env.NODE_ENV === 'production') {
+    const isWww = host === 'www.itcs.com.pk'
+    const isHttps = proto === 'https'
+
+    if (!isWww || !isHttps) {
+      const canonicalUrl = `https://www.itcs.com.pk${req.originalUrl}`
+      return res.redirect(301, canonicalUrl)
+    }
+  }
+  next()
+})
+
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff')
   res.setHeader('X-Frame-Options', 'SAMEORIGIN')
@@ -143,8 +161,21 @@ const sendSitemap = async (req, res) => {
   }
 }
 app.get('/sitemap.xml', sendSitemap)
-app.get('/api/sitemap.xml', (req, res) => {
-  res.redirect(301, 'https://www.itcs.com.pk/sitemap.xml')
+app.get('/api/sitemap.xml', sendSitemap)
+
+app.get('/robots.txt', (req, res) => {
+  const robotsPath = existsSync(path.join(distPath, 'robots.txt'))
+    ? path.join(distPath, 'robots.txt')
+    : path.join(__dirname, '../../public/robots.txt')
+  
+  if (existsSync(robotsPath)) {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+    res.setHeader('Cache-Control', 'public, max-age=3600')
+    return res.sendFile(robotsPath)
+  }
+  
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+  res.send(`User-agent: *\nAllow: /\nAllow: /assets/\nAllow: /uploads/\nDisallow: /admin\nDisallow: /login\nDisallow: /signup\nDisallow: /forgot-password\nDisallow: /reset-password\nDisallow: /apply\nDisallow: /api/\n\nSitemap: https://www.itcs.com.pk/sitemap.xml\nSitemap: https://itcs.com.pk/api/sitemap.xml\n`)
 })
 
 const distPath = path.join(__dirname, '../../dist')

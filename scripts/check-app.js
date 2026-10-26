@@ -1,4 +1,4 @@
-import('./app.js')
+import('../app.js')
   .then(() => {
     console.log('OK - app.js loaded successfully')
     process.exit(0)

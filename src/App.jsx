@@ -146,8 +146,9 @@ function App() {
             <Route path="/services/cloud/security" element={<Navigate to="/cloud/security" replace />} />
             <Route path="/services/cybersecurity" element={<Navigate to="/cybersecurity" replace />} />
             <Route path="/services/cybersecurity/assessment" element={<Navigate to="/cybersecurity/assessment" replace />} />
-            <Route path="/cybersecurity" element={<Navigate to="/cybersecurity" replace />} />
-            <Route path="/cybersecurity/assessment" element={<Navigate to="/cybersecurity/assessment" replace />} />
+            <Route path="/services/cyber-security" element={<Navigate to="/cybersecurity" replace />} />
+            <Route path="/cyber-security" element={<Navigate to="/cybersecurity" replace />} />
+            <Route path="/cyber-security/assessment" element={<Navigate to="/cybersecurity/assessment" replace />} />
             <Route path="/services/consulting" element={<Navigate to="/consulting" replace />} />
             <Route path="/services/enterprise-solutions" element={<Navigate to="/enterprise-solutions" replace />} />
             <Route path="/services/it-services" element={<Navigate to="/it-services" replace />} />

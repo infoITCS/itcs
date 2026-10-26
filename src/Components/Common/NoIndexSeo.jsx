@@ -1,8 +1,8 @@
 import { Helmet } from "react-helmet-async";
 
 /**
- * Routes that must never appear in search results. Kept as a prefix list so
- * nested admin screens (e.g. /admin/blog/edit/123) are covered automatically.
+ * Strictly private/admin routes that must never appear in search engines.
+ * Public career positions, tags, and content are strictly EXCLUDED from this list.
  */
 const PRIVATE_PREFIXES = [
   "/admin",
@@ -11,13 +11,10 @@ const PRIVATE_PREFIXES = [
   "/forgot-password",
   "/reset-password",
   "/apply",
-  "/careers/",
-  "/tag/",
-  "/author/",
 ];
 
 const isPrivate = (pathname) =>
-  PRIVATE_PREFIXES.some((p) => pathname === p || pathname.startsWith(p));
+  PRIVATE_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
 const PAGE_LABEL = {
   login: "Sign In",

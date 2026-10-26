@@ -4,6 +4,7 @@ import ServicesGrid from "./ServicesGrid/ServicesGrid";
 import ServicesSatisfaction from "./ServicesSatisfaction/ServicesSatisfaction";
 import ServicesCertifications from "./ServicesCertifications/ServicesCertifications";
 import PageSEO from "../Common/PageSEO";
+import RelatedServicesAndInsights from "../Common/RelatedServicesAndInsights";
 import { SEO_META } from "../../config/seoMeta";
 
 const Services = () => {
@@ -15,6 +16,7 @@ const Services = () => {
       <ServicesGrid />
       <ServicesCertifications />
       <ServicesSatisfaction />
+      <RelatedServicesAndInsights currentPath="/services" />
     </>
   );
 };
