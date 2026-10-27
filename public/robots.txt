@@ -16,7 +16,7 @@ Disallow: /signup
 Disallow: /forgot-password
 Disallow: /reset-password
 Disallow: /apply
-Disallow: /api/
+
 
 # Sitemaps
 Sitemap: https://www.itcs.com.pk/sitemap.xml
