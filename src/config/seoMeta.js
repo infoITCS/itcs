@@ -270,13 +270,21 @@ export const jobSeoFromJob = (job) => {
 };
 
 /** Meta for tag / author filtered blog views. */
+const toTitleCase = (str) =>
+  String(str || "")
+    .replace(/-/g, " ")
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+
 export const blogFilterSeo = ({ tag, tagLabel, authorSlug, authorLabel }) => {
   if (tag) {
-    const label = tagLabel || tag.replace(/-/g, " ");
-    const pretty = label.charAt(0).toUpperCase() + label.slice(1);
+    const rawLabel = tagLabel || tag.replace(/-/g, " ");
+    const pretty = toTitleCase(rawLabel);
     return {
-      title: `${pretty} Articles & Insights | ITCS Blog`,
-      description: `Explore in-depth articles, tutorials, and practical insights on ${pretty} from enterprise technology specialists at ITCS.`,
+      title: `${pretty} Articles, Guides & Insights | ITCS Blog`,
+      description: `Explore practical tutorials, enterprise architecture guides, and technical insights on ${pretty} from certified engineers at ITCS Pakistan.`,
       path: `/tag/${tag}`,
       noindex: false,
     };

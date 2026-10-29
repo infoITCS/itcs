@@ -233,9 +233,9 @@ export default function Blog() {
           <div className="blog-grid">
             {currentPosts.length > 0 ? (
               currentPosts.map((post, idx) => (
-                <Link key={post.id} to={getBlogPostUrl(post)} className="blog-card">
+                <div key={post.id} className="blog-card">
                   {(post.cover_image || post.social_image) && (
-                    <div className="blog-cover-wrap">
+                    <Link to={getBlogPostUrl(post)} className="blog-cover-wrap" aria-label={post.title}>
                       <img
                         src={post.cover_image || post.social_image}
                         alt={post.title}
@@ -246,28 +246,22 @@ export default function Blog() {
                         fetchPriority={idx === 0 ? 'high' : 'auto'}
                         decoding="async"
                       />
-                    </div>
+                    </Link>
                   )}
 
                   <div className="blog-card__content">
-                    <h3>{post.title}</h3>
+                    <Link to={getBlogPostUrl(post)} className="blog-title-link">
+                      <h3>{post.title}</h3>
+                    </Link>
 
                     <div className="blog-card__meta">
                       <div className="meta-author-wrap">
                         <span className="meta-avatar">
                           {String(post.displayAuthor || "A").trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "A"}
                         </span>
-                        <span
-                          className="meta-author"
-                          onClick={(e) => handleAuthorClick(e, post.displayAuthor)}
-                          role="link"
-                          tabIndex={0}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") handleAuthorClick(e, post.displayAuthor);
-                          }}
-                        >
+                        <Link to={getAuthorUrl(post.displayAuthor)} className="meta-author">
                           {post.displayAuthor}
-                        </span>
+                        </Link>
                       </div>
 
                       <div className="meta-details">
@@ -281,24 +275,21 @@ export default function Blog() {
 
                     <div className="tags-small">
                       {post.tag_list?.slice(0, 3).map((tag) => (
-                        <span
+                        <Link
                           key={tag}
+                          to={getTagUrl(tag)}
                           className="tag-link"
-                          onClick={(e) => handleTagClick(e, tag)}
-                          role="link"
-                          tabIndex={0}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") handleTagClick(e, tag);
-                          }}
                         >
                           #{tag}
-                        </span>
+                        </Link>
                       ))}
                     </div>
 
-                    <span className="read-more">Read more</span>
+                    <Link to={getBlogPostUrl(post)} className="read-more">
+                      Read more &rarr;
+                    </Link>
                   </div>
-                </Link>
+                </div>
               ))
             ) : (
               <p className="no-posts">

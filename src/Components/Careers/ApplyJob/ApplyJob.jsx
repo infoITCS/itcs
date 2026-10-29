@@ -138,7 +138,6 @@ const ApplyJob = () => {
         title={job?.title ? `Apply for ${job.title} | ITCS` : SEO_META.apply.title}
         description={SEO_META.apply.description}
         path={SEO_META.apply.path}
-        noindex
       />
       <div className="theme-radial-top"></div>
 

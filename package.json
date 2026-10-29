@@ -11,8 +11,9 @@
   "scripts": {
     "dev": "vite",
     "dev:server": "npm run dev --prefix src/Backend",
-    "build": "vite build",
-    "vercel-build": "vite build",
+    "build": "vite build && node scripts/generate-sitemap.js",
+    "vercel-build": "vite build && node scripts/generate-sitemap.js",
+    "sitemap": "node scripts/generate-sitemap.js",
     "plesk:deploy": "npm install && npm install --prefix src/Backend && npm run build",
     "lint": "eslint .",
     "start": "node run.js",

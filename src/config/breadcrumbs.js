@@ -32,6 +32,7 @@ const SEGMENT_LABELS = {
   careers: "Careers",
   "privacy-policy": "Privacy Policy",
   blog: "Blog",
+  tag: "Tags",
 };
 
 /**

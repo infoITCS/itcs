@@ -10,7 +10,6 @@ const PRIVATE_PREFIXES = [
   "/signup",
   "/forgot-password",
   "/reset-password",
-  "/apply",
 ];
 
 const isPrivate = (pathname) =>

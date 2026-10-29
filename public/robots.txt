@@ -15,7 +15,6 @@ Disallow: /login
 Disallow: /signup
 Disallow: /forgot-password
 Disallow: /reset-password
-Disallow: /apply
 
 
 # Sitemaps

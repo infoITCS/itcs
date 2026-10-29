@@ -175,7 +175,7 @@ app.get('/robots.txt', (req, res) => {
   }
   
   res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-  res.send(`User-agent: *\nAllow: /\nAllow: /assets/\nAllow: /uploads/\nDisallow: /admin\nDisallow: /login\nDisallow: /signup\nDisallow: /forgot-password\nDisallow: /reset-password\nDisallow: /apply\nDisallow: /api/\n\nSitemap: https://www.itcs.com.pk/sitemap.xml\nSitemap: https://itcs.com.pk/api/sitemap.xml\n`)
+  res.send(`User-agent: *\nAllow: /\nAllow: /assets/\nAllow: /uploads/\nDisallow: /admin\nDisallow: /login\nDisallow: /signup\nDisallow: /forgot-password\nDisallow: /reset-password\nDisallow: /api/\n\nSitemap: https://www.itcs.com.pk/sitemap.xml\nSitemap: https://itcs.com.pk/api/sitemap.xml\n`)
 })
 
 const distPath = path.join(__dirname, '../../dist')

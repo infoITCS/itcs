@@ -31,6 +31,7 @@ export const STATIC_SITEMAP_PATHS = [
   { path: '/about-us', changefreq: 'monthly', priority: '0.8' },
   { path: '/contact', changefreq: 'monthly', priority: '0.8' },
   { path: '/careers', changefreq: 'weekly', priority: '0.7' },
+  { path: '/apply', changefreq: 'weekly', priority: '0.7' },
   { path: '/privacy-policy', changefreq: 'yearly', priority: '0.3' },
   { path: '/blog', changefreq: 'daily', priority: '0.8' },
 ]
@@ -83,6 +84,22 @@ export const buildSitemapXml = async (origin) => {
           priority: '0.7',
         })),
     )
+
+    const tagSet = new Set()
+    publishedBlogs.forEach((b) => {
+      ;(b?.tags || []).forEach((t) => {
+        const slug = toUrlSlug(t)
+        if (slug) tagSet.add(slug)
+      })
+    })
+
+    tagSet.forEach((slug) => {
+      dynamicEntries.push({
+        path: `/tag/${slug}`,
+        changefreq: 'weekly',
+        priority: '0.6',
+      })
+    })
   } catch (error) {
     // Still return static pages if DB is unavailable
     console.error('Sitemap blog fetch failed:', error.message)

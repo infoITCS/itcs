@@ -1,12 +1,13 @@
 import express from 'express';
+import { exec } from 'child_process';
 const router = express.Router();
 
 // GET: /api/custom-blogs/published
-// Yeh route frontend ke HomeBlog.jsx aur Blog.jsx ke 404 error ko fix karega
+// This route fixes the 404 error for HomeBlog.jsx and Blog.jsx on the frontend
 router.get('/published', async (req, res) => {
     try {
-        // Yahan aap Database query likhenge (e.g., Blog.find({ status: 'published' }))
-        // Hum empty array bhej rahe hain magar empty array response status 200 ke saath Axios error nahi deta
+        // Write your database query here (e.g., Blog.find({ status: 'published' }))
+        // We return an empty array; Axios does not treat a 200 response with an empty array as an error
         const blogs = []; // Yahan database logic add karein baad mein
         res.status(200).json(blogs);
     } catch (error) {
@@ -15,14 +16,18 @@ router.get('/published', async (req, res) => {
 });
 
 // POST: /api/custom-blogs
-// Yeh route AddCustomBlog.jsx se aane wale data ko handle karega
+// This route handles data submitted from AddCustomBlog.jsx
 router.post('/', async (req, res) => {
     try {
         const blogData = req.body;
         console.log("Saving Blog:", blogData);
         
-        // Yahan database mein save karne ki logic aayegi
+        // Database save logic will be added here
         res.status(201).json({ message: "Blog published successfully!", data: blogData });
+        // Regenerate sitemap after new blog creation
+        exec('node scripts/generate-sitemap.js', (err, stdout, stderr) => {
+          if (err) console.error('Sitemap regeneration failed:', err);
+        });
     } catch (error) {
         res.status(500).json({ message: "Failed to save blog", error: error.message });
     }

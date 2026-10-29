@@ -48,7 +48,7 @@ Each page also gets:
 | `/about-us` | About Us | About ITCS \| Technology Partner in Pakistan | Learn about ITCS — a Pakistan-based technology company delivering cloud, cybersecurity, networking, and consulting with a focus on people and results. |
 | `/contact` | Contact | Contact ITCS \| Get in Touch | Contact ITCS for IT solutions, demos, and support. Reach our Karachi team by phone, email, or the online form — we respond quickly to business inquiries. |
 | `/careers` | Careers | Careers at ITCS \| Jobs & Openings | Join ITCS. Explore open roles in technology, sales, and operations. Build your career with a growing IT solutions company in Pakistan. |
-| `/apply` | Apply Job | Apply for a Job at ITCS | Submit your application to join ITCS. Share your experience and resume for open technology and professional roles across our teams. **(noindex)** |
+| `/apply` | Apply Job | Apply for a Job at ITCS | Submit your application to join ITCS. Share your experience and resume for open technology and professional roles across our teams. |
 | `/privacy-policy` | Privacy Policy | Privacy Policy \| ITCS | Read the ITCS privacy policy to understand how we collect, use, and protect personal information when you use our website and services. |
 | `/blog` | Blog index | ITCS Blog \| Insights on Cloud, Security & IT | Articles and insights from ITCS on cloud computing, cybersecurity, networking, digital transformation, and practical technology guidance for businesses. |
 | *(404)* | Not Found | Page Not Found \| ITCS | The page you requested could not be found. Return to the ITCS homepage to explore our IT services, blog, and company information. **(noindex)** |
@@ -63,7 +63,7 @@ These titles/descriptions are generated at runtime.
 |-------------|------|--------------------|--------------------------|--------|
 | `/{blog-slug}` | Blog post | CMS `metaTitle`, or `{Post Title} \| ITCS Blog` | CMS `metaDescription` / excerpt (max 160 chars), or auto fallback from title | Set fields in Admin → Add/Edit Custom Blog |
 | `/careers/{job-slug}` | Job detail | `{Job Title} \| Careers at ITCS` | `Apply for {Job Title} [in {location}] at ITCS…` | Built via `jobSeoFromJob()` |
-| `/tag/{tag}` | Tag filter | `{Tag} Articles \| ITCS Blog` | Browse posts tagged “{Tag}”… | **noindex** (thin listing) |
+| `/tag/{tag}` | Tag landing page | `{Tag} Articles, Guides & Insights \| ITCS Blog` | Explore practical tutorials, enterprise architecture guides, and technical insights on {Tag}… | **Indexable** keyword landing page in sitemap |
 | `/author/{author}` | Author filter | `Posts by {Author} \| ITCS Blog` | Read articles by {Author}… | **noindex** (thin listing) |
 
 ### Blog CMS fields (admin)

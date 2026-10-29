@@ -105,11 +105,9 @@ const sendSitemap = async (req, res) => {
   }
 };
 
-// Dynamic sitemap: static pages + all published blog slugs (auto-updates).
+// Dynamic sitemap: static pages + all published blog slugs + tags (auto-updates).
 app.get('/sitemap.xml', sendSitemap);
-app.get('/api/sitemap.xml', (req, res) => {
-  res.redirect(301, 'https://www.itcs.com.pk/sitemap.xml');
-});
+app.get('/api/sitemap.xml', sendSitemap);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);

@@ -169,6 +169,16 @@
     z-index: 1;
   }
 
+  .blog-title-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+
+    &:hover h3 {
+      color: var(--accent-purple-light-2);
+    }
+  }
+
   .blog-card h3 {
     font-size: clamp(18px, 1.8vw, 22px);
     margin: 0 0 12px;
@@ -179,6 +189,7 @@
     overflow: hidden;
     word-break: keep-all;
     overflow-wrap: break-word;
+    transition: color 0.2s ease;
   }
 
   .blog-card__meta {
@@ -258,7 +269,7 @@
     gap: 8px;
     margin-bottom: 24px;
 
-    span {
+    span, a {
       background: rgba(124, 58, 237, 0.1);
       color: var(--accent-purple-light-2);
       padding: 5px 12px;
@@ -268,6 +279,8 @@
       letter-spacing: 0.02em;
       border: 1px solid rgba(124, 58, 237, 0.1);
       transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
 
       &:hover {
         background: rgba(124, 58, 237, 0.2);
@@ -282,6 +295,7 @@
 
   .meta-author {
     cursor: pointer;
+    text-decoration: none;
     transition: color 0.2s ease;
 
     &:hover {
