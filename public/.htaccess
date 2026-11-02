@@ -7,9 +7,6 @@
   RewriteEngine On
   RewriteBase /
 
-  # Normalize requests for the entry document to the canonical site root.
-  RewriteRule ^index\.html$ https://www.itcs.com.pk/ [R=301,L]
-
   # --------------------------------------------------------------------------
   # 1. Strictly redirect all HTTP and non-www to https://www.itcs.com.pk (301)
   # --------------------------------------------------------------------------
