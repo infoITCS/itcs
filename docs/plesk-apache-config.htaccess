@@ -21,6 +21,9 @@
   RewriteEngine On
   RewriteBase /
 
+  # Normalize requests for the entry document to the canonical site root.
+  RewriteRule ^index\.html$ https://www.itcs.com.pk/ [R=301,L]
+
   # --- 1. Force the canonical host (https + www) ---------------------------
   # The canonical origin used in robots.txt, sitemap.xml and every <link
   # rel="canonical"> is https://www.itcs.com.pk, so the bare domain must 301.

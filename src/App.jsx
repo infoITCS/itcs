@@ -178,6 +178,7 @@ function App() {
             <Route path="/author/:authorSlug" element={<Blog />} />
             <Route path="/blog/:id" element={<LegacyBlogSlugRedirect />} />
             <Route path="/custom-blog/:slug" element={<CustomBlogRedirect />} />
+            <Route path="/index.html" element={<Navigate to="/" replace />} />
             <Route
               path="/admin"
               element={
