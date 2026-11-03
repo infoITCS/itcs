@@ -7,6 +7,7 @@ Allow: /
 Allow: /assets/
 Allow: /uploads/
 Allow: /api/sitemap.xml
+Disallow: /api/
 
 # Restricted private/administrative areas
 Disallow: /admin
@@ -19,4 +20,3 @@ Disallow: /reset-password
 
 # Sitemaps
 Sitemap: https://www.itcs.com.pk/sitemap.xml
-Sitemap: https://itcs.com.pk/api/sitemap.xml

@@ -6,6 +6,7 @@ import { Helmet } from "react-helmet-async";
  */
 const PRIVATE_PREFIXES = [
   "/admin",
+  "/apply",
   "/login",
   "/signup",
   "/forgot-password",

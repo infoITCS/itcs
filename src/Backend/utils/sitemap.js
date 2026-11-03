@@ -31,7 +31,6 @@ export const STATIC_SITEMAP_PATHS = [
   { path: '/about-us', changefreq: 'monthly', priority: '0.8' },
   { path: '/contact', changefreq: 'monthly', priority: '0.8' },
   { path: '/careers', changefreq: 'weekly', priority: '0.7' },
-  { path: '/apply', changefreq: 'weekly', priority: '0.7' },
   { path: '/privacy-policy', changefreq: 'yearly', priority: '0.3' },
   { path: '/blog', changefreq: 'daily', priority: '0.8' },
 ]
@@ -54,11 +53,9 @@ const toDateOnly = (value) => {
   return Number.isNaN(date.getTime()) ? null : date.toISOString().slice(0, 10)
 }
 
-const buildUrlEntry = ({ loc, lastmod, changefreq, priority }) => {
+const buildUrlEntry = ({ loc, lastmod }) => {
   const lines = [`  <url>`, `    <loc>${xmlEscape(loc)}</loc>`]
   if (lastmod) lines.push(`    <lastmod>${xmlEscape(lastmod)}</lastmod>`)
-  if (changefreq) lines.push(`    <changefreq>${xmlEscape(changefreq)}</changefreq>`)
-  if (priority) lines.push(`    <priority>${xmlEscape(priority)}</priority>`)
   lines.push(`  </url>`)
   return lines.join('\n')
 }
@@ -69,7 +66,6 @@ const buildUrlEntry = ({ loc, lastmod, changefreq, priority }) => {
  */
 export const buildSitemapXml = async (origin) => {
   const base = String(origin || 'https://www.itcs.com.pk').replace(/\/$/, '')
-  const today = new Date().toISOString().slice(0, 10)
 
   let dynamicEntries = []
   try {
@@ -80,8 +76,6 @@ export const buildSitemapXml = async (origin) => {
         .map((b) => ({
           path: `/${String(b.slug).replace(/^\/+/, '')}`,
           lastmod: toDateOnly(b.updatedAt || b.publishDate || b.createdAt),
-          changefreq: 'monthly',
-          priority: '0.7',
         })),
     )
 
@@ -96,8 +90,6 @@ export const buildSitemapXml = async (origin) => {
     tagSet.forEach((slug) => {
       dynamicEntries.push({
         path: `/tag/${slug}`,
-        changefreq: 'weekly',
-        priority: '0.6',
       })
     })
   } catch (error) {
@@ -109,13 +101,15 @@ export const buildSitemapXml = async (origin) => {
     const jobs = await findAllJobs()
     dynamicEntries.push(
       ...jobs
-        .map((job) => job?.slug || toUrlSlug(job?.title))
-        .filter(Boolean)
-        .map((slug) => ({
-          path: `/careers/${String(slug).replace(/^\/+/, '')}`,
-          changefreq: 'weekly',
-          priority: '0.6',
-        })),
+        .map((job) => {
+          const slug = job?.slug || toUrlSlug(job?.title)
+          if (!slug) return null
+          return {
+            path: `/careers/${String(slug).replace(/^\/+/, '')}`,
+            lastmod: toDateOnly(job.updatedAt || job.createdAt),
+          }
+        })
+        .filter(Boolean),
     )
   } catch (error) {
     console.error('Sitemap job fetch failed:', error.message)
@@ -130,9 +124,7 @@ export const buildSitemapXml = async (origin) => {
   const urls = Array.from(uniqueEntries.values())
     .map((entry) => buildUrlEntry({
       loc: `${base}${entry.path}`,
-      lastmod: entry.lastmod || today,
-      changefreq: entry.changefreq,
-      priority: entry.priority,
+      lastmod: entry.lastmod,
     }))
     .join('\n')
 

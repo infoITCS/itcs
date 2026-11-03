@@ -38,7 +38,6 @@ const STATIC_PATHS = [
   { path: '/about-us', changefreq: 'monthly', priority: '0.8' },
   { path: '/contact', changefreq: 'monthly', priority: '0.8' },
   { path: '/careers', changefreq: 'weekly', priority: '0.7' },
-  { path: '/apply', changefreq: 'weekly', priority: '0.7' },
   { path: '/privacy-policy', changefreq: 'yearly', priority: '0.3' },
   { path: '/blog', changefreq: 'daily', priority: '0.8' },
 ];
@@ -52,9 +51,9 @@ const xmlEscape = (str) =>
     .replaceAll("'", '&apos;');
 
 const toDateOnly = (val) => {
-  if (!val) return new Date().toISOString().slice(0, 10);
+  if (!val) return null;
   const d = new Date(val);
-  return Number.isNaN(d.getTime()) ? new Date().toISOString().slice(0, 10) : d.toISOString().slice(0, 10);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10);
 };
 
 async function generate() {
@@ -65,9 +64,6 @@ async function generate() {
   STATIC_PATHS.forEach((p) => {
     entries.set(p.path, {
       loc: `${BASE_URL}${p.path === '/' ? '/' : p.path}`,
-      lastmod: new Date().toISOString().slice(0, 10),
-      changefreq: p.changefreq,
-      priority: p.priority,
     });
   });
 
@@ -83,8 +79,6 @@ async function generate() {
       entries.set(path, {
         loc: `${BASE_URL}${path}`,
         lastmod: toDateOnly(b.updatedAt || b.publishDate || b.createdAt),
-        changefreq: 'monthly',
-        priority: '0.7',
       });
     });
 
@@ -113,9 +107,6 @@ async function generate() {
       const path = `/tag/${tagSlug}`;
       entries.set(path, {
         loc: `${BASE_URL}${path}`,
-        lastmod: new Date().toISOString().slice(0, 10),
-        changefreq: 'weekly',
-        priority: '0.6',
       });
     });
   } catch (err) {
@@ -135,8 +126,6 @@ async function generate() {
       entries.set(path, {
         loc: `${BASE_URL}${path}`,
         lastmod: toDateOnly(j.updatedAt || j.createdAt),
-        changefreq: 'weekly',
-        priority: '0.6',
       });
     });
   } catch (err) {
@@ -144,14 +133,10 @@ async function generate() {
   }
 
   const urlElements = Array.from(entries.values()).map((e) => {
-    return [
-      '  <url>',
-      `    <loc>${xmlEscape(e.loc)}</loc>`,
-      `    <lastmod>${xmlEscape(e.lastmod)}</lastmod>`,
-      `    <changefreq>${xmlEscape(e.changefreq)}</changefreq>`,
-      `    <priority>${xmlEscape(e.priority)}</priority>`,
-      '  </url>',
-    ].join('\n');
+    const lines = ['  <url>', `    <loc>${xmlEscape(e.loc)}</loc>`];
+    if (e.lastmod) lines.push(`    <lastmod>${xmlEscape(e.lastmod)}</lastmod>`);
+    lines.push('  </url>');
+    return lines.join('\n');
   });
 
   const xmlContent = [
@@ -170,15 +155,6 @@ async function generate() {
   if (fs.existsSync(path.join(__dirname, '../dist'))) {
     fs.writeFileSync(distSitemapPath, xmlContent, 'utf8');
     console.log(`Successfully written ${entries.size} URLs to ${distSitemapPath}`);
-  }
-
-  // Ping Google to notify about updated sitemap
-  try {
-    const googlePingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(`${BASE_URL}/sitemap.xml`)}`;
-    await axios.get(googlePingUrl);
-    console.log('Google sitemap ping successful');
-  } catch (pingErr) {
-    console.warn('Failed to ping Google sitemap:', pingErr.message);
   }
 
 }

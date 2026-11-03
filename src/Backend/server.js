@@ -13,9 +13,18 @@ import jobsRoutes from './routes/jobs.js'
 import uploadRoutes from './routes/uploadRoutes.js'
 import contactRoutes from './routes/contactRoutes.js'
 import diagRoutes from './routes/diagRoutes.js'
-import { setDb, isReady } from './models/dbHelpers.js'
+import {
+  findApprovedIds,
+  findBlogOneBySlug,
+  findBlogPublishedSummaries,
+  findJobById,
+  findJobBySlug,
+  setDb,
+  isReady,
+} from './models/dbHelpers.js'
 import { assertJwtSecretStrength } from './utils/validation.js'
-import { buildSitemapXml, getSiteOrigin } from './utils/sitemap.js'
+import { toUrlSlug } from './utils/slugify.js'
+import { buildSitemapXml, getSiteOrigin, STATIC_SITEMAP_PATHS } from './utils/sitemap.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -175,11 +184,87 @@ app.get('/robots.txt', (req, res) => {
   }
   
   res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-  res.send(`User-agent: *\nAllow: /\nAllow: /assets/\nAllow: /uploads/\nDisallow: /admin\nDisallow: /login\nDisallow: /signup\nDisallow: /forgot-password\nDisallow: /reset-password\nDisallow: /api/\n\nSitemap: https://www.itcs.com.pk/sitemap.xml\nSitemap: https://itcs.com.pk/api/sitemap.xml\n`)
+  res.send(`User-agent: *\nAllow: /\nAllow: /assets/\nAllow: /uploads/\nAllow: /api/sitemap.xml\nDisallow: /admin\nDisallow: /login\nDisallow: /signup\nDisallow: /forgot-password\nDisallow: /reset-password\nDisallow: /api/\n\nSitemap: https://www.itcs.com.pk/sitemap.xml\n`)
 })
 
 const distPath = path.join(__dirname, '../../dist')
 const indexHtmlPath = path.join(distPath, 'index.html')
+const sitemapPaths = new Set(STATIC_SITEMAP_PATHS.map(({ path }) => path))
+const clientRedirectPaths = new Set([
+  '/home',
+  '/services/cloud',
+  '/services/cloud/design',
+  '/services/cloud/migration',
+  '/services/cloud/security',
+  '/services/cybersecurity',
+  '/services/cybersecurity/assessment',
+  '/services/cyber-security',
+  '/services/cyber-security/assessment',
+  '/cyber-security',
+  '/cyber-security/assessment',
+  '/services/consulting',
+  '/services/enterprise-solutions',
+  '/services/it-services',
+  '/services/network-solutions',
+  '/services/network-solutions/design',
+  '/services/network-solutions/security',
+  '/services/network-solutions/support',
+  '/services/web-development',
+  '/services/ai',
+  '/vision-mission',
+  '/about',
+  '/contact-us',
+  '/index.html',
+])
+
+const isKnownFrontendPath = async (pathname) => {
+  const normalizedPath = pathname.replace(/\/+$/, '') || '/'
+  if (
+    sitemapPaths.has(normalizedPath) ||
+    clientRedirectPaths.has(normalizedPath) ||
+    ['/apply', '/login', '/signup', '/forgot-password'].includes(normalizedPath) ||
+    /^\/reset-password\/[^/]+$/.test(normalizedPath) ||
+    normalizedPath === '/admin' ||
+    normalizedPath.startsWith('/admin/')
+  ) {
+    return true
+  }
+
+  if (normalizedPath.startsWith('/tag/') || normalizedPath.startsWith('/author/')) {
+    const [, routeType, routeSlug, extraPath] = normalizedPath.split('/')
+    if (!routeSlug || extraPath) return false
+
+    const blogs = await findBlogPublishedSummaries()
+    return blogs.some((blog) => {
+      if (routeType === 'tag') {
+        return (blog.tags || []).some((tag) => toUrlSlug(tag) === routeSlug)
+      }
+      return blog.author && toUrlSlug(blog.author) === routeSlug
+    })
+  }
+
+  const jobMatch = normalizedPath.match(/^\/careers\/([^/]+)$/)
+  if (jobMatch) {
+    const [, jobId] = jobMatch
+    const job = await findJobBySlug(jobId) ||
+      (/^[a-f\d]{24}$/i.test(jobId) ? await findJobById(jobId) : null)
+    return Boolean(job)
+  }
+
+  const devToMatch = normalizedPath.match(/^\/blog\/(\d+)$/)
+  if (devToMatch) {
+    const approvedIds = await findApprovedIds()
+    return approvedIds.some((article) => String(article.devId) === devToMatch[1])
+  }
+
+  const blogMatch = normalizedPath.match(/^\/([a-z0-9-]+)$/i)
+  if (blogMatch) {
+    const blog = await findBlogOneBySlug(blogMatch[1])
+    return blog?.status === 'published'
+  }
+
+  return false
+}
 
 if (existsSync(distPath)) {
   app.use(
@@ -269,7 +354,7 @@ Object.entries(serviceRedirects).forEach(([from, to]) => {
   })
 })
 
-app.get('*', (req, res, next) => {
+app.get('*', async (req, res, next) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'API route not found' })
   }
@@ -281,9 +366,14 @@ app.get('*', (req, res, next) => {
   }
 
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
-  res.sendFile(indexHtmlPath, (err) => {
+  try {
+    const status = await isKnownFrontendPath(req.path) ? 200 : 404
+    res.status(status).sendFile(indexHtmlPath, (err) => {
+      if (err) next(err)
+    })
+  } catch (err) {
     if (err) next(err)
-  })
+  }
 })
 
 const isDirectRun = () => {
