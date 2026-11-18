@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
 import axios from "axios";
 import { apiUrl } from "../../config/api";
-import { getBlogPostUrl, getTagUrl, getAuthorUrl, isDevToBlogId } from "../../utils/blogUrls";
+import { getBlogPostUrl, getTagUrl, getAuthorUrl } from "../../utils/blogUrls";
 import { formatPublishedBlog, normalizeBlogHtml } from "../../utils/blogFormat";
 import PageSEO from "../Common/PageSEO";
 import RelatedServicesAndInsights from "../Common/RelatedServicesAndInsights";
@@ -19,16 +19,13 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 const BlogDetail = () => {
-  const { id, slug } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
-  const postKey = slug || id;
+  const postKey = slug;
   const [article, setArticle] = useState(null);
-  const [customAuthor, setCustomAuthor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [relatedPosts, setRelatedPosts] = useState([]);
-
-  const isCustomBlog = Boolean(slug) || (Boolean(id) && !isDevToBlogId(id));
 
   const cleanContent = (html) => {
     if (!html) return "";
@@ -50,123 +47,56 @@ const BlogDetail = () => {
   useEffect(() => {
     if (!postKey) return;
 
-    if (isCustomBlog) {
-      fetchCustomBlog(postKey);
-    } else {
-      fetchDevToArticle(id);
-    }
+    const fetchCustomBlog = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await axios.get(apiUrl(`/api/custom-blogs/slug/${postKey}`));
+
+        if (!res.data || !res.data.title || (res.data.status && res.data.status !== "published")) {
+          setError("Blog post not found");
+          setArticle(null);
+          return;
+        }
+
+        const blog = res.data;
+        setArticle({
+          title: blog.title,
+          body_html: blog.content,
+          cover_image: blog.featuredImage,
+          social_image: blog.ogImage,
+          publishDate: blog.publishDate,
+          reading_time_minutes: Math.ceil((blog.content || "").split(" ").length / 200),
+          user: { name: blog.author },
+          tag_list: blog.tags || [],
+          metaTitle: blog.metaTitle,
+          metaDescription: blog.metaDescription || blog.excerpt,
+          description: blog.excerpt || blog.metaDescription,
+          slug: blog.slug,
+        });
+      } catch (err) {
+        setError(err.response?.data?.error || "Failed to load blog post");
+        setArticle(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchRelatedPosts = async () => {
+      try {
+        const res = await axios.get(apiUrl("/api/custom-blogs/published"));
+        const allPosts = (res.data || []).map(formatPublishedBlog);
+        const filtered = allPosts.filter(p => String(p.slug) !== String(postKey));
+
+        setRelatedPosts(filtered.sort(() => 0.5 - Math.random()).slice(0, 6));
+      } catch (err) {
+        console.error("Error fetching related posts:", err);
+      }
+    };
+
+    fetchCustomBlog();
     fetchRelatedPosts();
-  }, [id, slug, postKey, isCustomBlog]);
-
-  const fetchRelatedPosts = async () => {
-    try {
-      const organization = "itcs11";
-      const [devRes, approvedRes, customRes] = await Promise.all([
-        fetch(`https://dev.to/api/organizations/${organization}/articles?per_page=50&_=${Date.now()}`),
-        axios.get(apiUrl("/api/blogs/approved-ids")),
-        axios.get(apiUrl("/api/custom-blogs/published"))
-      ]);
-
-      const devBlogs = await devRes.json();
-      const approvedData = approvedRes.data;
-      const customBlogs = customRes.data;
-      const approvedIds = approvedData.map(item => item.devId);
-
-      const allPosts = [
-        ...devBlogs.filter(b => approvedIds.includes(b.id)).map(b => ({
-          id: b.id,
-          title: b.title,
-          cover_image: b.cover_image || b.social_image,
-          displayAuthor: b.user?.username || "Unknown",
-          reading_time_minutes: b.reading_time_minutes || 1,
-          isCustom: false,
-          slug: b.id
-        })),
-        ...customBlogs.map(formatPublishedBlog).map(b => ({
-          id: b.id,
-          title: b.title,
-          cover_image: b.cover_image,
-          displayAuthor: b.displayAuthor,
-          reading_time_minutes: b.reading_time_minutes,
-          isCustom: true,
-          slug: b.slug,
-        })),
-      ];
-
-      const currentId = postKey;
-      const filtered = allPosts.filter(p => String(p.id) !== String(currentId) && String(p.slug) !== String(currentId));
-      
-      // Shuffle and take 6
-      setRelatedPosts(filtered.sort(() => 0.5 - Math.random()).slice(0, 6));
-    } catch (err) {
-      console.error("Error fetching related posts:", err);
-    }
-  };
-
-  const fetchCustomBlog = async (blogSlug) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const res = await axios.get(apiUrl(`/api/custom-blogs/slug/${blogSlug}`));
-
-      if (!res.data || !res.data.title) {
-        setError("Blog post not found");
-        setArticle(null);
-        return;
-      }
-
-      const blog = res.data;
-      setArticle({
-        title: blog.title,
-        body_html: blog.content,
-        cover_image: blog.featuredImage,
-        social_image: blog.ogImage,
-        publishDate: blog.publishDate,
-        reading_time_minutes: Math.ceil((blog.content || "").split(" ").length / 200),
-        user: { name: blog.author },
-        tag_list: blog.tags || [],
-        metaTitle: blog.metaTitle,
-        metaDescription: blog.metaDescription || blog.excerpt,
-        description: blog.excerpt || blog.metaDescription,
-        slug: blog.slug,
-      });
-
-      if (blog.author) setCustomAuthor(blog.author);
-    } catch (err) {
-      setError(err.response?.data?.error || "Failed to load blog post");
-      setArticle(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchDevToArticle = async (articleId) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const res = await fetch(`https://dev.to/api/articles/${articleId}`);
-      const data = await res.json();
-
-      if (!res.ok || data.error || !data.title) {
-        setError(data.error || "Blog post not found");
-        setArticle(null);
-        return;
-      }
-
-      setArticle(data);
-
-      const customRes = await fetch(apiUrl("/api/blogs/approved-ids"));
-      const customData = await customRes.json();
-      const match = customData.find((blog) => blog.devId === Number(articleId));
-      if (match && match.customAuthor) setCustomAuthor(match.customAuthor);
-    } catch (err) {
-      setError("Failed to load blog post");
-      setArticle(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [postKey]);
 
   if (loading) {
     const currentPath = postKey ? `/${postKey}` : "/blog";
@@ -206,9 +136,9 @@ const BlogDetail = () => {
     </div>
   );
 
-  const displayAuthor = customAuthor || article.user?.name || article.user?.username || "Unknown Author";
+  const displayAuthor = article.user?.name || article.user?.username || "Unknown Author";
   const articleTags = (article.tag_list || article.tags || []).filter(Boolean);
-  const postPath = getBlogPostUrl(article.slug ? { ...article, isCustom: true } : { ...article, id: postKey, isCustom: isCustomBlog });
+  const postPath = getBlogPostUrl(article);
   const seo = blogSeoFromArticle(article, postPath);
 
   return (

@@ -278,14 +278,19 @@ const toTitleCase = (str) =>
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     .join(" ");
 
-export const blogFilterSeo = ({ tag, tagLabel, authorSlug, authorLabel }) => {
+export const blogFilterSeo = ({ tag, tagLabel, authorSlug, authorLabel, postCount }) => {
   if (tag) {
     const rawLabel = tagLabel || tag.replace(/-/g, " ");
     const pretty = toTitleCase(rawLabel);
+    const count = Number.isFinite(postCount) && postCount > 0
+      ? ` Browse ${postCount} ${postCount === 1 ? "article" : "articles"} written by ITCS engineers.`
+      : "";
     return {
       title: `${pretty} Articles, Guides & Insights | ITCS Blog`,
-      description: `Explore practical tutorials, enterprise architecture guides, and technical insights on ${pretty} from certified engineers at ITCS Pakistan.`,
+      description: `Explore practical tutorials, enterprise architecture guides, and technical insights on ${pretty} from certified engineers at ITCS Pakistan.${count}`,
       path: `/tag/${tag}`,
+      // Tag pages are real keyword landing pages: keep them indexable. An
+      // empty tag is flagged noindex by Blog.jsx once posts have loaded.
       noindex: false,
     };
   }
@@ -295,7 +300,9 @@ export const blogFilterSeo = ({ tag, tagLabel, authorSlug, authorLabel }) => {
       title: `Articles by ${label} | ITCS Expert Authors`,
       description: `Read technical articles and strategic IT commentary by ${label} on cloud architecture, cybersecurity, and digital infrastructure at ITCS.`,
       path: `/author/${authorSlug}`,
-      noindex: false,
+      // Author archives are thin listing pages and must not compete with the
+      // articles themselves in the search results.
+      noindex: true,
     };
   }
   return SEO_META.blog;

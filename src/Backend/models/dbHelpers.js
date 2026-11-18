@@ -170,22 +170,6 @@ export const deleteBlogById = async (id) => {
   return result.deletedCount > 0 ? { _id: id } : null
 }
 
-// BlogStatuses (Dev.to)
-export const findBlogStatuses = () =>
-  coll('blogstatuses').find({}).toArray()
-
-export const findApprovedIds = () =>
-  coll('blogstatuses').find({ status: 'approved' }).project({
-    devId: 1, customAuthor: 1, customDate: 1, createdAt: 1
-  }).toArray()
-
-export const upsertBlogStatus = (devId, update) =>
-  coll('blogstatuses').findOneAndUpdate(
-    { devId },
-    { $set: update },
-    { upsert: true, returnDocument: 'after' }
-  )
-
 // Jobs
 export const findAllJobs = () =>
   coll('jobs').find({}).sort({ createdAt: -1 }).toArray()

@@ -1,9 +1,7 @@
 import { toUrlSlug } from './slugify'
 
-export const isDevToBlogId = (value) => /^\d+$/.test(String(value || ''))
-
 export const getBlogPostUrl = (post) =>
-  post.isCustom ? `/${post.slug}` : `/blog/${post.id}`
+  post?.slug ? `/${String(post.slug).replace(/^\/+/, '')}` : '/blog'
 
 export const getCustomBlogPath = (slug) => `/${slug}`
 

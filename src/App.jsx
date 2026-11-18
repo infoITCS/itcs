@@ -8,7 +8,6 @@ import Header from './Components/Header/Header'
 import Footer from './Components/Footer/Footer'
 import AdminRoute from './Components/AdminPanel/AdminRoute'
 import { Route, Routes, useLocation, Navigate, useParams } from 'react-router-dom'
-import { isDevToBlogId } from './utils/blogUrls'
 
 const Home = lazyWithRetry(() => import('./Components/Home/Home'))
 const Services = lazyWithRetry(() => import('./Components/Services/Services'))
@@ -22,7 +21,6 @@ const Blog = lazyWithRetry(() => import('./Components/Blog/Blog'))
 const BlogDetail = lazyWithRetry(() => import('./Components/Blog/BlogDetail'))
 const AdminPanel = lazyWithRetry(() => import('./Components/AdminPanel/AdminPanel'))
 const BlogApproval = lazyWithRetry(() => import('./Components/AdminPanel/BlogApproval/BlogApproval'))
-const AdminBlogDetail = lazyWithRetry(() => import('./Components/AdminPanel/BlogApproval/AdminBlogDetail'))
 const AdminCustomBlogDetail = lazyWithRetry(() => import('./Components/AdminPanel/BlogApproval/AdminCustomBlogDetail'))
 const Cloud = lazyWithRetry(() => import('./Components/Services-Dropdown/Cloud/Cloud'))
 const CloudDesign = lazyWithRetry(() => import('./Components/Services-Dropdown/Cloud/CloudDesign/CloudDesign'))
@@ -79,14 +77,6 @@ const Loading = () => (
 const CustomBlogRedirect = () => {
   const { slug } = useParams()
   return <Navigate to={`/${slug}`} replace />
-}
-
-const LegacyBlogSlugRedirect = () => {
-  const { id } = useParams()
-  if (isDevToBlogId(id)) {
-    return <BlogDetail />
-  }
-  return <Navigate to={`/${id}`} replace />
 }
 
 function App() {
@@ -176,7 +166,6 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/tag/:tagSlug" element={<Blog />} />
             <Route path="/author/:authorSlug" element={<Blog />} />
-            <Route path="/blog/:id" element={<LegacyBlogSlugRedirect />} />
             <Route path="/custom-blog/:slug" element={<CustomBlogRedirect />} />
             <Route path="/index.html" element={<Navigate to="/" replace />} />
             <Route
@@ -192,14 +181,6 @@ function App() {
               element={
                 <AdminRoute>
                   <BlogApproval />
-                </AdminRoute>
-              }
-            />
-            <Route
-              path="/admin/blog/:id"
-              element={
-                <AdminRoute>
-                  <AdminBlogDetail />
                 </AdminRoute>
               }
             />

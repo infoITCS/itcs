@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import authRoutes from '../src/Backend/routes/authRoutes.js';
 import jobRoutes from '../src/Backend/routes/jobRoutes.js';
 import blogRoutes from '../src/Backend/routes/blogRoutes.js';
@@ -10,6 +13,15 @@ import contactRoutes from '../src/Backend/routes/contactRoutes.js';
 import { setDb } from '../src/Backend/models/dbHelpers.js';
 import { assertJwtSecretStrength } from '../src/Backend/utils/validation.js';
 import { buildSitemapXml, getSiteOrigin } from '../src/Backend/utils/sitemap.js';
+import {
+  NOINDEX_HEADER,
+  getFrontendStatus,
+  isMediaPath,
+} from '../src/Backend/utils/seoRouting.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const distPath = path.resolve(__dirname, '../dist');
+const indexHtmlPath = path.join(distPath, 'index.html');
 
 let mongooseConnection = null;
 let connectingPromise = null;
@@ -17,7 +29,7 @@ let dbInitialized = false;
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean)
-  : ['http://localhost:5173', 'http://localhost:5000'];
+  : ['https://itcs.com.pk', 'https://www.itcs.com.pk', 'http://localhost:5173', 'http://localhost:5000'];
 
 const getMongoConnection = async () => {
   if (mongooseConnection) {
@@ -75,9 +87,15 @@ app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
 const isSitemapPath = (req) => {
-  const path = req.path || '';
-  return path === '/sitemap.xml' || path === '/api/sitemap.xml';
+  const pathname = req.path || '';
+  return pathname === '/sitemap.xml' || pathname === '/api/sitemap.xml';
 };
+
+const canSkipDatabase = (req) =>
+  isSitemapPath(req) ||
+  req.path === '/robots.txt' ||
+  isMediaPath(req.path) ||
+  /\.[a-z0-9]{2,8}$/i.test(req.path);
 
 app.use(async (req, res, next) => {
   try {
@@ -85,11 +103,11 @@ app.use(async (req, res, next) => {
     next();
   } catch (error) {
     console.error('MongoDB connection error:', error);
-    // Sitemap can still return static pages without DB
-    if (isSitemapPath(req)) {
+    if (canSkipDatabase(req)) {
       return next();
     }
-    res.status(500).json({ error: 'Database connection failed' });
+    res.setHeader('X-Robots-Tag', NOINDEX_HEADER);
+    return res.status(503).json({ error: 'Database connection failed' });
   }
 });
 
@@ -130,6 +148,23 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Direct media URLs are assets, never indexable pages.
+app.use('/uploads', (req, res) => {
+  res.setHeader('X-Robots-Tag', NOINDEX_HEADER);
+  res.status(404).json({ error: 'Media not found' });
+});
+
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath, {
+    index: false,
+    setHeaders(res, filePath) {
+      if (filePath.includes(`${path.sep}assets${path.sep}`) || filePath.includes('/assets/')) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      }
+    },
+  }));
+}
+
 app.use((err, req, res, next) => {
   if (err.message === 'Not allowed by CORS') {
     return res.status(403).json({ message: 'CORS policy blocked this request.' });
@@ -148,8 +183,34 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Frontend deep links: the status comes from the database, so a missing blog,
+// tag or job returns a real 404 instead of a 200 Soft 404 SPA shell.
+app.get('*', async (req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    res.setHeader('X-Robots-Tag', NOINDEX_HEADER);
+    return res.status(404).json({ error: 'API route not found' });
+  }
+
+  if (!fs.existsSync(indexHtmlPath)) {
+    return res.status(503).send('Frontend build missing.');
+  }
+
+  try {
+    const status = await getFrontendStatus(req.path);
+    if (status !== 200) res.setHeader('X-Robots-Tag', NOINDEX_HEADER);
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.status(status).sendFile(indexHtmlPath, (err) => {
+      if (err) next(err);
+    });
+  } catch {
+    res.setHeader('X-Robots-Tag', NOINDEX_HEADER);
+    return res.status(503).send('Service temporarily unavailable');
+  }
+});
+
 app.use((req, res) => {
-  res.status(404).json({ error: 'API route not found' });
+  res.setHeader('X-Robots-Tag', NOINDEX_HEADER);
+  res.status(404).json({ error: 'Route not found' });
 });
 
 export default async function handler(req, res) {

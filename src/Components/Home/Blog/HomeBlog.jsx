@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { apiUrl } from "../../../config/api";
@@ -35,7 +35,7 @@ export default function Blog() {
     <div className="home-blog-section">
       <h2 className="blog-public-title">Our Blogs</h2>
 
-      {loading && <p className="loading-text">Loading approved blogs...</p>}
+      {loading && <p className="loading-text">Loading blogs...</p>}
 
       <div className="blog-grid">
         {posts.length > 0 ? (

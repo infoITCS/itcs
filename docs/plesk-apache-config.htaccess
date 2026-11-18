@@ -46,16 +46,18 @@
   RewriteRule ^contact-us/?$    /contact       [R=301,L]
   RewriteRule ^vision-mission/?$ /mission-vision [R=301,L]
 
-  # --- 3. SPA fallback -----------------------------------------------------
-  # Real static files are served directly; everything else falls back to
-  # index.html so client-side routes work on a hard refresh / deep link.
-  # /api is excluded so an existing reverse proxy is never intercepted.
+  # --- 3. SPA fallback -> Node (NOT index.html) -----------------------------
+  # A static fallback to index.html answers unknown URLs with 200 OK, which
+  # Google reports as Soft 404. Proxy unknown paths to the Node app instead;
+  # Express checks the database and returns a real 200 / 404 / 410.
+  # Requires mod_proxy (Plesk enables it by default).
+  # Change port 3000 if the Node app listens elsewhere.
 
   RewriteCond %{REQUEST_URI} !^/api/
   RewriteCond %{REQUEST_URI} !^/uploads/
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^ index.html [L]
+  RewriteRule ^ http://127.0.0.1:3000%{REQUEST_URI} [P,L]
 </IfModule>
 
 # --- 4. MIME types the migrated blog media depend on ------------------------

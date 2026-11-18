@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { fileURLToPath } from 'url';
+import { toUrlSlug } from '../src/utils/slugify.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -82,33 +83,30 @@ async function generate() {
       });
     });
 
-    // Extract all unique blog tags
-    const toUrlSlug = (val) =>
-      String(val || '')
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w ]+/g, '')
-        .replace(/ +/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '');
-
-    const tagSet = new Set();
+    // Only tags attached to a published post are indexable. Empty tags are
+    // skipped because they render "No blogs found" and cause Soft 404s.
+    const tagDates = new Map();
     blogs.forEach((b) => {
-      if (Array.isArray(b.tags)) {
-        b.tags.forEach((t) => {
-          const tagSlug = toUrlSlug(t);
-          if (tagSlug) tagSet.add(tagSlug);
-        });
-      }
+      if (!Array.isArray(b.tags)) return;
+      const lastmod = toDateOnly(b.updatedAt || b.publishDate || b.createdAt);
+      b.tags.forEach((t) => {
+        const tagSlug = toUrlSlug(t);
+        if (!tagSlug) return;
+        if (!tagDates.has(tagSlug) || (lastmod && lastmod > tagDates.get(tagSlug))) {
+          tagDates.set(tagSlug, lastmod || null);
+        }
+      });
     });
 
-    console.log(`Extracted ${tagSet.size} unique tags from blogs.`);
-    tagSet.forEach((tagSlug) => {
+    console.log(`Extracted ${tagDates.size} unique tags from blogs.`);
+    tagDates.forEach((lastmod, tagSlug) => {
       const path = `/tag/${tagSlug}`;
       entries.set(path, {
         loc: `${BASE_URL}${path}`,
+        lastmod,
       });
     });
+
   } catch (err) {
     console.warn('Could not fetch blogs from live API:', err.message);
   }
@@ -119,7 +117,8 @@ async function generate() {
     const jobs = Array.isArray(res.data) ? res.data : [];
     console.log(`Fetched ${jobs.length} jobs from API.`);
     jobs.forEach((j) => {
-      const slug = j?.slug;
+      if (j?.isActive === false) return;
+      const slug = j?.slug || toUrlSlug(j?.title);
       if (!slug) return;
       const cleanSlug = String(slug).replace(/^\/+/, '');
       const path = `/careers/${cleanSlug}`;
@@ -132,12 +131,19 @@ async function generate() {
     console.warn('Could not fetch jobs from live API:', err.message);
   }
 
-  const urlElements = Array.from(entries.values()).map((e) => {
-    const lines = ['  <url>', `    <loc>${xmlEscape(e.loc)}</loc>`];
-    if (e.lastmod) lines.push(`    <lastmod>${xmlEscape(e.lastmod)}</lastmod>`);
-    lines.push('  </url>');
-    return lines.join('\n');
-  });
+  const isExcludedPath = (p) =>
+    /^\/(uploads|media|attachments|wp-content|admin|api)(\/|$)/i.test(p) ||
+    /[?#]/.test(p) ||
+    /\.[a-z0-9]{2,8}$/i.test(p);
+
+  const urlElements = Array.from(entries.entries())
+    .filter(([p]) => !isExcludedPath(p))
+    .map(([, e]) => {
+      const lines = ['  <url>', `    <loc>${xmlEscape(e.loc)}</loc>`];
+      if (e.lastmod) lines.push(`    <lastmod>${xmlEscape(e.lastmod)}</lastmod>`);
+      lines.push('  </url>');
+      return lines.join('\n');
+    });
 
   const xmlContent = [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -148,13 +154,13 @@ async function generate() {
 
   const publicSitemapPath = path.join(__dirname, '../public/sitemap.xml');
   fs.writeFileSync(publicSitemapPath, xmlContent, 'utf8');
-  console.log(`Successfully written ${entries.size} URLs to ${publicSitemapPath}`);
+  console.log(`Successfully written ${urlElements.length} URLs to ${publicSitemapPath}`);
 
   // Also if dist exists, update dist/sitemap.xml
   const distSitemapPath = path.join(__dirname, '../dist/sitemap.xml');
   if (fs.existsSync(path.join(__dirname, '../dist'))) {
     fs.writeFileSync(distSitemapPath, xmlContent, 'utf8');
-    console.log(`Successfully written ${entries.size} URLs to ${distSitemapPath}`);
+    console.log(`Successfully written ${urlElements.length} URLs to ${distSitemapPath}`);
   }
 
 }

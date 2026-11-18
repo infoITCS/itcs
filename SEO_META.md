@@ -63,8 +63,9 @@ These titles/descriptions are generated at runtime.
 |-------------|------|--------------------|--------------------------|--------|
 | `/{blog-slug}` | Blog post | CMS `metaTitle`, or `{Post Title} \| ITCS Blog` | CMS `metaDescription` / excerpt (max 160 chars), or auto fallback from title | Set fields in Admin → Add/Edit Custom Blog |
 | `/careers/{job-slug}` | Job detail | `{Job Title} \| Careers at ITCS` | `Apply for {Job Title} [in {location}] at ITCS…` | Built via `jobSeoFromJob()` |
-| `/tag/{tag}` | Tag landing page | `{Tag} Articles, Guides & Insights \| ITCS Blog` | Explore practical tutorials, enterprise architecture guides, and technical insights on {Tag}… | **Indexable** keyword landing page in sitemap |
-| `/author/{author}` | Author filter | `Posts by {Author} \| ITCS Blog` | Read articles by {Author}… | **noindex** (thin listing) |
+| `/tag/{tag}` | Tag landing page | `{Tag} Articles, Guides & Insights \| ITCS Blog` | Explore practical tutorials, enterprise architecture guides, and technical insights on {Tag}… plus article count. | **Indexable** keyword landing page in sitemap when at least one published post carries the tag. Empty/unknown tags return 404 + `noindex`. |
+| `/author/{author}` | Author filter | `Articles by {Author} \| ITCS Expert Authors` | Read technical articles and strategic IT commentary by {Author}… | **noindex, nofollow** (thin listing) |
+| `/blog/{legacyId}` | Removed legacy article URL | — | — | **410 Gone** — content removed, never in sitemap |
 
 ### Blog CMS fields (admin)
 
@@ -121,10 +122,13 @@ For `noindex` pages:
 
 | File | Purpose |
 |------|---------|
-| `public/sitemap.xml` | XML sitemap (expand with all public URLs for Google) |
+| `src/Backend/utils/sitemap.js` | Dynamic `/sitemap.xml` (static routes, published custom posts, live tags, active jobs) |
+| `scripts/generate-sitemap.js` | Build-time `public/sitemap.xml` / `dist/sitemap.xml` generator |
 | `public/robots.txt` | Crawler rules + sitemap URL |
 | `src/config/seoMeta.js` | Titles, descriptions, helpers |
 | `src/Components/Common/PageSEO.jsx` | Helmet / head tags |
+| `src/Backend/utils/seoRouting.js` | Shared 200/404/410 status logic for Express (Plesk + Vercel) |
+| `docs/plesk-nginx-seo.conf` | nginx directives required for real 404 statuses in production |
 
 ---
 

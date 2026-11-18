@@ -5,6 +5,8 @@
 User-agent: *
 Allow: /
 Allow: /assets/
+# Uploaded media stay crawlable so crawlers can read the X-Robots-Tag:
+# noindex header served by the Node backend for every /uploads/* file.
 Allow: /uploads/
 Allow: /api/sitemap.xml
 Disallow: /api/
@@ -16,6 +18,14 @@ Disallow: /login
 Disallow: /signup
 Disallow: /forgot-password
 Disallow: /reset-password
+Disallow: /uploads/resumes/
+
+# Blog filter/sort query strings are duplicates of clean canonical URLs.
+Disallow: /*?q=
+Disallow: /*?sort=
+Disallow: /*?range=
+Disallow: /*&sort=
+Disallow: /*&range=
 
 
 # Sitemaps

@@ -95,6 +95,21 @@ export const breadcrumbSchema = (crumbs) => ({
   })),
 });
 
+/** ItemList for indexable tag landing pages, built from the visible article cards. */
+export const itemListSchema = ({ name, path, items = [] }) => ({
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name,
+  url: abs(path),
+  numberOfItems: items.length,
+  itemListElement: items.map((item, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: item.title,
+    url: abs(item.path),
+  })),
+});
+
 /** BlogPosting for a single article, built from its CMS record. */
 export const blogPostingSchema = ({ article, path }) => {
   const image = img(article?.cover_image || article?.social_image || article?.ogImage);

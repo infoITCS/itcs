@@ -41,7 +41,10 @@ const PageSEO = ({
   withBreadcrumbs = true,
 }) => {
   const fullTitle = title?.includes("ITCS") ? title : `${title} | ITCS`;
-  const canonical = `${SITE_URL}${path.startsWith("/") ? path : path ? `/${path}` : "/"}`;
+  const cleanPath = String(path || "")
+    .split(/[?#]/)[0]
+    .replace(/\/+$/, "");
+  const canonical = `${SITE_URL}${cleanPath.startsWith("/") ? cleanPath : cleanPath ? `/${cleanPath}` : "/"}`;
   // Fall back to the site logo rather than the 32px favicon so link previews
   // are not a blurry square.
   const ogImage = image || `${SITE_URL}/apple-touch-icon.png`;
@@ -64,7 +67,7 @@ const PageSEO = ({
         name="robots"
         content={
           noindex
-            ? "noindex, follow"
+            ? "noindex, nofollow"
             : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
         }
       />
@@ -73,7 +76,7 @@ const PageSEO = ({
         name="googlebot"
         content={
           noindex
-            ? "noindex, follow"
+            ? "noindex, nofollow"
             : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
         }
       />

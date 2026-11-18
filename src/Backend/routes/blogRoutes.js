@@ -237,7 +237,12 @@ router.get('/published', async (req, res) => {
 router.get('/slug/:slug', async (req, res) => {
   try {
     const blog = await db.findBlogOneBySlug(req.params.slug)
-    if (!blog) return res.status(404).json({ message: 'Blog not found' })
+    // Only published posts have a public URL. Drafts/pending posts must return
+    // a real 404 so they cannot be crawled or shown as a 200 empty page.
+    if (!blog || blog.status !== 'published') {
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow')
+      return res.status(404).json({ message: 'Blog not found' })
+    }
     res.json(blog)
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message })
@@ -355,50 +360,10 @@ router.delete('/:id', requireAuthorOrAdmin, async (req, res) => {
   }
 })
 
-router.get('/statuses', requireAuthorOrAdmin, async (req, res) => {
-  try {
-    const statuses = await db.findBlogStatuses()
-    res.json(statuses)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to fetch statuses' })
-  }
-})
-
-router.get('/approved-ids', async (req, res) => {
-  try {
-    const approvedBlogs = await db.findApprovedIds()
-    res.json(approvedBlogs)
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Failed to fetch approved IDs' })
-  }
-})
-
 router.patch('/:id/status', requireAdmin, async (req, res) => {
   try {
-    const { status, customAuthor, customDate } = req.body
+    const { status } = req.body
     const idParam = req.params.id
-
-    const numId = Number(idParam)
-    if (!Number.isNaN(numId)) {
-      const updateFields = {}
-      if (status !== undefined) {
-        if (!['approved', 'rejected'].includes(status)) {
-          return res.status(400).json({ error: 'Invalid status' })
-        }
-        updateFields.status = status
-      }
-      if (customAuthor !== undefined) updateFields.customAuthor = customAuthor
-      if (customDate !== undefined) updateFields.customDate = customDate
-
-      if (Object.keys(updateFields).length === 0) {
-        return res.status(400).json({ error: 'No valid fields to update' })
-      }
-
-      const updated = await db.upsertBlogStatus(numId, updateFields)
-      return res.json(updated)
-    }
 
     if (!ObjectId.isValid(idParam)) {
       return res.status(400).json({ error: 'Invalid ID' })

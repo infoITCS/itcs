@@ -35,4 +35,20 @@ export default [
       ],
     },
   },
+  {
+    files: [
+      'api/**/*.js',
+      'scripts/**/*.js',
+      'src/Backend/**/*.js',
+      'app.js',
+      'server.js',
+      'run.js',
+      'entry.js',
+      '_passenger.cjs',
+      'diagnostic.mjs',
+    ],
+    languageOptions: {
+      globals: { ...globals.browser, ...globals.node },
+    },
+  },
 ]

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { apiUrl } from "../../config/api";
 import { getAuthorUrl, getBlogPostUrl, getTagUrl, toUrlSlug } from "../../utils/blogUrls";
@@ -7,6 +7,7 @@ import { formatPublishedBlog, sortBlogsByDate } from "../../utils/blogFormat";
 import BlogFilter from "./BlogFilter";
 import PageSEO from "../Common/PageSEO";
 import { SEO_META, blogFilterSeo } from "../../config/seoMeta";
+import { itemListSchema } from "../../config/structuredData";
 import "./Blog.scss";
 
 const SORTS = {
@@ -82,9 +83,11 @@ export default function Blog() {
     setCurrentPage(1);
   }, [activeTagSlug, activeAuthorSlug, filters.q, filters.range, filters.sort]);
 
-  if (!tagSlugParam && legacyTag) {
-    return <Navigate to={`/tag/${toUrlSlug(legacyTag)}`} replace />;
-  }
+  useEffect(() => {
+    if (!tagSlugParam && legacyTag) {
+      navigate(`/tag/${toUrlSlug(legacyTag)}`, { replace: true });
+    }
+  }, [tagSlugParam, legacyTag, navigate]);
 
   const displayTag =
     posts
@@ -141,10 +144,22 @@ export default function Blog() {
   };
 
   const seo = activeTagSlug
-    ? blogFilterSeo({ tag: activeTagSlug, tagLabel: displayTag })
+    ? blogFilterSeo({ tag: activeTagSlug, tagLabel: displayTag, postCount: filteredPosts.length })
     : activeAuthorSlug
-      ? blogFilterSeo({ authorSlug: activeAuthorSlug, authorLabel: displayAuthor })
+      ? blogFilterSeo({ authorSlug: activeAuthorSlug, authorLabel: displayAuthor, postCount: filteredPosts.length })
       : SEO_META.blog;
+
+  // An indexable tag with no published posts is a Soft 404 in GSC. Wait for the
+  // API response before deciding so the skeleton state never triggers noindex.
+  const noindex = seo.noindex || (!loading && Boolean(activeTagSlug || activeAuthorSlug) && filteredPosts.length === 0);
+
+  const listSchema = activeTagSlug && filteredPosts.length > 0
+    ? itemListSchema({
+        name: `Articles tagged ${displayTag}`,
+        path: seo.path,
+        items: filteredPosts.map((post) => ({ title: post.title, path: getBlogPostUrl(post) })),
+      })
+    : null;
 
   const formatDate = (dateStr, isCustom = false) => {
     if (!dateStr) return "";
@@ -153,18 +168,6 @@ export default function Blog() {
     }
     const date = new Date(dateStr);
     return date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-  };
-
-  const handleAuthorClick = (e, author) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (author) navigate(getAuthorUrl(author));
-  };
-
-  const handleTagClick = (e, tag) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (tag) navigate(getTagUrl(tag));
   };
 
   const SkeletonCard = () => (
@@ -192,7 +195,8 @@ export default function Blog() {
         title={seo.title}
         description={seo.description}
         path={seo.path}
-        noindex={seo.noindex}
+        noindex={noindex}
+        schema={listSchema}
       />
       <div className="blog-page-heading">
         <span className="blog-title-badge">ITCS INSIGHTS</span>
@@ -204,6 +208,13 @@ export default function Blog() {
             </>
           )}
         </h1>
+        {activeTagSlug && !loading && filteredPosts.length > 0 && (
+          <p className="blog-tag-intro">
+            Explore {filteredPosts.length} {filteredPosts.length === 1 ? "article" : "articles"} tagged
+            {" "}{displayTag} — practical guides, enterprise architecture insights and hands-on
+            {" "}technical guidance from the ITCS engineering team.
+          </p>
+        )}
       </div>
 
       <BlogFilter

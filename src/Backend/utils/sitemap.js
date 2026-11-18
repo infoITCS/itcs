@@ -79,17 +79,24 @@ export const buildSitemapXml = async (origin) => {
         })),
     )
 
-    const tagSet = new Set()
+    // Indexable tag landing pages. Only tags attached to a published post are
+    // emitted — never empty/orphan tags (a guaranteed Soft 404 in GSC).
+    const tagDates = new Map()
     publishedBlogs.forEach((b) => {
       ;(b?.tags || []).forEach((t) => {
         const slug = toUrlSlug(t)
-        if (slug) tagSet.add(slug)
+        if (!slug) return
+        const date = toDateOnly(b.updatedAt || b.publishDate || b.createdAt)
+        if (!tagDates.has(slug) || (date && date > tagDates.get(slug))) {
+          tagDates.set(slug, date || null)
+        }
       })
     })
 
-    tagSet.forEach((slug) => {
+    tagDates.forEach((lastmod, slug) => {
       dynamicEntries.push({
         path: `/tag/${slug}`,
+        lastmod,
       })
     })
   } catch (error) {
@@ -101,6 +108,7 @@ export const buildSitemapXml = async (origin) => {
     const jobs = await findAllJobs()
     dynamicEntries.push(
       ...jobs
+        .filter((job) => job?.isActive !== false)
         .map((job) => {
           const slug = job?.slug || toUrlSlug(job?.title)
           if (!slug) return null
@@ -115,9 +123,14 @@ export const buildSitemapXml = async (origin) => {
     console.error('Sitemap job fetch failed:', error.message)
   }
 
+  const isExcludedPath = (pathname) =>
+    /^\/(uploads|media|attachments|wp-content|admin|api)(\/|$)/i.test(pathname) ||
+    /[?#]/.test(pathname) ||
+    /\.[a-z0-9]{2,8}$/i.test(pathname)
+
   const uniqueEntries = new Map()
   ;[...STATIC_SITEMAP_PATHS, ...dynamicEntries].forEach((entry) => {
-    if (!entry?.path) return
+    if (!entry?.path || isExcludedPath(entry.path)) return
     uniqueEntries.set(entry.path, entry)
   })
 
